@@ -1,0 +1,67 @@
+/* Estilos base */
+body {
+    font-family: 'Poppins', sans-serif;
+    color: #333;
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.5s ease-in;
+}
+
+/* Efectos hover */
+.hover-scale {
+    transition: transform 0.3s ease;
+}
+
+.hover-scale:hover {
+    transform: scale(1.03);
+}
+
+/* Estilos personalizados para el color ámbar */
+.bg-amber-50 {
+    background-color: #fffbeb;
+}
+
+.text-amber-800 {
+    color: #92400e;
+}
+
+.bg-amber-600 {
+    background-color: #d97706;
+}
+
+.hover\:bg-amber-700:hover {
+    background-color: #b45309;
+}
+
+.border-amber-300 {
+    border-color: #fcd34d;
+}
+
+.focus\:ring-amber-500:focus {
+    --tw-ring-color: #f59e0b;
+}
+
+/* Estilos para el mapa de mesas */
+.table-map {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1rem;
+}
+
+.table-item {
+    transition: all 0.3s ease;
+}
+
+/* Responsividad adicional */
+@media (max-width : 1269px ){
+    .table-map {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
