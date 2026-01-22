@@ -107,12 +107,21 @@ class CustomHero extends HTMLElement {
             line-height: 1.5;
           }
           
+          .hero-content {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+          }
+          
           .hero-buttons {
             flex-direction: column;
             gap: 0.75rem;
             width: 100%;
             max-width: 280px;
             margin: 0 auto;
+            align-items: center;
           }
           
           .hero-btn {
@@ -120,16 +129,11 @@ class CustomHero extends HTMLElement {
             padding: 0.875rem 1.5rem;
             font-size: 1rem;
             text-align: center;
+            margin: 0;
           }
         }
         
         @media (max-width: 480px) {
-          :host {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-          }
-          
           .hero {
             height: 35vh;
             min-height: 200px;
@@ -140,27 +144,27 @@ class CustomHero extends HTMLElement {
             width: 100%;
             max-width: 100%;
             padding: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
           }
           
           .hero h1 {
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
-          }
-          
-          .hero p {
-            font-size: 0.85rem;
-            margin-bottom: 1rem;
-            padding: 0 0.25rem;
+            text-align: center;
           }
           
           .hero-buttons {
-            max-width: 240px;
+            max-width: 220px;
             gap: 0.5rem;
+            align-items: center;
           }
           
           .hero-btn {
             padding: 0.625rem 1rem;
             font-size: 0.875rem;
+            margin: 0;
           }
         }
         
