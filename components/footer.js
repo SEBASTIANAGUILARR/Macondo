@@ -205,24 +205,10 @@ class CustomFooter extends HTMLElement {
             <img src="http://static.photos/food/200x200/1" alt="Macondo Bar Latino">
             Macondo Bar Latino
           </div>
-          <p>Un espacio donde la gastronomía colombiana se fusiona con la alegría del Caribe para ofrecerte una experiencia única.</p>
           <div class="social-links">
             <a href="#"><i data-feather="facebook"></i></a>
             <a href="#"><i data-feather="instagram"></i></a>
-            <a href="#"><i data-feather="twitter"></i></a>
-            <a href="#"><i data-feather="youtube"></i></a>
           </div>
-        </div>
-        
-        <div class="footer-links">
-          <h3 data-i18n="footer.quickLinks">Enlaces Rápidos</h3>
-          <ul>
-            <li><a href="#menu" data-i18n="footer.ourMenu">Nuestro Menú</a></li>
-            <li><a href="#reservas" data-i18n="navbar.reservations">Reservas</a></li>
-            <li><a href="#eventos" data-i18n="navbar.events">Eventos</a></li>
-            <li><a href="#" data-i18n="footer.gallery">Galería</a></li>
-            <li><a href="#" data-i18n="footer.aboutUs">Sobre Nosotros</a></li>
-          </ul>
         </div>
         
         <div class="footer-contact">
@@ -230,7 +216,6 @@ class CustomFooter extends HTMLElement {
           <p><i data-feather="map-pin"></i> Calle 85 #12-45, Bogotá</p>
           <p><i data-feather="phone"></i> +57 1 345 6789</p>
           <p><i data-feather="mail"></i> info@macondobar.com</p>
-          <p><i data-feather="clock"></i> Lunes a Domingo: 11:00 AM - 12:00 AM</p>
         </div>
       </div>
       
