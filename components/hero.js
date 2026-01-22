@@ -11,8 +11,8 @@ class CustomHero extends HTMLElement {
         
         .hero {
           position: relative;
-          height: 80vh;
-          min-height: 500px;
+          height: 50vh;
+          min-height: 300px;
           width: 100%;
           background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
                       url('http://static.photos/restaurant/1200x630/1');
@@ -91,8 +91,8 @@ class CustomHero extends HTMLElement {
           }
           
           .hero {
-            height: 70vh;
-            min-height: 400px;
+            height: 40vh;
+            min-height: 250px;
             padding: 0 1rem;
           }
           
@@ -130,8 +130,8 @@ class CustomHero extends HTMLElement {
           }
           
           .hero {
-            height: 60vh;
-            min-height: 300px;
+            height: 35vh;
+            min-height: 200px;
             padding: 0 0.75rem;
           }
           
@@ -172,7 +172,6 @@ class CustomHero extends HTMLElement {
       <section class="hero">
         <div class="hero-content">
           <h1 data-i18n="hero.title">Macondo Bar Latino</h1>
-          <p data-i18n="hero.description">Disfruta de la mejor comida colombiana, cócteles tropicales y un ambiente vibrante que te transportará directamente a Latinoamérica.</p>
           <div class="hero-buttons">
             <a href="#menu" class="hero-btn" data-i18n="hero.orderButton">Pedir Ahora</a>
             <a href="#reservas" class="hero-btn hero-btn-secondary" data-i18n="hero.reserveButton">Reservar Mesa</a>
