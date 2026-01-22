@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eventos - Macondo Bar Latino</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script src="components/navbar.js"></script>
+    <script src="components/footer.js"></script>
+    <script src="components/auth.js"></script>
+    <script src="components/auth-modal.js"></script>
+    <script src="components/cart.js"></script>
+    <script src="components/orders.js"></script>
+    <script src="components/checkout.js"></script>
+    <script src="components/user-panel.js"></script>
+</head>
+<body class="bg-amber-50">
+    <custom-navbar></custom-navbar>
+
+    <main class="container mx-auto px-4 py-8 mt-20">
+        <div class="text-center mb-12">
+            <h1 class="text-5xl font-bold text-amber-800 mb-4">Eventos</h1>
+            <p class="text-xl text-gray-600">Todas nuestras noches especiales, música en vivo y experiencias Macondo</p>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8">
+            <section class="lg:col-span-2">
+                <div class="space-y-8">
+                    <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                        <img src="nochedevallenato.png" alt="Noche de Vallenato" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h2 class="text-2xl font-bold text-amber-800">Noche de Vallenato</h2>
+                                <span class="text-sm text-gray-500">Viernes 15 de Julio · 8:00 PM</span>
+                            </div>
+                            <p class="text-gray-700 mb-4">Disfruta de la mejor música vallenata en vivo con el grupo "Los Diablitos del Vallenato". Ambiente tropical, coctelería especial y platos típicos.</p>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Reservar</button>
+                                <button class="bg-white border border-amber-600 text-amber-700 hover:bg-amber-50 font-bold py-2 px-4 rounded-lg transition-colors">Ver detalles</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                        <img src="salsa.jpg" alt="Sábado de Salsa" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h2 class="text-2xl font-bold text-amber-800">Sábado de Salsa</h2>
+                                <span class="text-sm text-gray-500">Sábado 16 de Julio · 9:00 PM</span>
+                            </div>
+                            <p class="text-gray-700 mb-4">DJ especializado en salsa clásica y moderna. Pista de baile, promociones en cócteles y un menú perfecto para compartir.</p>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Reservar</button>
+                                <button class="bg-white border border-amber-600 text-amber-700 hover:bg-amber-50 font-bold py-2 px-4 rounded-lg transition-colors">Ver detalles</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                        <img src="fiesta.jpg" alt="Noche Tropical" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h2 class="text-2xl font-bold text-amber-800">Noche Tropical</h2>
+                                <span class="text-sm text-gray-500">Sábado 23 de Julio · 8:00 PM</span>
+                            </div>
+                            <p class="text-gray-700 mb-4">Celebración con música tropical, platos especiales y promociones en bebidas. Ideal para grupos y celebraciones.</p>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Reservar</button>
+                                <button class="bg-white border border-amber-600 text-amber-700 hover:bg-amber-50 font-bold py-2 px-4 rounded-lg transition-colors">Ver detalles</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                        <img src="mojitodelulo.jpg" alt="Noche de Coctelería" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h2 class="text-2xl font-bold text-amber-800">Noche de Coctelería</h2>
+                                <span class="text-sm text-gray-500">Jueves 28 de Julio · 7:30 PM</span>
+                            </div>
+                            <p class="text-gray-700 mb-4">Degustación de cocteles colombianos con maridaje de tapas para grupos. Incluye demostración y recomendaciones del bartender.</p>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Reservar</button>
+                                <button class="bg-white border border-amber-600 text-amber-700 hover:bg-amber-50 font-bold py-2 px-4 rounded-lg transition-colors">Ver detalles</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                        <img src="components/bandeja-paisa-receta.jpg" alt="Festival de Platos Típicos" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h2 class="text-2xl font-bold text-amber-800">Festival de Platos Típicos</h2>
+                                <span class="text-sm text-gray-500">Domingo 31 de Julio · 2:00 PM</span>
+                            </div>
+                            <p class="text-gray-700 mb-4">Un menú especial con variedad de platos tradicionales, opciones para compartir y promos familiares. Perfecto para venir en grupo.</p>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Reservar</button>
+                                <button class="bg-white border border-amber-600 text-amber-700 hover:bg-amber-50 font-bold py-2 px-4 rounded-lg transition-colors">Ver detalles</button>
+                            </div>
+                        </div>
+                    </article>
+
+                    <article class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                        <img src="sancocho.jpg" alt="Noche de Música en Vivo" class="w-full h-64 object-cover">
+                        <div class="p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <h2 class="text-2xl font-bold text-amber-800">Noche de Música en Vivo</h2>
+                                <span class="text-sm text-gray-500">Viernes 05 de Agosto · 8:30 PM</span>
+                            </div>
+                            <p class="text-gray-700 mb-4">Música en vivo con repertorio latino. Ambiente perfecto para una cena especial y cócteles de autor.</p>
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Reservar</button>
+                                <button class="bg-white border border-amber-600 text-amber-700 hover:bg-amber-50 font-bold py-2 px-4 rounded-lg transition-colors">Ver detalles</button>
+                            </div>
+                        </div>
+                    </article>
+                </div>
+            </section>
+
+            <aside class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
+                    <h3 class="text-xl font-bold text-amber-800 mb-4">Navegación</h3>
+                    <div class="space-y-3">
+                        <a href="index.html#eventos" class="block w-full text-center bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Volver al Home</a>
+                        <a href="menu.html" class="block w-full text-center bg-white border border-amber-600 text-amber-700 hover:bg-amber-50 font-bold py-2 px-4 rounded-lg transition-colors">Ver Menú Completo</a>
+                    </div>
+
+                    <div class="mt-6">
+                        <h4 class="text-lg font-bold text-amber-800 mb-3">Próximamente</h4>
+                        <ul class="space-y-2 text-gray-700">
+                            <li class="flex items-start">
+                                <i data-feather="calendar" class="w-4 h-4 mr-2 mt-1 text-amber-700"></i>
+                                <span>Más noches temáticas cada semana</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i data-feather="music" class="w-4 h-4 mr-2 mt-1 text-amber-700"></i>
+                                <span>Sesiones acústicas y DJ invitados</span>
+                            </li>
+                            <li class="flex items-start">
+                                <i data-feather="users" class="w-4 h-4 mr-2 mt-1 text-amber-700"></i>
+                                <span>Eventos privados y caterings</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </aside>
+        </div>
+    </main>
+
+    <custom-footer></custom-footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+
+            try {
+                window.authModal = new AuthModal();
+                window.authModal.init();
+            } catch (error) {
+                console.error('❌ Error inicializando AuthModal:', error);
+            }
+
+            try {
+                window.checkout = new CheckoutSystem();
+                window.checkout.init();
+            } catch (error) {
+                console.error('❌ Error inicializando CheckoutSystem:', error);
+            }
+
+            try {
+                window.userPanel = new UserPanel();
+                window.userPanel.init();
+            } catch (error) {
+                console.error('❌ Error inicializando UserPanel:', error);
+            }
+
+            if (window.cart && typeof window.cart.updateUI === 'function') {
+                window.cart.updateUI();
+            }
+        });
+    </script>
+</body>
+</html>
