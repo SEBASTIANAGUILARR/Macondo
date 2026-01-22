@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>¡Pago Exitoso! - Macondo Bar Latino</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="components/i18n.js"></script>
+    <script src="components/navbar.js"></script>
+    <script src="components/footer.js"></script>
+    <style>
+        .success-container {
+            min-height: calc(100vh - 200px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        .success-card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            text-align: center;
+            max-width: 500px;
+            width: 100%;
+        }
+        
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            animation: scaleIn 0.5s ease-out;
+        }
+        
+        .success-icon svg {
+            width: 40px;
+            height: 40px;
+            color: white;
+        }
+        
+        .confetti {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 1000;
+        }
+        
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #f59e0b;
+            animation: confettiFall 3s ease-out forwards;
+        }
+        
+        @keyframes scaleIn {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        @keyframes confettiFall {
+            0% {
+                transform: translateY(-100vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+        
+        .order-details {
+            background: #fffbeb;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin: 1.5rem 0;
+            text-align: left;
+        }
+        
+        .order-details p {
+            margin: 0.5rem 0;
+            color: #92400e;
+        }
+        
+        @media (max-width: 480px) {
+            .success-card {
+                padding: 2rem 1.5rem;
+            }
+            
+            .success-icon {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .success-icon svg {
+                width: 30px;
+                height: 30px;
+            }
+        }
+    </style>
+</head>
+<body class="bg-amber-50">
+    <custom-navbar></custom-navbar>
+    
+    <div class="success-container" style="margin-top: 70px;">
+        <div class="success-card">
+            <div class="success-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            
+            <h1 class="text-3xl font-bold text-amber-800 mb-4">¡Pago Exitoso!</h1>
+            
+            <p class="text-gray-600 mb-4">
+                Gracias por tu compra en Macondo Bar Latino. Tu pedido ha sido procesado correctamente.
+            </p>
+            
+            <div class="order-details" id="order-details">
+                <p><strong>Número de pedido:</strong> <span id="order-number">Cargando...</span></p>
+                <p><strong>Estado:</strong> <span class="text-green-600 font-semibold">Confirmado</span></p>
+                <p><strong>Fecha:</strong> <span id="order-date"></span></p>
+            </div>
+            
+            <p class="text-gray-500 text-sm mb-6">
+                Recibirás un correo electrónico con los detalles de tu pedido. Si tienes alguna pregunta, no dudes en contactarnos.
+            </p>
+            
+            <div class="space-y-3">
+                <a href="index.html" class="block w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                    Volver al Inicio
+                </a>
+                
+                <a href="index.html#menu" class="block w-full bg-white border-2 border-amber-600 text-amber-600 hover:bg-amber-50 font-bold py-3 px-6 rounded-lg transition-colors">
+                    Ver Menú
+                </a>
+            </div>
+            
+            <div class="mt-6 pt-6 border-t border-gray-200">
+                <p class="text-gray-500 text-sm">
+                    ¿Necesitas ayuda? Contáctanos:
+                </p>
+                <p class="text-amber-700 font-medium">
+                    <a href="tel:+571345678">+57 1 345 6789</a> | 
+                    <a href="mailto:info@macondobar.com">info@macondobar.com</a>
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Confetti Animation -->
+    <div class="confetti" id="confetti"></div>
+    
+    <custom-footer></custom-footer>
+    
+    <script>
+        // Generar confetti
+        function createConfetti() {
+            const confettiContainer = document.getElementById('confetti');
+            const colors = ['#f59e0b', '#d97706', '#92400e', '#fcd34d', '#10b981'];
+            
+            for (let i = 0; i < 50; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.random() * 100 + 'vw';
+                piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+                piece.style.animationDelay = Math.random() * 2 + 's';
+                piece.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                confettiContainer.appendChild(piece);
+            }
+            
+            // Limpiar confetti después de la animación
+            setTimeout(() => {
+                confettiContainer.innerHTML = '';
+            }, 5000);
+        }
+        
+        // Obtener información del pedido
+        function loadOrderDetails() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const sessionId = urlParams.get('session_id');
+            
+            // Generar número de pedido basado en timestamp
+            const orderNumber = 'MAC-' + Date.now().toString(36).toUpperCase();
+            document.getElementById('order-number').textContent = orderNumber;
+            
+            // Fecha actual
+            const now = new Date();
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            document.getElementById('order-date').textContent = now.toLocaleDateString('es-ES', options);
+            
+            // Limpiar carrito después de compra exitosa
+            localStorage.removeItem('macondo_cart');
+            
+            // Disparar evento para actualizar contador del carrito
+            window.dispatchEvent(new CustomEvent('cartUpdated'));
+        }
+        
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            createConfetti();
+            loadOrderDetails();
+            
+            // Inicializar iconos
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+        });
+    </script>
+</body>
+</html>
