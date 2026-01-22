@@ -84,15 +84,24 @@ body {
    OPTIMIZACIÓN MÓVIL - Mobile First
    ============================================ */
 
-/* Espaciado del body para navbar fija */
+/* Espaciado del body para navbar fija - solo afecta al main, no al hero */
 body {
-    padding-top: 70px;
+    padding-top: 0;
+}
+
+/* El hero se posiciona debajo del navbar */
+custom-hero {
+    margin-top: 70px;
 }
 
 /* Contenedor principal móvil */
 @media (max-width: 768px) {
     body {
-        padding-top: 60px;
+        padding-top: 0;
+    }
+    
+    custom-hero {
+        margin-top: 56px;
     }
     
     /* Contenedor principal - prevenir overflow */
@@ -262,7 +271,11 @@ body {
 /* Pantallas muy pequeñas (< 480px) */
 @media (max-width: 480px) {
     body {
-        padding-top: 55px;
+        padding-top: 0;
+    }
+    
+    custom-hero {
+        margin-top: 48px;
     }
     
     main {

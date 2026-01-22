@@ -5,8 +5,6 @@ class CustomHero extends HTMLElement {
       <style>
         :host {
           display: block;
-          margin: 0;
-          padding: 0;
           width: 100%;
         }
         
