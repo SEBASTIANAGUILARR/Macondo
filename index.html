@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
+    <script src="components/i18n.js"></script>
+    <script src="components/language-selector.js"></script>
     <script src="components/navbar.js"></script>
     <script src="components/footer.js"></script>
     <script src="components/hero.js"></script>
@@ -17,6 +19,13 @@
     <script src="components/orders.js"></script>
     <script src="components/checkout.js"></script>
     <script src="components/user-panel.js"></script>
+    <script>
+        // Inicializar el sistema de idiomas cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            // El sistema i18n se inicializa automáticamente
+            console.log('Sistema de idiomas inicializado');
+        });
+    </script>
 </head>
 <body class="bg-amber-50">
     <custom-navbar></custom-navbar>
@@ -25,29 +34,29 @@
     <main class="container mx-auto px-4 py-8">
         <!-- Sección Menú -->
         <section id="menu" class="mb-16">
-            <h2 class="text-4xl font-bold text-amber-800 mb-8 text-center">Nuestro Menú</h2>
+            <h2 class="text-4xl font-bold text-amber-800 mb-8 text-center" data-i18n="menu.title">Nuestro Menú</h2>
             
             <!-- Platos Principales -->
             <div class="mb-12">
-                <h3 class="text-2xl font-semibold text-amber-700 mb-6 border-b-2 border-amber-200 pb-2">Platos Típicos Colombianos</h3>
+                <h3 class="text-2xl font-semibold text-amber-700 mb-6 border-b-2 border-amber-200 pb-2" data-i18n="menu.colombianDishes">Platos Típicos Colombianos</h3>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                     <!-- Plato 1 -->
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                         <img src="components/bandeja-paisa-receta.jpg" alt="Bandeja Paisa" class="w-full h-48 object-cover">
                         <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Bandeja Paisa</h4>
-                            <p class="text-gray-600 mb-2">Arroz, frijoles, chicharrón, carne molida, chorizo, huevo, aguacate y arepa.</p>
+                            <h4 class="text-xl font-bold text-amber-800" data-i18n="dishes.bandejaPaisa.name">Bandeja Paisa</h4>
+                            <p class="text-gray-600 mb-2" data-i18n="dishes.bandejaPaisa.description">Arroz, frijoles, chicharrón, carne molida, chorizo, huevo, aguacate y arepa.</p>
                             <div class="flex justify-between items-center mb-3">
                                 <p class="text-amber-600 font-bold">60,00 PLN</p>
                             </div>
                             <button onclick="window.cart.addItem({
                                 id: 'bandeja-paisa',
-                                name: 'Bandeja Paisa',
+                                name: t('dishes.bandejaPaisa.name'),
                                 price: '60,00 PLN',
                                 image: 'components/bandeja-paisa-receta.jpg'
                             })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
                                 <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
+                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
                             </button>
                         </div>
                     </div>
@@ -56,19 +65,19 @@
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                         <img src="ajiaco.jpg" alt="Ajiaco" class="w-full h-48 object-cover">
                         <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Ajiaco Santafereño</h4>
-                            <p class="text-gray-600 mb-2">Sopa de pollo con tres tipos de papa, mazorca, guascas, crema de leche y alcaparras.</p>
+                            <h4 class="text-xl font-bold text-amber-800" data-i18n="dishes.ajiaco.name">Ajiaco Santafereño</h4>
+                            <p class="text-gray-600 mb-2" data-i18n="dishes.ajiaco.description">Sopa de pollo con tres tipos de papa, mazorca, guascas, crema de leche y alcaparras.</p>
                             <div class="flex justify-between items-center mb-3">
                                 <p class="text-amber-600 font-bold">35,00 PLN</p>
                             </div>
                             <button onclick="window.cart.addItem({
                                 id: 'ajiaco',
-                                name: 'Ajiaco Santafereño',
+                                name: t('dishes.ajiaco.name'),
                                 price: '35,00 PLN',
                                 image: 'ajiaco.jpg'
                             })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
                                 <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
+                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
                             </button>
                         </div>
                     </div>
@@ -77,19 +86,19 @@
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                         <img src="sancocho.jpg" alt="Sancocho" class="w-full h-48 object-cover">
                         <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Sancocho de Gallina</h4>
-                            <p class="text-gray-600 mb-2">Sopa tradicional con gallina criolla, yuca, plátano, mazorca y cilantro.</p>
+                            <h4 class="text-xl font-bold text-amber-800" data-i18n="dishes.sancocho.name">Sancocho de Gallina</h4>
+                            <p class="text-gray-600 mb-2" data-i18n="dishes.sancocho.description">Sopa tradicional con gallina criolla, yuca, plátano, mazorca y cilantro.</p>
                             <div class="flex justify-between items-center mb-3">
                                 <p class="text-amber-600 font-bold">35,00 PLN</p>
                             </div>
                             <button onclick="window.cart.addItem({
                                 id: 'sancocho',
-                                name: 'Sancocho de Gallina',
+                                name: t('dishes.sancocho.name'),
                                 price: '35,00 PLN',
                                 image: 'sancocho.jpg'
                             })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
                                 <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
+                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
                             </button>
                         </div>
                     </div>
@@ -98,19 +107,19 @@
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                         <img src="patacones con carne.jpg" alt="Lechona" class="w-full h-48 object-cover">
                         <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Patacones con carne&nbsp;</h4>
-                            <p class="text-gray-600 mb-2">Los patacones son la especialidad de la casa pueden con carn, vegue o gambas&nbsp; &nbsp;</p>
+                            <h4 class="text-xl font-bold text-amber-800" data-i18n="dishes.patacones.name">Patacones con carne</h4>
+                            <p class="text-gray-600 mb-2" data-i18n="dishes.patacones.description">Los patacones son la especialidad de la casa pueden con carne, vegue o gambas</p>
                             <div class="flex justify-between items-center mb-3">
                                 <p class="text-amber-600 font-bold">38,00 PLN</p>
                             </div>
                             <button onclick="window.cart.addItem({
                                 id: 'patacones-carne',
-                                name: 'Patacones con carne',
+                                name: t('dishes.patacones.name'),
                                 price: '38,00 PLN',
                                 image: 'patacones con carne.jpg'
                             })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
                                 <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
+                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
                             </button>
                         </div>
                     </div>
@@ -119,19 +128,19 @@
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                         <img src="mojarra.jpg" alt="Mojarra" class="w-full h-48 object-cover">
                         <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Mojarra Frita</h4>
-                            <p class="text-gray-600 mb-2">Pescado entero frito acompañado de patacón, arroz con coco y ensalada.</p>
+                            <h4 class="text-xl font-bold text-amber-800" data-i18n="dishes.mojarra.name">Mojarra Frita</h4>
+                            <p class="text-gray-600 mb-2" data-i18n="dishes.mojarra.description">Pescado entero frito acompañado de patacón, arroz con coco y ensalada.</p>
                             <div class="flex justify-between items-center mb-3">
                                 <p class="text-amber-600 font-bold">70,00 PLN</p>
                             </div>
                             <button onclick="window.cart.addItem({
                                 id: 'mojarra',
-                                name: 'Mojarra Frita',
+                                name: t('dishes.mojarra.name'),
                                 price: '70,00 PLN',
                                 image: 'mojarra.jpg'
                             })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
                                 <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
+                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
                             </button>
                         </div>
                     </div>
@@ -140,19 +149,19 @@
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                         <img src="shredded-beef-arepas.jpg" alt="Tamal" class="w-full h-48 object-cover">
                         <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Arepas con carne&nbsp;</h4>
-                            <p class="text-gray-600 mb-2">Las arepas tipicas y tradicionales de colombia asadas te hacen sentir en colombia clima tropical y sabores unicos&nbsp; &nbsp; &nbsp;</p>
+                            <h4 class="text-xl font-bold text-amber-800" data-i18n="dishes.arepas.name">Arepas con carne</h4>
+                            <p class="text-gray-600 mb-2" data-i18n="dishes.arepas.description">Las arepas tipicas y tradicionales de colombia asadas te hacen sentir en colombia clima tropical y sabores unicos</p>
                             <div class="flex justify-between items-center mb-3">
                                 <p class="text-amber-600 font-bold">30,00 PLN</p>
                             </div>
                             <button onclick="window.cart.addItem({
                                 id: 'arepas-carne',
-                                name: 'Arepas con carne',
+                                name: t('dishes.arepas.name'),
                                 price: '30,00 PLN',
                                 image: 'shredded-beef-arepas.jpg'
                             })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
                                 <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
+                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
                             </button>
                         </div>
                     </div>
@@ -161,25 +170,25 @@
             
             <!-- Bebidas -->
             <div class="mb-12">
-                <h3 class="text-2xl font-semibold text-amber-700 mb-6 border-b-2 border-amber-200 pb-2">Bebidas y Cócteles</h3>
+                <h3 class="text-2xl font-semibold text-amber-700 mb-6 border-b-2 border-amber-200 pb-2" data-i18n="menu.drinks">Bebidas y Cócteles</h3>
                 <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Cóctel 1 -->
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                         <img src="aguardiente.jpg" alt="Aguardiente" class="w-full h-48 object-cover">
                         <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Aguardiente Antioqueño</h4>
-                            <p class="text-gray-600 mb-2">Tradicional licor colombiano con sabor a anís.</p>
+                            <h4 class="text-xl font-bold text-amber-800" data-i18n="drinks.aguardiente.name">Aguardiente Antioqueño</h4>
+                            <p class="text-gray-600 mb-2" data-i18n="drinks.aguardiente.description">Tradicional licor colombiano con sabor a anís.</p>
                             <div class="flex justify-between items-center mb-3">
                                 <p class="text-amber-600 font-bold">10,00 PLN</p>
                             </div>
                             <button onclick="window.cart.addItem({
                                 id: 'aguardiente',
-                                name: 'Aguardiente Antioqueño',
+                                name: t('drinks.aguardiente.name'),
                                 price: '10,00 PLN',
                                 image: 'aguardiente.jpg'
                             })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
                                 <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
+                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
                             </button>
                         </div>
                     </div>
@@ -188,19 +197,19 @@
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                         <img src="mojitodelulo.jpg" alt="Mojito" class="w-full h-48 object-cover">
                         <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Mojito de Lulo</h4>
-                            <p class="text-gray-600 mb-2">Ron, lulo, hierbabuena, azúcar y soda.</p>
+                            <h4 class="text-xl font-bold text-amber-800" data-i18n="drinks.mojito.name">Mojito de Lulo</h4>
+                            <p class="text-gray-600 mb-2" data-i18n="drinks.mojito.description">Ron, lulo, hierbabuena, azúcar y soda.</p>
                             <div class="flex justify-between items-center mb-3">
                                 <p class="text-amber-600 font-bold">30,00 PLN</p>
                             </div>
                             <button onclick="window.cart.addItem({
                                 id: 'mojito-lulo',
-                                name: 'Mojito de Lulo',
+                                name: t('drinks.mojito.name'),
                                 price: '30,00 PLN',
                                 image: 'mojitodelulo.jpg'
                             })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
                                 <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
+                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
                             </button>
                         </div>
                     </div>
@@ -209,19 +218,19 @@
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                         <img src="2-ClubColombia-world-brand-design.jpg" alt="Cerveza" class="w-full h-48 object-cover">
                         <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Cervezas Importadas</h4>
-                            <p class="text-gray-600 mb-2">Heineken, Corona, Stella Artois, Budweiser.</p>
+                            <h4 class="text-xl font-bold text-amber-800" data-i18n="drinks.beer.name">Cervezas Importadas</h4>
+                            <p class="text-gray-600 mb-2" data-i18n="drinks.beer.description">Heineken, Corona, Stella Artois, Budweiser.</p>
                             <div class="flex justify-between items-center mb-3">
                                 <p class="text-amber-600 font-bold">21,00 PLN</p>
                             </div>
                             <button onclick="window.cart.addItem({
                                 id: 'cervezas-importadas',
-                                name: 'Cervezas Importadas',
+                                name: t('drinks.beer.name'),
                                 price: '21,00 PLN',
                                 image: '2-ClubColombia-world-brand-design.jpg'
                             })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
                                 <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
+                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
                             </button>
                         </div>
                     </div>
@@ -230,19 +239,19 @@
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                         <img src="cococotail.jpg" alt="Jugo" class="w-full h-48 object-cover">
                         <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Jugos Naturales</h4>
-                            <p class="text-gray-600 mb-2">Mango, guanábana, maracuyá, lulo, mora.</p>
+                            <h4 class="text-xl font-bold text-amber-800" data-i18n="drinks.juices.name">Jugos Naturales</h4>
+                            <p class="text-gray-600 mb-2" data-i18n="drinks.juices.description">Mango, guanábana, maracuyá, lulo, mora.</p>
                             <div class="flex justify-between items-center mb-3">
                                 <p class="text-amber-600 font-bold">25,00 PLN</p>
                             </div>
                             <button onclick="window.cart.addItem({
                                 id: 'jugos-naturales',
-                                name: 'Jugos Naturales',
+                                name: t('drinks.juices.name'),
                                 price: '25,00 PLN',
                                 image: 'cococotail.jpg'
                             })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
                                 <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
+                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
                             </button>
                         </div>
                     </div>
@@ -252,191 +261,158 @@
             <div class="text-center mt-8 mb-16">
                 <a href="menu.html" class="inline-flex items-center bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-8 rounded-lg transition-colors text-lg">
                     <i data-feather="menu" class="w-5 h-5 mr-3"></i>
-                    Ver Menú Completo
+                    <span data-i18n="common.viewFullMenu">Ver Menú Completo</span>
                 </a>
             </div>
             
             <!-- Ofertas -->
             <div>
-                <h3 class="text-2xl font-semibold text-amber-700 mb-6 border-b-2 border-amber-200 pb-2">Ofertas Especiales</h3>
+                <h3 class="text-2xl font-semibold text-amber-700 mb-6 border-b-2 border-amber-200 pb-2" data-i18n="menu.specialOffers">Ofertas Especiales</h3>
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Oferta 1: Menú Lunch -->
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="ruta/imagen.jpg" alt="Tapas Colombianas para Grupos" class="w-full h-48 object-cover">
+                        <div class="bg-gradient-to-r from-amber-500 to-amber-600 p-4 text-white text-center">
+                            <span class="text-3xl">🍽️</span>
+                            <p class="text-sm font-medium mt-1" data-i18n="offers.lunch.schedule">Lunes a Viernes</p>
+                        </div>
                         <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Tapas Colombianas para Grupos</h4>
-                            <p class="text-gray-600 mb-2">Tabla grande para compartir (8-12 personas). Mini arepas, empanadas, patacones y salsas.</p>
+                            <h4 class="text-xl font-bold text-amber-800" data-i18n="offers.lunch.name">Menú Lunch</h4>
+                            <p class="text-gray-600 mb-3" data-i18n="offers.lunch.description">Disfruta de nuestro menú especial de almuerzo en horario de 12:00 a 16:00. Incluye plato principal y bebida.</p>
                             <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">Desde PLN 180,00</p>
-                                <span class="text-sm text-gray-500">8-12 personas</span>
+                                <p class="text-2xl text-amber-600 font-bold">25 PLN</p>
+                                <span class="bg-green-100 text-green-800 text-xs font-semibold px-2 py-1 rounded" data-i18n="offers.lunch.badge">Solo días de semana</span>
                             </div>
                             <button onclick="window.cart.addItem({
-                                id: 'tapas-grupos',
-                                name: 'Tapas Colombianas para Grupos',
-                                price: '180,00 PLN',
-                                image: 'ruta/imagen.jpg'
+                                id: 'menu-lunch',
+                                name: t('offers.lunch.name'),
+                                price: '25,00 PLN',
+                                image: ''
                             })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
                                 <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
+                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
                             </button>
                         </div>
                     </div>
 
+                    <!-- Oferta 2: Envío Gratis Empresas -->
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="ruta/imagen.jpg" alt="Combo Familiar para Grupos" class="w-full h-48 object-cover">
+                        <div class="bg-gradient-to-r from-blue-500 to-blue-600 p-4 text-white text-center">
+                            <span class="text-3xl">🚚</span>
+                            <p class="text-sm font-medium mt-1" data-i18n="offers.freeDelivery.badge">Para Empresas</p>
+                        </div>
                         <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Combo Familiar para Grupos</h4>
-                            <p class="text-gray-600 mb-2">Perfecto para 6-8 personas. Incluye 2 platos principales, acompañamientos y postre.</p>
+                            <h4 class="text-xl font-bold text-amber-800" data-i18n="offers.freeDelivery.name">Envío Gratis</h4>
+                            <p class="text-gray-600 mb-3" data-i18n="offers.freeDelivery.description">Envío gratuito para pedidos de 5 o más personas a la misma dirección. Ideal para oficinas y empresas.</p>
                             <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">Desde PLN 280,00</p>
-                                <span class="text-sm text-gray-500">6-8 personas</span>
+                                <p class="text-lg text-amber-600 font-bold" data-i18n="offers.freeDelivery.condition">Mínimo 5 pedidos</p>
+                                <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded" data-i18n="offers.freeDelivery.saving">Ahorra en envío</span>
                             </div>
                             <button onclick="window.cart.addItem({
-                                id: 'combo-familiar-grupos',
-                                name: 'Combo Familiar para Grupos',
-                                price: '280,00 PLN',
-                                image: 'ruta/imagen.jpg'
+                                id: 'envio-gratis-empresas',
+                                name: t('offers.freeDelivery.name'),
+                                price: '0,00 PLN',
+                                image: ''
                             })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
                                 <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
+                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
                             </button>
                         </div>
                     </div>
 
+                    <!-- Oferta 3: Catering Personalizado -->
                     <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="ruta/imagen.jpg" alt="Menú Ejecutivo para Empresas" class="w-full h-48 object-cover">
+                        <div class="bg-gradient-to-r from-purple-500 to-purple-600 p-4 text-white text-center">
+                            <span class="text-3xl">🎉</span>
+                            <p class="text-sm font-medium mt-1" data-i18n="offers.catering.badge">Servicio Personalizado</p>
+                        </div>
                         <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Menú Ejecutivo para Empresas</h4>
-                            <p class="text-gray-600 mb-2">Ideal para almuerzos corporativos (10-15 personas). Incluye plato, bebida y postre.</p>
+                            <h4 class="text-xl font-bold text-amber-800" data-i18n="offers.catering.name">Catering para Eventos</h4>
+                            <p class="text-gray-600 mb-3" data-i18n="offers.catering.description">Organizamos el catering perfecto para tu evento en nuestro restaurante. Menús personalizados según tus necesidades.</p>
                             <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">Desde PLN 220,00</p>
-                                <span class="text-sm text-gray-500">Por persona</span>
+                                <p class="text-lg text-amber-600 font-bold" data-i18n="offers.catering.price">Precio a consultar</p>
+                                <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2 py-1 rounded" data-i18n="offers.catering.custom">A medida</span>
                             </div>
-                            <button onclick="window.cart.addItem({
-                                id: 'menu-ejecutivo-empresas',
-                                name: 'Menú Ejecutivo para Empresas',
-                                price: '220,00 PLN',
-                                image: 'ruta/imagen.jpg'
-                            })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
-                            </button>
+                            <a href="https://wa.me/48511599562?text=Hola%2C%20me%20interesa%20el%20servicio%20de%20catering" target="_blank" class="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
+                                <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+                                <span data-i18n="offers.catering.contact">Contáctanos</span>
+                            </a>
                         </div>
                     </div>
 
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="ruta/imagen.jpg" alt="Barra de Cócteles para Eventos" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Barra de Cócteles para Eventos</h4>
-                            <p class="text-gray-600 mb-2">Servicio de coctelería en vivo para celebraciones. Incluye insumos y bartender.</p>
-                            <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">Desde PLN 260,00</p>
-                                <span class="text-sm text-gray-500">Por evento</span>
-                            </div>
-                            <button onclick="window.cart.addItem({
-                                id: 'barra-cocteles-eventos',
-                                name: 'Barra de Cócteles para Eventos',
-                                price: '260,00 PLN',
-                                image: 'ruta/imagen.jpg'
-                            })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="ruta/imagen.jpg" alt="Paquete Cumpleaños" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800">Paquete Cumpleaños</h4>
-                            <p class="text-gray-600 mb-2">Para celebraciones (8-15 personas). Incluye reserva de zona, decoración básica y una ronda de shots.</p>
-                            <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">Desde PLN 320,00</p>
-                                <span class="text-sm text-gray-500">8-15 personas</span>
-                            </div>
-                            <button onclick="window.cart.addItem({
-                                id: 'paquete-cumpleanos',
-                                name: 'Paquete Cumpleaños',
-                                price: '320,00 PLN',
-                                image: 'ruta/imagen.jpg'
-                            })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                Agregar al Carrito
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </div>
         </section>
         
         <!-- Sección Reservas -->
         <section id="reservas" class="mb-16 bg-white p-8 rounded-lg shadow-lg">
-            <h2 class="text-4xl font-bold text-amber-800 mb-8 text-center">Reserva tu Mesa</h2>
+            <h2 class="text-4xl font-bold text-amber-800 mb-8 text-center" data-i18n="reservations.title">Reserva tu Mesa</h2>
             
             <div class="grid md:grid-cols-2 gap-8">
                 <!-- Formulario -->
                 <div>
                     <form class="space-y-4">
                         <div>
-                            <label for="nombre" class="block text-amber-700 font-medium mb-1">Nombre Completo</label>
+                            <label for="nombre" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.fullName">Nombre Completo</label>
                             <input type="text" id="nombre" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                         </div>
                         
                         <div>
-                            <label for="email" class="block text-amber-700 font-medium mb-1">Correo Electrónico</label>
+                            <label for="email" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.email">Correo Electrónico</label>
                             <input type="email" id="email" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                         </div>
                         
                         <div>
-                            <label for="telefono" class="block text-amber-700 font-medium mb-1">Teléfono</label>
+                            <label for="telefono" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.phone">Teléfono</label>
                             <input type="tel" id="telefono" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                         </div>
                         
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label for="fecha" class="block text-amber-700 font-medium mb-1">Fecha</label>
+                                <label for="fecha" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.date">Fecha</label>
                                 <input type="date" id="fecha" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                             </div>
                             
                             <div>
-                                <label for="personas" class="block text-amber-700 font-medium mb-1">Personas</label>
+                                <label for="personas" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.people">Personas</label>
                                 <select id="personas" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
-                                    <option value="1">1 persona</option>
-                                    <option value="2">2 personas</option>
-                                    <option value="3">3 personas</option>
-                                    <option value="4">4 personas</option>
-                                    <option value="5">5 personas</option>
-                                    <option value="6">6 personas</option>
-                                    <option value="7">7+ personas</option>
+                                    <option value="1" data-i18n="reservations.person1">1 persona</option>
+                                    <option value="2" data-i18n="reservations.person2">2 personas</option>
+                                    <option value="3" data-i18n="reservations.person3">3 personas</option>
+                                    <option value="4" data-i18n="reservations.person4">4 personas</option>
+                                    <option value="5" data-i18n="reservations.person5">5 personas</option>
+                                    <option value="6" data-i18n="reservations.person6">6 personas</option>
+                                    <option value="7" data-i18n="reservations.person7plus">7+ personas</option>
                                 </select>
                             </div>
                         </div>
                         
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label for="hora-entrada" class="block text-amber-700 font-medium mb-1">Hora de Entrada</label>
+                                <label for="hora-entrada" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.entryTime">Hora de Entrada</label>
                                 <input type="time" id="hora-entrada" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                             </div>
                             
                             <div>
-                                <label for="hora-salida" class="block text-amber-700 font-medium mb-1">Hora de Salida</label>
+                                <label for="hora-salida" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.exitTime">Hora de Salida</label>
                                 <input type="time" id="hora-salida" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                             </div>
                         </div>
                         
                         <div>
-                            <label for="comentarios" class="block text-amber-700 font-medium mb-1">Comentarios Especiales</label>
+                            <label for="comentarios" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.comments">Comentarios Especiales</label>
                             <textarea id="comentarios" rows="3" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
                         </div>
                         
                         <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
-                            Reservar Mesa
+                            <span data-i18n="reservations.reserveButton">Reservar Mesa</span>
                         </button>
                     </form>
                 </div>
                 
                 <!-- Mapa de Mesas -->
                 <div>
-                    <h3 class="text-xl font-bold text-amber-800 mb-4">Selecciona tu Mesa</h3>
+                    <h3 class="text-xl font-bold text-amber-800 mb-4" data-i18n="reservations.selectTable">Selecciona tu Mesa</h3>
                     <div class="bg-amber-100 p-4 rounded-lg">
                         <div class="grid grid-cols-4 gap-4 mb-4">
                             <!-- Mesa 1 -->
@@ -493,11 +469,11 @@
                         <div class="flex justify-center space-x-4">
                             <div class="flex items-center">
                                 <i data-feather="circle" class="text-green-500 mr-2"></i>
-                                <span>Disponible</span>
+                                <span data-i18n="reservations.available">Disponible</span>
                             </div>
                             <div class="flex items-center">
                                 <i data-feather="circle" class="text-red-500 mr-2"></i>
-                                <span>Ocupado</span>
+                                <span data-i18n="reservations.occupied">Ocupado</span>
                             </div>
                         </div>
                     </div>
@@ -507,18 +483,18 @@
         
         <!-- Sección Eventos -->
         <section id="eventos" class="mb-16">
-            <h2 class="text-4xl font-bold text-amber-800 mb-8 text-center">Eventos y Noches Especiales</h2>
+            <h2 class="text-4xl font-bold text-amber-800 mb-8 text-center" data-i18n="events.title">Eventos y Noches Especiales</h2>
             
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
                 <!-- Evento 1 -->
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                     <img src="nochedevallenato.png" alt="Música Viva" class="w-full h-48 object-cover">
                     <div class="p-4">
-                        <h4 class="text-xl font-bold text-amber-800">Noche de Vallenato</h4>
-                        <p class="text-gray-600 mb-2">Viernes 15 de Julio, 8:00 PM</p>
-                        <p class="text-gray-700 mb-4">Disfruta de la mejor música vallenata en vivo con el grupo "Los Diablitos del Vallenato".</p>
+                        <h4 class="text-xl font-bold text-amber-800" data-i18n="events.vallenatoNight.name">Noche de Vallenato</h4>
+                        <p class="text-gray-600 mb-2" data-i18n="events.vallenatoNight.date">Viernes 15 de Julio, 8:00 PM</p>
+                        <p class="text-gray-700 mb-4" data-i18n="events.vallenatoNight.description">Disfruta de la mejor música vallenata en vivo con el grupo "Los Diablitos del Vallenato".</p>
                         <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded">
-                            Reservar Ahora
+                            <span data-i18n="events.reserveNow">Reservar Ahora</span>
                         </button>
                     </div>
                 </div>
@@ -527,11 +503,11 @@
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                     <img src="salsa.jpg" alt="DJ" class="w-full h-48 object-cover">
                     <div class="p-4">
-                        <h4 class="text-xl font-bold text-amber-800">Sábado de Salsa</h4>
-                        <p class="text-gray-600 mb-2">Sábado 16 de Julio, 9:00 PM</p>
-                        <p class="text-gray-700 mb-4">DJ especializado en salsa clásica y moderna. Pista de baile y cócteles especiales.</p>
+                        <h4 class="text-xl font-bold text-amber-800" data-i18n="events.salsaSaturday.name">Sábado de Salsa</h4>
+                        <p class="text-gray-600 mb-2" data-i18n="events.salsaSaturday.date">Sábado 16 de Julio, 9:00 PM</p>
+                        <p class="text-gray-700 mb-4" data-i18n="events.salsaSaturday.description">DJ especializado en salsa clásica y moderna. Pista de baile y cócteles especiales.</p>
                         <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded">
-                            Reservar Ahora
+                            <span data-i18n="events.reserveNow">Reservar Ahora</span>
                         </button>
                     </div>
                 </div>
@@ -540,11 +516,11 @@
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                     <img src="fiesta.jpg" alt="Fiesta" class="w-full h-48 object-cover">
                     <div class="p-4">
-                        <h4 class="text-xl font-bold text-amber-800">DJ Uro&nbsp;</h4>
-                        <p class="text-gray-600 mb-2">Sábado 23 de Julio, 8:00 PM</p>
-                        <p class="text-gray-700 mb-4">Celebración con música tropical, platos especiales y promociones en bebidas.</p>
+                        <h4 class="text-xl font-bold text-amber-800" data-i18n="events.djUro.name">DJ Uro</h4>
+                        <p class="text-gray-600 mb-2" data-i18n="events.djUro.date">Sábado 23 de Julio, 8:00 PM</p>
+                        <p class="text-gray-700 mb-4" data-i18n="events.djUro.description">Celebración con música tropical, platos especiales y promociones en bebidas.</p>
                         <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded">
-                            Reservar Ahora
+                            <span data-i18n="events.reserveNow">Reservar Ahora</span>
                         </button>
                     </div>
                 </div>
@@ -552,7 +528,7 @@
             
             <div class="mt-8 text-center">
                 <a href="events.html" class="inline-block bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                    Ver Todos los Eventos
+                    <span data-i18n="events.viewAllEvents">Ver Todos los Eventos</span>
                 </a>
             </div>
         </section>

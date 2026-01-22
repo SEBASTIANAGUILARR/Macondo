@@ -1,0 +1,165 @@
+{
+  "navbar": {
+    "home": "Home",
+    "menu": "Menu",
+    "reservations": "Reservations",
+    "events": "Events",
+    "contact": "Contact",
+    "login": "Login",
+    "cart": "Cart",
+    "profile": "My Profile"
+  },
+  "hero": {
+    "title": "Macondo Bar Latino",
+    "subtitle": "Authentic Colombian flavor in the heart of Poland",
+    "description": "Enjoy the best Colombian food, tropical cocktails and a vibrant atmosphere that will transport you directly to Latin America.",
+    "orderButton": "Order Now",
+    "reserveButton": "Reserve Table"
+  },
+  "menu": {
+    "title": "Our Menu",
+    "colombianDishes": "Typical Colombian Dishes",
+    "drinks": "Drinks and Cocktails",
+    "specialOffers": "Special Offers",
+    "addToCart": "Add to Cart",
+    "viewFullMenu": "View Full Menu"
+  },
+  "offers": {
+    "lunch": {
+      "name": "Lunch Menu",
+      "description": "Enjoy our special lunch menu from 12:00 to 16:00. Includes main dish and drink.",
+      "schedule": "Monday to Friday",
+      "badge": "Weekdays only"
+    },
+    "freeDelivery": {
+      "name": "Free Delivery",
+      "description": "Free delivery for orders of 5 or more people to the same address. Ideal for offices and companies.",
+      "badge": "For Companies",
+      "condition": "Minimum 5 orders",
+      "saving": "Save on delivery"
+    },
+    "catering": {
+      "name": "Event Catering",
+      "description": "We organize the perfect catering for your event at our restaurant. Customized menus according to your needs.",
+      "badge": "Personalized Service",
+      "price": "Price on request",
+      "custom": "Custom",
+      "contact": "Contact Us"
+    }
+  },
+  "dishes": {
+    "bandejaPaisa": {
+      "name": "Bandeja Paisa",
+      "description": "Rice, beans, pork rind, ground beef, chorizo, egg, avocado and arepa."
+    },
+    "ajiaco": {
+      "name": "Ajiaco Santafereño",
+      "description": "Chicken soup with three types of potatoes, corn, guascas, cream and capers."
+    },
+    "sancocho": {
+      "name": "Sancocho de Gallina",
+      "description": "Traditional soup with free-range chicken, yucca, plantain, corn and cilantro."
+    },
+    "patacones": {
+      "name": "Patacones with meat",
+      "description": "Patacones are the house specialty, can be with meat, vegan or shrimp"
+    },
+    "mojarra": {
+      "name": "Fried Mojarra",
+      "description": "Whole fried fish served with patacón, coconut rice and salad."
+    },
+    "arepas": {
+      "name": "Arepas with meat",
+      "description": "The typical and traditional arepas from Colombia grilled make you feel in Colombia tropical climate and unique flavors"
+    }
+  },
+  "drinks": {
+    "aguardiente": {
+      "name": "Aguardiente Antioqueño",
+      "description": "Traditional Colombian liquor with anise flavor."
+    },
+    "mojito": {
+      "name": "Lulo Mojito",
+      "description": "Rum, lulo, mint, sugar and soda."
+    },
+    "beer": {
+      "name": "Imported Beers",
+      "description": "Heineken, Corona, Stella Artois, Budweiser."
+    },
+    "juices": {
+      "name": "Natural Juices",
+      "description": "Mango, soursop, passion fruit, lulo, blackberry."
+    }
+  },
+  "reservations": {
+    "title": "Reserve Your Table",
+    "fullName": "Full Name",
+    "email": "Email",
+    "phone": "Phone",
+    "date": "Date",
+    "people": "People",
+    "entryTime": "Entry Time",
+    "exitTime": "Exit Time",
+    "comments": "Special Comments",
+    "reserveButton": "Reserve Table",
+    "selectTable": "Select Your Table",
+    "table": "Table",
+    "available": "Available",
+    "occupied": "Occupied",
+    "person1": "1 person",
+    "person2": "2 people",
+    "person3": "3 people",
+    "person4": "4 people",
+    "person5": "5 people",
+    "person6": "6 people",
+    "person7plus": "7+ people"
+  },
+  "events": {
+    "title": "Events and Special Nights",
+    "vallenatoNight": {
+      "name": "Vallenato Night",
+      "date": "Friday July 15, 8:00 PM",
+      "description": "Enjoy the best live vallenato music with the group \"Los Diablitos del Vallenato\"."
+    },
+    "salsaSaturday": {
+      "name": "Salsa Saturday",
+      "date": "Saturday July 16, 9:00 PM",
+      "description": "DJ specialized in classic and modern salsa. Dance floor and special cocktails."
+    },
+    "djUro": {
+      "name": "DJ Uro",
+      "date": "Saturday July 23, 8:00 PM",
+      "description": "Celebration with tropical music, special dishes and drink promotions."
+    },
+    "reserveNow": "Reserve Now",
+    "viewAllEvents": "View All Events"
+  },
+  "footer": {
+    "description": "Macondo Bar Latino - Your Colombian corner in Poland",
+    "address": "Address",
+    "phone": "Phone",
+    "email": "Email",
+    "hours": "Hours",
+    "followUs": "Follow Us",
+    "quickLinks": "Quick Links",
+    "ourMenu": "Our Menu",
+    "gallery": "Gallery",
+    "aboutUs": "About Us",
+    "rights": "All rights reserved."
+  },
+  "common": {
+    "price": "PLN",
+    "from": "From",
+    "perPerson": "Per person",
+    "perEvent": "Per event",
+    "people": "people",
+    "register": "Register",
+    "logout": "Logout",
+    "myPanel": "My Panel",
+    "cart": "Cart",
+    "user": "User",
+    "viewFullMenu": "View Full Menu",
+    "reserveNow": "Reserve Now",
+    "contact": "Contact"
+  }
+}

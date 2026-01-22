@@ -41,6 +41,7 @@ class CustomNavbar extends HTMLElement {
         .nav-links {
           display: flex;
           gap: 2rem;
+          align-items: center;
         }
         
         .nav-links a {
@@ -84,6 +85,11 @@ class CustomNavbar extends HTMLElement {
           display: flex;
           align-items: center;
           gap: 1rem;
+        }
+        
+        .language-selector-container {
+          display: flex;
+          align-items: center;
         }
         
         .auth-buttons {
@@ -151,7 +157,7 @@ class CustomNavbar extends HTMLElement {
           cursor: pointer;
           display: flex;
           align-items: center;
-          gap: 0.5rem;
+          justify-content: center;
           padding: 0.5rem;
           border-radius: 0.5rem;
           transition: background-color 0.3s ease;
@@ -161,52 +167,167 @@ class CustomNavbar extends HTMLElement {
           background-color: rgba(146, 64, 14, 0.1);
         }
         
-        .cart-icon i {
-          color: white;
-        }
-        
-        .cart-main {
-          font-size: 1.5rem;
+        .cart-icon svg {
+          width: 24px;
+          height: 24px;
         }
         
         .cart-count {
           position: absolute;
-          top: -8px;
-          right: -8px;
+          top: 0;
+          right: 0;
           background-color: #dc2626;
           color: white;
           border-radius: 50%;
-          width: 20px;
-          height: 20px;
+          min-width: 18px;
+          height: 18px;
           display: flex;
           align-items: center;
           justify-content: center;
-          font-size: 0.75rem;
+          font-size: 0.7rem;
           font-weight: bold;
+          padding: 0 4px;
         }
         
         @media (max-width: 768px) {
+          nav {
+            padding: 0.75rem 1rem;
+          }
+          
+          .logo {
+            font-size: 1.1rem;
+          }
+          
+          .logo img {
+            height: 32px;
+          }
+          
           .nav-links {
             position: fixed;
-            top: 70px;
+            top: 56px;
             left: 0;
             width: 100%;
             background-color: rgba(251, 191, 36, 0.98);
             flex-direction: column;
-            align-items: center;
-            padding: 1rem 0;
-            gap: 1rem;
+            align-items: stretch;
+            padding: 1rem;
+            gap: 0.5rem;
             transform: translateY(-150%);
             transition: transform 0.3s ease;
             z-index: 999;
+            max-height: calc(100vh - 56px);
+            overflow-y: auto;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
           }
           
           .nav-links.active {
             transform: translateY(0);
           }
           
-          .mobile-menu-btn {
+          .nav-links a {
             display: block;
+            padding: 0.875rem 1rem;
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            font-size: 1rem;
+          }
+          
+          .nav-links a:hover {
+            background-color: rgba(255, 255, 255, 0.5);
+          }
+          
+          .mobile-menu-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            background-color: rgba(146, 64, 14, 0.1);
+            transition: background-color 0.3s ease;
+          }
+          
+          .mobile-menu-btn:hover,
+          .mobile-menu-btn:active {
+            background-color: rgba(146, 64, 14, 0.2);
+          }
+          
+          .mobile-menu-btn i {
+            color: #92400e;
+            width: 24px;
+            height: 24px;
+          }
+          
+          .language-selector-container {
+            order: -1;
+            display: flex;
+            justify-content: center;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(146, 64, 14, 0.2);
+            margin-bottom: 0.5rem;
+          }
+          
+          .cart-icon {
+            justify-content: center;
+            padding: 0.875rem;
+            background-color: rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+          }
+          
+          .auth-section {
+            flex-direction: column;
+            width: 100%;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+            padding-top: 0.5rem;
+            border-top: 1px solid rgba(146, 64, 14, 0.2);
+          }
+          
+          .auth-buttons {
+            width: 100%;
+            flex-direction: column;
+            gap: 0.5rem;
+          }
+          
+          .btn-login, .btn-register {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            text-align: center;
+            font-size: 1rem;
+          }
+          
+          .user-info {
+            flex-direction: column;
+            width: 100%;
+            gap: 0.5rem;
+          }
+          
+          .user-info .btn-login,
+          .user-info .btn-logout {
+            width: 100%;
+            margin: 0 !important;
+          }
+        }
+        
+        /* Pantallas muy pequeñas */
+        @media (max-width: 480px) {
+          nav {
+            padding: 0.5rem 0.75rem;
+          }
+          
+          .logo {
+            font-size: 0.95rem;
+          }
+          
+          .logo img {
+            height: 28px;
+            margin-right: 0.25rem;
+          }
+          
+          .nav-links {
+            top: 48px;
+            max-height: calc(100vh - 48px);
           }
         }
       </style>
@@ -222,31 +343,38 @@ class CustomNavbar extends HTMLElement {
         </button>
         
         <div class="nav-links">
-          <a href="menu.html">Menú</a>
-          <a href="#reservas">Reservas</a>
-          <a href="#eventos">Eventos</a>
-          <a href="#contacto">Contacto</a>
+          <a href="index.html" data-i18n="navbar.home">Inicio</a>
+          <a href="menu.html" data-i18n="navbar.menu">Menú</a>
+          <a href="#reservas" data-i18n="navbar.reservations">Reservas</a>
+          <a href="#eventos" data-i18n="navbar.events">Eventos</a>
+          <a href="#contacto" data-i18n="navbar.contact">Contacto</a>
+          
+          <!-- Selector de idioma -->
+          <div class="language-selector-container">
+            <language-selector></language-selector>
+          </div>
           
           <!-- Carrito de compras -->
           <div class="cart-icon">
-            <i data-feather="shopping-cart" class="cart-main"></i>
-            <div style="position: relative;">
-              <i data-feather="shopping-bag"></i>
-              <span class="cart-count" id="cart-count">0</span>
-            </div>
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="9" cy="21" r="1"></circle>
+              <circle cx="20" cy="21" r="1"></circle>
+              <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+            </svg>
+            <span class="cart-count" id="cart-count">0</span>
           </div>
           
           <!-- Sección de autenticación -->
           <div class="auth-section">
             <div class="auth-buttons" id="auth-buttons">
-              <button class="btn-login">Iniciar Sesión</button>
+              <button class="btn-login" data-i18n="navbar.login">Iniciar Sesión</button>
               <button class="btn-register">Registrarse</button>
             </div>
             
             <div class="user-info" id="user-info">
               <span class="user-name" id="user-name">Usuario</span>
               <button class="btn-logout">Cerrar Sesión</button>
-              <button class="btn-login" style="margin-left: 0.5rem;">Mi Panel</button>
+              <button class="btn-login" style="margin-left: 0.5rem;" data-i18n="navbar.profile">Mi Panel</button>
             </div>
           </div>
         </div>
@@ -320,6 +448,27 @@ class CustomNavbar extends HTMLElement {
         }
       });
     }
+    
+    // Aplicar traducciones dentro del Shadow DOM
+    this.applyTranslations();
+    
+    // Escuchar cambios de idioma
+    window.addEventListener('languageChanged', () => {
+      this.applyTranslations();
+    });
+  }
+  
+  applyTranslations() {
+    if (!window.i18n) return;
+    
+    const elements = this.shadowRoot.querySelectorAll('[data-i18n]');
+    elements.forEach(element => {
+      const key = element.getAttribute('data-i18n');
+      const translation = window.i18n.t(key);
+      if (translation && translation !== key) {
+        element.textContent = translation;
+      }
+    });
   }
 }
 

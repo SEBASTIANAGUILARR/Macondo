@@ -115,8 +115,86 @@ class CustomFooter extends HTMLElement {
         }
         
         @media (max-width: 768px) {
+          :host {
+            padding: 2rem 1rem;
+          }
+          
           .footer-container {
             grid-template-columns: 1fr;
+            gap: 1.5rem;
+            text-align: center;
+          }
+          
+          .footer-logo {
+            justify-content: center;
+            font-size: 1.25rem;
+          }
+          
+          .footer-about p {
+            font-size: 0.9rem;
+          }
+          
+          .footer-links h3::after, .footer-contact h3::after {
+            left: 50%;
+            transform: translateX(-50%);
+          }
+          
+          .footer-links ul {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 0.5rem 1rem;
+          }
+          
+          .footer-links li {
+            margin-bottom: 0;
+          }
+          
+          .footer-links a {
+            padding: 0.5rem;
+            display: inline-block;
+          }
+          
+          .footer-contact p {
+            justify-content: center;
+            font-size: 0.9rem;
+          }
+          
+          .social-links {
+            justify-content: center;
+          }
+          
+          .social-links a {
+            width: 44px;
+            height: 44px;
+          }
+          
+          .footer-bottom {
+            margin-top: 2rem;
+            padding-top: 1rem;
+          }
+          
+          .footer-bottom p {
+            font-size: 0.85rem;
+          }
+        }
+        
+        @media (max-width: 480px) {
+          :host {
+            padding: 1.5rem 0.75rem;
+          }
+          
+          .footer-logo {
+            font-size: 1.1rem;
+          }
+          
+          .footer-logo img {
+            height: 32px;
+          }
+          
+          .footer-links h3, .footer-contact h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
           }
         }
       </style>
@@ -137,18 +215,18 @@ class CustomFooter extends HTMLElement {
         </div>
         
         <div class="footer-links">
-          <h3>Enlaces Rápidos</h3>
+          <h3 data-i18n="footer.quickLinks">Enlaces Rápidos</h3>
           <ul>
-            <li><a href="#menu">Nuestro Menú</a></li>
-            <li><a href="#reservas">Reservas</a></li>
-            <li><a href="#eventos">Eventos</a></li>
-            <li><a href="#">Galería</a></li>
-            <li><a href="#">Sobre Nosotros</a></li>
+            <li><a href="#menu" data-i18n="footer.ourMenu">Nuestro Menú</a></li>
+            <li><a href="#reservas" data-i18n="navbar.reservations">Reservas</a></li>
+            <li><a href="#eventos" data-i18n="navbar.events">Eventos</a></li>
+            <li><a href="#" data-i18n="footer.gallery">Galería</a></li>
+            <li><a href="#" data-i18n="footer.aboutUs">Sobre Nosotros</a></li>
           </ul>
         </div>
         
         <div class="footer-contact">
-          <h3>Contacto</h3>
+          <h3 data-i18n="navbar.contact">Contacto</h3>
           <p><i data-feather="map-pin"></i> Calle 85 #12-45, Bogotá</p>
           <p><i data-feather="phone"></i> +57 1 345 6789</p>
           <p><i data-feather="mail"></i> info@macondobar.com</p>
@@ -157,9 +235,30 @@ class CustomFooter extends HTMLElement {
       </div>
       
       <div class="footer-bottom">
-        <p>&copy; <span id="current-year">2023</span> Macondo Bar Latino. Todos los derechos reservados.</p>
+        <p>&copy; <span id="current-year">2023</span> Macondo Bar Latino. <span data-i18n="footer.rights">Todos los derechos reservados.</span></p>
       </div>
     `;
+    
+    // Aplicar traducciones dentro del Shadow DOM
+    this.applyTranslations();
+    
+    // Escuchar cambios de idioma
+    window.addEventListener('languageChanged', () => {
+      this.applyTranslations();
+    });
+  }
+  
+  applyTranslations() {
+    if (!window.i18n) return;
+    
+    const elements = this.shadowRoot.querySelectorAll('[data-i18n]');
+    elements.forEach(element => {
+      const key = element.getAttribute('data-i18n');
+      const translation = window.i18n.t(key);
+      if (translation && translation !== key) {
+        element.textContent = translation;
+      }
+    });
   }
 }
 

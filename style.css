@@ -60,8 +60,204 @@ body {
 }
 
 /* Responsividad adicional */
-@media (max-width : 1269px ){
+@media (max-width: 1269px) {
     .table-map {
         grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* ============================================
+   OPTIMIZACIÓN MÓVIL - Mobile First
+   ============================================ */
+
+/* Espaciado del body para navbar fija */
+body {
+    padding-top: 70px;
+}
+
+/* Contenedor principal móvil */
+@media (max-width: 768px) {
+    body {
+        padding-top: 60px;
+    }
+    
+    /* Contenedor principal */
+    .container {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
+    }
+    
+    /* Títulos más pequeños en móvil */
+    h1, .text-4xl {
+        font-size: 1.75rem !important;
+        line-height: 1.2 !important;
+    }
+    
+    h2, .text-3xl {
+        font-size: 1.5rem !important;
+    }
+    
+    h3, .text-2xl {
+        font-size: 1.25rem !important;
+    }
+    
+    h4, .text-xl {
+        font-size: 1.1rem !important;
+    }
+    
+    /* Grids de 1 columna en móvil */
+    .grid.md\:grid-cols-2,
+    .grid.md\:grid-cols-3,
+    .grid.lg\:grid-cols-3,
+    .grid.lg\:grid-cols-4 {
+        grid-template-columns: 1fr !important;
+        gap: 1rem !important;
+    }
+    
+    /* Tarjetas de productos más compactas */
+    .bg-white.rounded-lg.shadow-md {
+        margin-bottom: 1rem;
+    }
+    
+    .bg-white.rounded-lg.shadow-md img {
+        height: 180px !important;
+    }
+    
+    .bg-white.rounded-lg.shadow-md .p-4 {
+        padding: 0.75rem !important;
+    }
+    
+    /* Botones más grandes para touch */
+    button, .btn, a.inline-flex, a.inline-block {
+        min-height: 44px;
+        font-size: 0.9rem !important;
+    }
+    
+    /* Formulario de reservas */
+    .grid.grid-cols-2 {
+        grid-template-columns: 1fr !important;
+        gap: 0.75rem !important;
+    }
+    
+    /* Inputs más grandes para touch */
+    input, select, textarea {
+        font-size: 16px !important; /* Evita zoom en iOS */
+        padding: 0.875rem !important;
+        min-height: 48px;
+    }
+    
+    /* Mapa de mesas - 2 columnas en móvil */
+    .grid.grid-cols-4 {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 0.5rem !important;
+    }
+    
+    /* Sección de reservas */
+    #reservas {
+        padding: 1.5rem !important;
+    }
+    
+    /* Espaciado entre secciones */
+    section {
+        margin-bottom: 2rem !important;
+    }
+    
+    /* Texto de descripción más legible */
+    p.text-gray-600, p.text-gray-700 {
+        font-size: 0.9rem !important;
+        line-height: 1.5 !important;
+    }
+    
+    /* Precios más visibles */
+    .text-amber-600.font-bold {
+        font-size: 1.1rem !important;
+    }
+    
+    /* Leyenda de mesas */
+    .flex.justify-center.space-x-4 {
+        flex-direction: column !important;
+        align-items: center !important;
+        gap: 0.5rem !important;
+    }
+    
+    /* Eventos - botones full width */
+    #eventos button {
+        width: 100%;
+    }
+    
+    /* Ver todos los eventos - full width */
+    #eventos .mt-8.text-center a {
+        display: block;
+        width: 100%;
+    }
+}
+
+/* Pantallas muy pequeñas (< 480px) */
+@media (max-width: 480px) {
+    body {
+        padding-top: 55px;
+    }
+    
+    h1, .text-4xl {
+        font-size: 1.5rem !important;
+    }
+    
+    h2, .text-3xl {
+        font-size: 1.25rem !important;
+    }
+    
+    /* Tarjetas aún más compactas */
+    .bg-white.rounded-lg.shadow-md img {
+        height: 150px !important;
+    }
+    
+    /* Padding reducido */
+    .p-8 {
+        padding: 1rem !important;
+    }
+    
+    .p-4 {
+        padding: 0.75rem !important;
+    }
+    
+    /* Botones más compactos */
+    button, .btn {
+        padding: 0.625rem 1rem !important;
+        font-size: 0.85rem !important;
+    }
+}
+
+/* Mejoras de accesibilidad táctil */
+@media (hover: none) and (pointer: coarse) {
+    /* Áreas táctiles más grandes */
+    button, a, input, select, textarea {
+        min-height: 44px;
+    }
+    
+    /* Espaciado entre elementos clicables */
+    .nav-links a {
+        padding: 0.75rem 0;
+    }
+    
+    /* Hover effects desactivados en touch */
+    .hover-scale:hover {
+        transform: none;
+    }
+}
+
+/* Orientación landscape en móvil */
+@media (max-width: 768px) and (orientation: landscape) {
+    .grid.grid-cols-4,
+    .grid.md\:grid-cols-2 {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* Safe area para dispositivos con notch */
+@supports (padding: max(0px)) {
+    body {
+        padding-left: max(1rem, env(safe-area-inset-left));
+        padding-right: max(1rem, env(safe-area-inset-right));
+        padding-bottom: max(1rem, env(safe-area-inset-bottom));
     }
 }

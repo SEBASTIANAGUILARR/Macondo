@@ -1,0 +1,165 @@
+{
+  "navbar": {
+    "home": "Strona główna",
+    "menu": "Menu",
+    "reservations": "Rezerwacje",
+    "events": "Wydarzenia",
+    "contact": "Kontakt",
+    "login": "Zaloguj się",
+    "cart": "Koszyk",
+    "profile": "Mój Profil"
+  },
+  "hero": {
+    "title": "Macondo Bar Latino",
+    "subtitle": "Autentyczny smak Kolumbii w sercu Polski",
+    "description": "Ciesz się najlepszą kolumbijską kuchnią, tropikalnymi koktajlami i tętniącą życiem atmosferą, która przeniesie Cię prosto do Ameryki Łacińskiej.",
+    "orderButton": "Zamów Teraz",
+    "reserveButton": "Zarezerwuj Stolik"
+  },
+  "menu": {
+    "title": "Nasze Menu",
+    "colombianDishes": "Typowe Dania Kolumbijskie",
+    "drinks": "Napoje i Koktajle",
+    "specialOffers": "Specjalne Oferty",
+    "addToCart": "Dodaj do Koszyka",
+    "viewFullMenu": "Zobacz Pełne Menu"
+  },
+  "offers": {
+    "lunch": {
+      "name": "Menu Lunchowe",
+      "description": "Ciesz się naszym specjalnym menu lunchowym od 12:00 do 16:00. Zawiera danie główne i napój.",
+      "schedule": "Poniedziałek - Piątek",
+      "badge": "Tylko dni robocze"
+    },
+    "freeDelivery": {
+      "name": "Darmowa Dostawa",
+      "description": "Darmowa dostawa dla zamówień 5 lub więcej osób pod ten sam adres. Idealne dla biur i firm.",
+      "badge": "Dla Firm",
+      "condition": "Minimum 5 zamówień",
+      "saving": "Oszczędź na dostawie"
+    },
+    "catering": {
+      "name": "Catering na Wydarzenia",
+      "description": "Organizujemy idealny catering na Twoje wydarzenie w naszej restauracji. Spersonalizowane menu według Twoich potrzeb.",
+      "badge": "Usługa Spersonalizowana",
+      "price": "Cena na zapytanie",
+      "custom": "Na miarę",
+      "contact": "Skontaktuj się"
+    }
+  },
+  "dishes": {
+    "bandejaPaisa": {
+      "name": "Bandeja Paisa",
+      "description": "Ryż, fasola, skórka wieprzowa, mielona wołowina, chorizo, jajko, awokado i arepa."
+    },
+    "ajiaco": {
+      "name": "Ajiaco Santafereño",
+      "description": "Zupa z kurczakiem z trzema rodzajami ziemniaków, kukurydzą, guascas, śmietaną i kaparami."
+    },
+    "sancocho": {
+      "name": "Sancocho z Kurczaka",
+      "description": "Tradycyjna zupa z wolnowyborowego kurczaka, manioku, banana, kukurydzy i kolendry."
+    },
+    "patacones": {
+      "name": "Patacones z mięsem",
+      "description": "Patacones to specjalność domu, mogą być z mięsem, wegańskie lub z krewetkami"
+    },
+    "mojarra": {
+      "name": "Smażona Mojarra",
+      "description": "Cała smażona ryba podawana z patacónem, ryżem kokosowym i sałatką."
+    },
+    "arepas": {
+      "name": "Arepas z mięsem",
+      "description": "Typowe i tradycyjne arepas z Kolumbii grillowane sprawiają, że czujesz się w Kolumbii tropikalny klimat i unikalne smaki"
+    }
+  },
+  "drinks": {
+    "aguardiente": {
+      "name": "Aguardiente Antioqueño",
+      "description": "Tradycyjny kolumbijski likier o smaku anyżu."
+    },
+    "mojito": {
+      "name": "Mojito z Lulo",
+      "description": "Rum, lulo, mięta, cukier i soda."
+    },
+    "beer": {
+      "name": "Importowane Piwa",
+      "description": "Heineken, Corona, Stella Artois, Budweiser."
+    },
+    "juices": {
+      "name": "Naturalne Soki",
+      "description": "Mango, guanabana, marakuja, lulo, jeżyna."
+    }
+  },
+  "reservations": {
+    "title": "Zarezerwuj Swój Stolik",
+    "fullName": "Imię i Nazwisko",
+    "email": "Email",
+    "phone": "Telefon",
+    "date": "Data",
+    "people": "Osoby",
+    "entryTime": "Godzina Wejścia",
+    "exitTime": "Godzina Wyjścia",
+    "comments": "Specjalne Uwagi",
+    "reserveButton": "Zarezerwuj Stolik",
+    "selectTable": "Wybierz Swój Stolik",
+    "table": "Stolik",
+    "available": "Dostępny",
+    "occupied": "Zajęty",
+    "person1": "1 osoba",
+    "person2": "2 osoby",
+    "person3": "3 osoby",
+    "person4": "4 osoby",
+    "person5": "5 osób",
+    "person6": "6 osób",
+    "person7plus": "7+ osób"
+  },
+  "events": {
+    "title": "Wydarzenia i Specjalne Wieczory",
+    "vallenatoNight": {
+      "name": "Wieczór Vallenato",
+      "date": "Piątek 15 lipca, 20:00",
+      "description": "Ciesz się najlepszą muzyką vallenato na żywo z grupą \"Los Diablitos del Vallenato\"."
+    },
+    "salsaSaturday": {
+      "name": "Sobota Salsy",
+      "date": "Sobota 16 lipca, 21:00",
+      "description": "DJ specjalizujący się w klasycznej i nowoczesnej salsie. Parkiet taneczny i specjalne koktajle."
+    },
+    "djUro": {
+      "name": "DJ Uro",
+      "date": "Sobota 23 lipca, 20:00",
+      "description": "Celebracja z muzyką tropikalną, specjalnymi daniami i promocjami na napoje."
+    },
+    "reserveNow": "Zarezerwuj Teraz",
+    "viewAllEvents": "Zobacz Wszystkie Wydarzenia"
+  },
+  "footer": {
+    "description": "Macondo Bar Latino - Twój kolumbijski zakątek w Polsce",
+    "address": "Adres",
+    "phone": "Telefon",
+    "email": "Email",
+    "hours": "Godziny",
+    "followUs": "Śledź nas",
+    "quickLinks": "Szybkie Linki",
+    "ourMenu": "Nasze Menu",
+    "gallery": "Galeria",
+    "aboutUs": "O Nas",
+    "rights": "Wszelkie prawa zastrzeżone."
+  },
+  "common": {
+    "price": "PLN",
+    "from": "Od",
+    "perPerson": "Na osobę",
+    "perEvent": "Na wydarzenie",
+    "people": "osób",
+    "register": "Zarejestruj się",
+    "logout": "Wyloguj się",
+    "myPanel": "Mój Panel",
+    "cart": "Koszyk",
+    "user": "Użytkownik",
+    "viewFullMenu": "Zobacz Pełne Menu",
+    "reserveNow": "Zarezerwuj Teraz",
+    "contact": "Kontakt"
+  }
+}

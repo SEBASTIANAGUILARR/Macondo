@@ -1,0 +1,165 @@
+{
+  "navbar": {
+    "home": "Inicio",
+    "menu": "Menú",
+    "reservations": "Reservas",
+    "events": "Eventos",
+    "contact": "Contacto",
+    "login": "Iniciar Sesión",
+    "cart": "Carrito",
+    "profile": "Mi Perfil"
+  },
+  "hero": {
+    "title": "Macondo Bar Latino",
+    "subtitle": "Sabor auténtico de Colombia en el corazón de Polonia",
+    "description": "Disfruta de la mejor comida colombiana, cócteles tropicales y un ambiente vibrante que te transportará directamente a Latinoamérica.",
+    "orderButton": "Pedir Ahora",
+    "reserveButton": "Reservar Mesa"
+  },
+  "menu": {
+    "title": "Nuestro Menú",
+    "colombianDishes": "Platos Típicos Colombianos",
+    "drinks": "Bebidas y Cócteles",
+    "specialOffers": "Ofertas Especiales",
+    "addToCart": "Agregar al Carrito",
+    "viewFullMenu": "Ver Menú Completo"
+  },
+  "offers": {
+    "lunch": {
+      "name": "Menú Lunch",
+      "description": "Disfruta de nuestro menú especial de almuerzo en horario de 12:00 a 16:00. Incluye plato principal y bebida.",
+      "schedule": "Lunes a Viernes",
+      "badge": "Solo días de semana"
+    },
+    "freeDelivery": {
+      "name": "Envío Gratis",
+      "description": "Envío gratuito para pedidos de 5 o más personas a la misma dirección. Ideal para oficinas y empresas.",
+      "badge": "Para Empresas",
+      "condition": "Mínimo 5 pedidos",
+      "saving": "Ahorra en envío"
+    },
+    "catering": {
+      "name": "Catering para Eventos",
+      "description": "Organizamos el catering perfecto para tu evento en nuestro restaurante. Menús personalizados según tus necesidades.",
+      "badge": "Servicio Personalizado",
+      "price": "Precio a consultar",
+      "custom": "A medida",
+      "contact": "Contáctanos"
+    }
+  },
+  "dishes": {
+    "bandejaPaisa": {
+      "name": "Bandeja Paisa",
+      "description": "Arroz, frijoles, chicharrón, carne molida, chorizo, huevo, aguacate y arepa."
+    },
+    "ajiaco": {
+      "name": "Ajiaco Santafereño",
+      "description": "Sopa de pollo con tres tipos de papa, mazorca, guascas, crema de leche y alcaparras."
+    },
+    "sancocho": {
+      "name": "Sancocho de Gallina",
+      "description": "Sopa tradicional con gallina criolla, yuca, plátano, mazorca y cilantro."
+    },
+    "patacones": {
+      "name": "Patacones con carne",
+      "description": "Los patacones son la especialidad de la casa pueden con carne, vegue o gambas"
+    },
+    "mojarra": {
+      "name": "Mojarra Frita",
+      "description": "Pescado entero frito acompañado de patacón, arroz con coco y ensalada."
+    },
+    "arepas": {
+      "name": "Arepas con carne",
+      "description": "Las arepas tipicas y tradicionales de colombia asadas te hacen sentir en colombia clima tropical y sabores unicos"
+    }
+  },
+  "drinks": {
+    "aguardiente": {
+      "name": "Aguardiente Antioqueño",
+      "description": "Tradicional licor colombiano con sabor a anís."
+    },
+    "mojito": {
+      "name": "Mojito de Lulo",
+      "description": "Ron, lulo, hierbabuena, azúcar y soda."
+    },
+    "beer": {
+      "name": "Cervezas Importadas",
+      "description": "Heineken, Corona, Stella Artois, Budweiser."
+    },
+    "juices": {
+      "name": "Jugos Naturales",
+      "description": "Mango, guanábana, maracuyá, lulo, mora."
+    }
+  },
+  "reservations": {
+    "title": "Reserva tu Mesa",
+    "fullName": "Nombre Completo",
+    "email": "Correo Electrónico",
+    "phone": "Teléfono",
+    "date": "Fecha",
+    "people": "Personas",
+    "entryTime": "Hora de Entrada",
+    "exitTime": "Hora de Salida",
+    "comments": "Comentarios Especiales",
+    "reserveButton": "Reservar Mesa",
+    "selectTable": "Selecciona tu Mesa",
+    "table": "Mesa",
+    "available": "Disponible",
+    "occupied": "Ocupado",
+    "person1": "1 persona",
+    "person2": "2 personas",
+    "person3": "3 personas",
+    "person4": "4 personas",
+    "person5": "5 personas",
+    "person6": "6 personas",
+    "person7plus": "7+ personas"
+  },
+  "events": {
+    "title": "Eventos y Noches Especiales",
+    "vallenatoNight": {
+      "name": "Noche de Vallenato",
+      "date": "Viernes 15 de Julio, 8:00 PM",
+      "description": "Disfruta de la mejor música vallenata en vivo con el grupo \"Los Diablitos del Vallenato\"."
+    },
+    "salsaSaturday": {
+      "name": "Sábado de Salsa",
+      "date": "Sábado 16 de Julio, 9:00 PM",
+      "description": "DJ especializado en salsa clásica y moderna. Pista de baile y cócteles especiales."
+    },
+    "djUro": {
+      "name": "DJ Uro",
+      "date": "Sábado 23 de Julio, 8:00 PM",
+      "description": "Celebración con música tropical, platos especiales y promociones en bebidas."
+    },
+    "reserveNow": "Reservar Ahora",
+    "viewAllEvents": "Ver Todos los Eventos"
+  },
+  "footer": {
+    "description": "Macondo Bar Latino - Tu rincón colombiano en Polonia",
+    "address": "Dirección",
+    "phone": "Teléfono",
+    "email": "Correo",
+    "hours": "Horario",
+    "followUs": "Síguenos",
+    "quickLinks": "Enlaces Rápidos",
+    "ourMenu": "Nuestro Menú",
+    "gallery": "Galería",
+    "aboutUs": "Sobre Nosotros",
+    "rights": "Todos los derechos reservados."
+  },
+  "common": {
+    "price": "PLN",
+    "from": "Desde",
+    "perPerson": "Por persona",
+    "perEvent": "Por evento",
+    "people": "personas",
+    "register": "Registrarse",
+    "logout": "Cerrar Sesión",
+    "myPanel": "Mi Panel",
+    "cart": "Carrito",
+    "user": "Usuario",
+    "viewFullMenu": "Ver Menú Completo",
+    "reserveNow": "Reservar Ahora",
+    "contact": "Contacto"
+  }
+}
