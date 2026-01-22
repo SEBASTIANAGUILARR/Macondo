@@ -23,7 +23,7 @@ class CustomHero extends HTMLElement {
           justify-content: center;
           text-align: center;
           color: white;
-          padding: 0 1.5rem;
+          padding: 0;
           margin: 0;
           box-sizing: border-box;
         }
@@ -99,34 +99,33 @@ class CustomHero extends HTMLElement {
           .hero {
             height: 40vh;
             min-height: 250px;
-            padding: 0 1rem;
+            padding: 0;
           }
           
           .hero h1 {
             font-size: 2rem;
             margin-bottom: 0.75rem;
-          }
-          
-          .hero p {
-            font-size: 0.95rem;
-            margin-bottom: 1.5rem;
-            line-height: 1.5;
+            width: 100%;
           }
           
           .hero-content {
             width: 100%;
+            max-width: 100%;
+            padding: 0 1rem;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            box-sizing: border-box;
           }
           
           .hero-buttons {
             flex-direction: column;
             gap: 0.75rem;
-            width: 100%;
+            width: 80%;
             max-width: 280px;
-            margin: 0 auto;
+            margin: 0;
+            padding: 0;
             align-items: center;
           }
           
@@ -136,6 +135,7 @@ class CustomHero extends HTMLElement {
             font-size: 1rem;
             text-align: center;
             margin: 0;
+            box-sizing: border-box;
           }
         }
         
@@ -143,34 +143,40 @@ class CustomHero extends HTMLElement {
           .hero {
             height: 35vh;
             min-height: 200px;
-            padding: 0 0.75rem;
+            padding: 0;
           }
           
           .hero-content {
             width: 100%;
             max-width: 100%;
-            padding: 0;
+            padding: 0 0.75rem;
             display: flex;
             flex-direction: column;
             align-items: center;
+            box-sizing: border-box;
           }
           
           .hero h1 {
             font-size: 1.5rem;
             margin-bottom: 0.5rem;
             text-align: center;
+            width: 100%;
           }
           
           .hero-buttons {
+            width: 80%;
             max-width: 220px;
             gap: 0.5rem;
             align-items: center;
+            margin: 0;
+            padding: 0;
           }
           
           .hero-btn {
             padding: 0.625rem 1rem;
             font-size: 0.875rem;
             margin: 0;
+            box-sizing: border-box;
           }
         }
         
