@@ -31,11 +31,32 @@ class CustomNavbar extends HTMLElement {
           text-decoration: none;
           display: flex;
           align-items: center;
+          gap: 0.5rem;
         }
         
         .logo img {
           height: 40px;
-          margin-right: 0.5rem;
+          border-radius: 8px;
+        }
+        
+        .logo-text {
+          display: flex;
+          flex-direction: column;
+          line-height: 1.15;
+        }
+        
+        .logo-text .brand {
+          font-size: 1.25rem;
+          font-weight: 800;
+          color: #92400e;
+        }
+        
+        .logo-text .tagline {
+          font-size: 0.7rem;
+          font-weight: 500;
+          color: #b45309;
+          text-transform: uppercase;
+          letter-spacing: 1px;
         }
         
         .nav-links {
@@ -195,11 +216,35 @@ class CustomNavbar extends HTMLElement {
           }
           
           .logo {
-            font-size: 1.1rem;
+            font-size: 1rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
           }
           
           .logo img {
-            height: 32px;
+            height: 36px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+          }
+          
+          .logo-text {
+            display: flex;
+            flex-direction: column;
+            line-height: 1.1;
+          }
+          
+          .logo-text .brand {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #92400e;
+          }
+          
+          .logo-text .tagline {
+            font-size: 0.6rem;
+            font-weight: 500;
+            color: #b45309;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
           }
           
           .nav-links {
@@ -244,17 +289,17 @@ class CustomNavbar extends HTMLElement {
             width: 44px;
             height: 44px;
             border-radius: 8px;
-            background-color: rgba(146, 64, 14, 0.1);
+            background-color: rgba(146, 64, 14, 0.8);
             transition: background-color 0.3s ease;
           }
           
           .mobile-menu-btn:hover,
           .mobile-menu-btn:active {
-            background-color: rgba(146, 64, 14, 0.2);
+            background-color: rgba(146, 64, 14, 1);
           }
           
           .mobile-menu-btn i {
-            color: #92400e;
+            color: white;
             width: 24px;
             height: 24px;
           }
@@ -335,7 +380,10 @@ class CustomNavbar extends HTMLElement {
       <nav>
         <a href="index.html" class="logo">
           <img src="http://static.photos/food/200x200/1" alt="Macondo Bar Latino">
-          Macondo Bar Latino
+          <span class="logo-text">
+            <span class="brand">Macondo</span>
+            <span class="tagline">Bar Latino</span>
+          </span>
         </a>
         
         <button class="mobile-menu-btn">
