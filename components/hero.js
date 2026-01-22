@@ -5,7 +5,8 @@ class CustomHero extends HTMLElement {
       <style>
         :host {
           display: block;
-          margin-top: 70px;
+          margin: 0;
+          padding: 0;
           width: 100%;
         }
         
@@ -87,7 +88,8 @@ class CustomHero extends HTMLElement {
         
         @media (max-width: 768px) {
           :host {
-            margin-top: 56px;
+            margin: 0;
+            padding: 0;
           }
           
           .hero {
@@ -125,7 +127,8 @@ class CustomHero extends HTMLElement {
         
         @media (max-width: 480px) {
           :host {
-            margin-top: 44px;
+            margin: 0;
+            padding: 0;
             width: 100%;
           }
           
