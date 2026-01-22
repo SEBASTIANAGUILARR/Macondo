@@ -122,11 +122,12 @@ class CustomHero extends HTMLElement {
           .hero-buttons {
             flex-direction: column;
             gap: 0.75rem;
-            width: 80%;
+            width: 100%;
             max-width: 280px;
-            margin: 0;
+            margin: 0 auto;
             padding: 0;
             align-items: center;
+            justify-content: center;
           }
           
           .hero-btn {
@@ -164,12 +165,13 @@ class CustomHero extends HTMLElement {
           }
           
           .hero-buttons {
-            width: 80%;
+            width: 100%;
             max-width: 220px;
             gap: 0.5rem;
             align-items: center;
-            margin: 0;
+            margin: 0 auto;
             padding: 0;
+            justify-content: center;
           }
           
           .hero-btn {
