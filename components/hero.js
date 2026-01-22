@@ -31,6 +31,11 @@ class CustomHero extends HTMLElement {
         .hero-content {
           max-width: 800px;
           animation: fadeIn 1s ease;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          text-align: center;
         }
         
         .hero h1 {
@@ -56,7 +61,6 @@ class CustomHero extends HTMLElement {
           text-decoration: none;
           transition: all 0.3s ease;
           box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-          margin: 0.5rem;
         }
         
         .hero-btn-secondary {
@@ -74,8 +78,10 @@ class CustomHero extends HTMLElement {
         .hero-buttons {
           display: flex;
           justify-content: center;
+          align-items: center;
           flex-wrap: wrap;
           gap: 1rem;
+          width: 100%;
         }
         
         .hero-btn:hover {
