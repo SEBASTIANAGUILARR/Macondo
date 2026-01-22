@@ -251,18 +251,20 @@ class CustomNavbar extends HTMLElement {
             position: fixed;
             top: 56px;
             left: 0;
+            right: 0;
             width: 100%;
             background-color: rgba(251, 191, 36, 0.98);
             flex-direction: column;
             align-items: stretch;
-            padding: 1rem;
-            gap: 0.5rem;
+            padding: 0.75rem;
+            gap: 0.375rem;
             transform: translateY(-150%);
             transition: transform 0.3s ease;
             z-index: 999;
             max-height: calc(100vh - 56px);
             overflow-y: auto;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            box-sizing: border-box;
           }
           
           .nav-links.active {
@@ -271,11 +273,11 @@ class CustomNavbar extends HTMLElement {
           
           .nav-links a {
             display: block;
-            padding: 0.875rem 1rem;
+            padding: 0.5rem 0.625rem;
             text-align: center;
             background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
-            font-size: 1rem;
+            border-radius: 6px;
+            font-size: 0.85rem;
           }
           
           .nav-links a:hover {
@@ -286,8 +288,8 @@ class CustomNavbar extends HTMLElement {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 44px;
-            height: 44px;
+            width: 40px;
+            height: 40px;
             border-radius: 8px;
             background-color: rgba(146, 64, 14, 0.8);
             transition: background-color 0.3s ease;
@@ -300,46 +302,46 @@ class CustomNavbar extends HTMLElement {
           
           .mobile-menu-btn i {
             color: white;
-            width: 24px;
-            height: 24px;
+            width: 20px;
+            height: 20px;
           }
           
           .language-selector-container {
             order: -1;
             display: flex;
             justify-content: center;
-            padding: 0.5rem 0;
+            padding: 0.375rem 0;
             border-bottom: 1px solid rgba(146, 64, 14, 0.2);
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.375rem;
           }
           
           .cart-icon {
             justify-content: center;
-            padding: 0.875rem;
+            padding: 0.5rem;
             background-color: rgba(255, 255, 255, 0.3);
-            border-radius: 8px;
+            border-radius: 6px;
           }
           
           .auth-section {
             flex-direction: column;
             width: 100%;
-            gap: 0.5rem;
-            margin-top: 0.5rem;
-            padding-top: 0.5rem;
+            gap: 0.375rem;
+            margin-top: 0.375rem;
+            padding-top: 0.375rem;
             border-top: 1px solid rgba(146, 64, 14, 0.2);
           }
           
           .auth-buttons {
             width: 100%;
             flex-direction: column;
-            gap: 0.5rem;
+            gap: 0.375rem;
           }
           
           .btn-login, .btn-register {
             width: 100%;
-            padding: 0.875rem 1rem;
+            padding: 0.5rem 0.75rem;
             text-align: center;
-            font-size: 1rem;
+            font-size: 0.85rem;
           }
           
           .user-info {
@@ -358,21 +360,51 @@ class CustomNavbar extends HTMLElement {
         /* Pantallas muy pequeñas */
         @media (max-width: 480px) {
           nav {
-            padding: 0.5rem 0.75rem;
+            padding: 0.375rem 0.5rem;
           }
           
           .logo {
-            font-size: 0.95rem;
+            font-size: 0.85rem;
           }
           
           .logo img {
-            height: 28px;
+            height: 26px;
             margin-right: 0.25rem;
           }
           
+          .logo-text .brand {
+            font-size: 0.85rem;
+          }
+          
+          .logo-text .tagline {
+            font-size: 0.5rem;
+          }
+          
+          .mobile-menu-btn {
+            width: 36px;
+            height: 36px;
+          }
+          
+          .mobile-menu-btn i {
+            width: 18px;
+            height: 18px;
+          }
+          
           .nav-links {
-            top: 48px;
-            max-height: calc(100vh - 48px);
+            top: 44px;
+            max-height: calc(100vh - 44px);
+            padding: 0.5rem;
+            gap: 0.25rem;
+          }
+          
+          .nav-links a {
+            padding: 0.375rem 0.5rem;
+            font-size: 0.8rem;
+          }
+          
+          .btn-login, .btn-register {
+            padding: 0.375rem 0.5rem;
+            font-size: 0.8rem;
           }
         }
       </style>

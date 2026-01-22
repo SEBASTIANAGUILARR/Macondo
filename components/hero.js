@@ -5,23 +5,28 @@ class CustomHero extends HTMLElement {
       <style>
         :host {
           display: block;
-          margin-top: 70px; /* Para compensar el navbar fijo */
+          margin-top: 70px;
+          width: 100%;
         }
         
         .hero {
           position: relative;
           height: 80vh;
           min-height: 500px;
+          width: 100%;
           background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), 
                       url('http://static.photos/restaurant/1200x630/1');
           background-size: cover;
           background-position: center;
+          background-repeat: no-repeat;
           display: flex;
           align-items: center;
           justify-content: center;
           text-align: center;
           color: white;
-          padding: 0 2rem;
+          padding: 0 1.5rem;
+          margin: 0;
+          box-sizing: border-box;
         }
         
         .hero-content {
@@ -120,25 +125,41 @@ class CustomHero extends HTMLElement {
         
         @media (max-width: 480px) {
           :host {
-            margin-top: 48px;
+            margin-top: 44px;
+            width: 100%;
           }
           
           .hero {
-            height: 65vh;
-            min-height: 350px;
+            height: 60vh;
+            min-height: 300px;
+            padding: 0 0.75rem;
+          }
+          
+          .hero-content {
+            width: 100%;
+            max-width: 100%;
+            padding: 0;
           }
           
           .hero h1 {
-            font-size: 1.75rem;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
           }
           
           .hero p {
-            font-size: 0.9rem;
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
+            padding: 0 0.25rem;
+          }
+          
+          .hero-buttons {
+            max-width: 240px;
+            gap: 0.5rem;
           }
           
           .hero-btn {
-            padding: 0.75rem 1.25rem;
-            font-size: 0.95rem;
+            padding: 0.625rem 1rem;
+            font-size: 0.875rem;
           }
         }
         
