@@ -385,10 +385,19 @@
                     </div>
                     
                     <div>
-                        <label class="block text-amber-700 font-medium mb-1">URL de Imagen</label>
-                        <input type="text" id="menu-item-imagen"
-                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                            placeholder="imagen.jpg o https://...">
+                        <label class="block text-amber-700 font-medium mb-1">Imagen</label>
+                        <div class="space-y-2">
+                            <input type="file" id="menu-item-file" accept="image/*"
+                                class="w-full p-2 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+                                onchange="previewMenuImage(this)">
+                            <div id="menu-image-preview" class="hidden">
+                                <img id="menu-preview-img" src="" alt="Preview" class="w-32 h-24 object-cover rounded-lg">
+                            </div>
+                            <p class="text-xs text-gray-500">O ingresa una URL:</p>
+                            <input type="text" id="menu-item-imagen"
+                                class="w-full p-2 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+                                placeholder="https://ejemplo.com/imagen.jpg">
+                        </div>
                     </div>
                     
                     <div class="flex items-center gap-2">
@@ -451,10 +460,19 @@
                     </div>
                     
                     <div>
-                        <label class="block text-amber-700 font-medium mb-1">URL de Imagen</label>
-                        <input type="url" id="event-imagen"
-                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
-                            placeholder="https://ejemplo.com/imagen.jpg">
+                        <label class="block text-amber-700 font-medium mb-1">Imagen</label>
+                        <div class="space-y-2">
+                            <input type="file" id="event-file" accept="image/*"
+                                class="w-full p-2 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+                                onchange="previewEventImage(this)">
+                            <div id="event-image-preview" class="hidden">
+                                <img id="event-preview-img" src="" alt="Preview" class="w-32 h-24 object-cover rounded-lg">
+                            </div>
+                            <p class="text-xs text-gray-500">O ingresa una URL:</p>
+                            <input type="text" id="event-imagen"
+                                class="w-full p-2 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 text-sm"
+                                placeholder="https://ejemplo.com/imagen.jpg">
+                        </div>
                     </div>
                     
                     <div>
@@ -997,48 +1015,6 @@
             showEventModal(id);
         }
         
-        // Guardar evento (crear o actualizar)
-        document.getElementById('event-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const eventId = document.getElementById('event-id').value;
-            const eventData = {
-                titulo: document.getElementById('event-titulo').value,
-                descripcion: document.getElementById('event-descripcion').value || null,
-                fecha: document.getElementById('event-fecha').value,
-                hora: document.getElementById('event-hora').value || null,
-                imagen_url: document.getElementById('event-imagen').value || null,
-                ubicacion: document.getElementById('event-ubicacion').value || 'Macondo Bar Latino',
-                precio: document.getElementById('event-precio').value || null,
-                activo: document.getElementById('event-activo').checked
-            };
-            
-            let error;
-            
-            if (eventId) {
-                // Actualizar
-                const result = await supabaseClient
-                    .from('events')
-                    .update(eventData)
-                    .eq('id', eventId);
-                error = result.error;
-            } else {
-                // Crear nuevo
-                const result = await supabaseClient
-                    .from('events')
-                    .insert([eventData]);
-                error = result.error;
-            }
-            
-            if (error) {
-                alert('Error al guardar: ' + error.message);
-                return;
-            }
-            
-            closeEventModal();
-            await loadEvents();
-        });
-        
         // Activar/Desactivar evento
         async function toggleEventActive(id, newStatus) {
             const { error } = await supabaseClient
@@ -1187,46 +1163,6 @@
             showMenuItemModal(id);
         }
         
-        // Guardar item del menú (crear o actualizar)
-        document.getElementById('menu-item-form').addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const itemId = document.getElementById('menu-item-id').value;
-            const itemData = {
-                nombre: document.getElementById('menu-item-nombre').value,
-                descripcion: document.getElementById('menu-item-descripcion').value || null,
-                precio: parseFloat(document.getElementById('menu-item-precio').value),
-                categoria: document.getElementById('menu-item-categoria').value,
-                imagen_url: document.getElementById('menu-item-imagen').value || null,
-                activo: document.getElementById('menu-item-activo').checked
-            };
-            
-            let error;
-            
-            if (itemId) {
-                // Actualizar
-                const result = await supabaseClient
-                    .from('menu_items')
-                    .update(itemData)
-                    .eq('id', itemId);
-                error = result.error;
-            } else {
-                // Crear nuevo
-                const result = await supabaseClient
-                    .from('menu_items')
-                    .insert([itemData]);
-                error = result.error;
-            }
-            
-            if (error) {
-                alert('Error al guardar: ' + error.message);
-                return;
-            }
-            
-            closeMenuItemModal();
-            await loadMenuItems();
-        });
-        
         // Activar/Desactivar item del menú
         async function toggleMenuItemActive(id, newStatus) {
             const { error } = await supabaseClient
@@ -1272,6 +1208,211 @@
                 });
             });
         }
+        
+        // ==================== SUBIDA DE IMÁGENES ====================
+        
+        // Preview de imagen para menú
+        function previewMenuImage(input) {
+            const preview = document.getElementById('menu-image-preview');
+            const img = document.getElementById('menu-preview-img');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+                // Limpiar URL si se selecciona archivo
+                document.getElementById('menu-item-imagen').value = '';
+            }
+        }
+        
+        // Preview de imagen para eventos
+        function previewEventImage(input) {
+            const preview = document.getElementById('event-image-preview');
+            const img = document.getElementById('event-preview-img');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    preview.classList.remove('hidden');
+                };
+                reader.readAsDataURL(input.files[0]);
+                // Limpiar URL si se selecciona archivo
+                document.getElementById('event-imagen').value = '';
+            }
+        }
+        
+        // Subir imagen a Supabase Storage
+        async function uploadImage(file, folder) {
+            const fileExt = file.name.split('.').pop();
+            const fileName = `${folder}_${Date.now()}.${fileExt}`;
+            const filePath = `${folder}/${fileName}`;
+            
+            const { data, error } = await supabaseClient.storage
+                .from('images')
+                .upload(filePath, file, {
+                    cacheControl: '3600',
+                    upsert: false
+                });
+            
+            if (error) {
+                console.error('Error subiendo imagen:', error);
+                throw error;
+            }
+            
+            // Obtener URL pública
+            const { data: urlData } = supabaseClient.storage
+                .from('images')
+                .getPublicUrl(filePath);
+            
+            return urlData.publicUrl;
+        }
+        
+        // Modificar el submit del formulario de menú para subir imagen
+        const originalMenuSubmit = document.getElementById('menu-item-form').onsubmit;
+        document.getElementById('menu-item-form').removeEventListener('submit', () => {});
+        document.getElementById('menu-item-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Guardando...';
+            submitBtn.disabled = true;
+            
+            try {
+                let imageUrl = document.getElementById('menu-item-imagen').value || null;
+                
+                // Si hay archivo seleccionado, subirlo
+                const fileInput = document.getElementById('menu-item-file');
+                if (fileInput.files && fileInput.files[0]) {
+                    try {
+                        imageUrl = await uploadImage(fileInput.files[0], 'menu');
+                    } catch (uploadError) {
+                        alert('Error al subir imagen: ' + uploadError.message + '\nSe guardará sin imagen.');
+                        imageUrl = null;
+                    }
+                }
+                
+                const itemId = document.getElementById('menu-item-id').value;
+                const itemData = {
+                    nombre: document.getElementById('menu-item-nombre').value,
+                    descripcion: document.getElementById('menu-item-descripcion').value || null,
+                    precio: parseFloat(document.getElementById('menu-item-precio').value),
+                    categoria: document.getElementById('menu-item-categoria').value,
+                    imagen_url: imageUrl,
+                    activo: document.getElementById('menu-item-activo').checked
+                };
+                
+                let error;
+                
+                if (itemId) {
+                    const result = await supabaseClient
+                        .from('menu_items')
+                        .update(itemData)
+                        .eq('id', itemId);
+                    error = result.error;
+                } else {
+                    const result = await supabaseClient
+                        .from('menu_items')
+                        .insert([itemData]);
+                    error = result.error;
+                }
+                
+                if (error) {
+                    alert('Error al guardar: ' + error.message);
+                    return;
+                }
+                
+                closeMenuItemModal();
+                await loadMenuItems();
+                
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+        
+        // Modificar el submit del formulario de eventos para subir imagen
+        document.getElementById('event-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const submitBtn = e.target.querySelector('button[type="submit"]');
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Guardando...';
+            submitBtn.disabled = true;
+            
+            try {
+                let imageUrl = document.getElementById('event-imagen').value || null;
+                
+                // Si hay archivo seleccionado, subirlo
+                const fileInput = document.getElementById('event-file');
+                if (fileInput.files && fileInput.files[0]) {
+                    try {
+                        imageUrl = await uploadImage(fileInput.files[0], 'events');
+                    } catch (uploadError) {
+                        alert('Error al subir imagen: ' + uploadError.message + '\nSe guardará sin imagen.');
+                        imageUrl = null;
+                    }
+                }
+                
+                const eventId = document.getElementById('event-id').value;
+                const eventData = {
+                    titulo: document.getElementById('event-titulo').value,
+                    descripcion: document.getElementById('event-descripcion').value || null,
+                    fecha: document.getElementById('event-fecha').value,
+                    hora: document.getElementById('event-hora').value || null,
+                    imagen_url: imageUrl,
+                    ubicacion: document.getElementById('event-ubicacion').value || 'Macondo Bar Latino',
+                    precio: document.getElementById('event-precio').value || null,
+                    activo: document.getElementById('event-activo').checked
+                };
+                
+                let error;
+                
+                if (eventId) {
+                    const result = await supabaseClient
+                        .from('events')
+                        .update(eventData)
+                        .eq('id', eventId);
+                    error = result.error;
+                } else {
+                    const result = await supabaseClient
+                        .from('events')
+                        .insert([eventData]);
+                    error = result.error;
+                }
+                
+                if (error) {
+                    alert('Error al guardar: ' + error.message);
+                    return;
+                }
+                
+                closeEventModal();
+                await loadEvents();
+                
+            } finally {
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }, { once: false });
+        
+        // Limpiar previews al abrir modales
+        const originalShowMenuItemModal = showMenuItemModal;
+        showMenuItemModal = function(itemId = null) {
+            document.getElementById('menu-item-file').value = '';
+            document.getElementById('menu-image-preview').classList.add('hidden');
+            originalShowMenuItemModal(itemId);
+        };
+        
+        const originalShowEventModal = showEventModal;
+        showEventModal = function(eventId = null) {
+            document.getElementById('event-file').value = '';
+            document.getElementById('event-image-preview').classList.add('hidden');
+            originalShowEventModal(eventId);
+        };
     </script>
 </body>
 </html>
