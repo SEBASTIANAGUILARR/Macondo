@@ -101,6 +101,27 @@
         .status-preparacion { background: #dbeafe; color: #1e40af; }
         .status-completado { background: #d1fae5; color: #065f46; }
         .status-cancelado { background: #fee2e2; color: #991b1b; }
+        
+        .menu-filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .menu-filter-btn.active {
+            background: #d97706;
+            color: white;
+        }
+        
+        .menu-filter-btn:not(.active) {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .menu-filter-btn:not(.active):hover {
+            background: #e5e7eb;
+        }
     </style>
 </head>
 <body class="bg-amber-50">
@@ -161,6 +182,9 @@
                 </button>
                 <button id="tab-eventos" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('eventos')">
                     🎉 Eventos
+                </button>
+                <button id="tab-menu" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('menu')">
+                    🍽️ Menú
                 </button>
             </div>
 
@@ -269,6 +293,121 @@
                     <p class="text-gray-500 text-center py-8">Cargando eventos...</p>
                 </div>
             </div>
+
+            <!-- Menú Section -->
+            <div id="section-menu" class="hidden">
+                <!-- Header con botón agregar -->
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-amber-800">Gestión del Menú</h2>
+                    <button onclick="showMenuItemModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                        <span>+</span> Nuevo Plato/Bebida
+                    </button>
+                </div>
+                
+                <!-- Stats Menú -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Total Items</p>
+                        <p id="stat-menu-total" class="text-3xl font-bold text-amber-800">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Platos</p>
+                        <p id="stat-menu-platos" class="text-3xl font-bold text-orange-600">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Bebidas</p>
+                        <p id="stat-menu-bebidas" class="text-3xl font-bold text-blue-600">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Activos</p>
+                        <p id="stat-menu-activos" class="text-3xl font-bold text-green-600">0</p>
+                    </div>
+                </div>
+                
+                <!-- Filters Menú -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="menu-filter-btn active" data-filter="all">Todos</button>
+                    <button class="menu-filter-btn" data-filter="plato">Platos</button>
+                    <button class="menu-filter-btn" data-filter="bebida">Bebidas</button>
+                    <button class="menu-filter-btn" data-filter="oferta">Ofertas</button>
+                </div>
+                
+                <!-- Menu Items List -->
+                <div id="menu-items-list">
+                    <p class="text-gray-500 text-center py-8">Cargando menú...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear/editar item del menú -->
+    <div id="menu-item-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="menu-modal-title" class="text-xl font-bold text-amber-800">Nuevo Item</h3>
+                    <button onclick="closeMenuItemModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                
+                <form id="menu-item-form" class="space-y-4">
+                    <input type="hidden" id="menu-item-id">
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Nombre *</label>
+                        <input type="text" id="menu-item-nombre" required
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="Ej: Bandeja Paisa">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Descripción</label>
+                        <textarea id="menu-item-descripcion" rows="2"
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="Describe el plato o bebida..."></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Precio (PLN) *</label>
+                            <input type="number" step="0.01" id="menu-item-precio" required
+                                class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                placeholder="35.00">
+                        </div>
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Categoría *</label>
+                            <select id="menu-item-categoria" required
+                                class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="plato">Plato</option>
+                                <option value="bebida">Bebida</option>
+                                <option value="oferta">Oferta</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">URL de Imagen</label>
+                        <input type="text" id="menu-item-imagen"
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="imagen.jpg o https://...">
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="menu-item-activo" checked class="w-5 h-5 text-amber-600">
+                        <label for="menu-item-activo" class="text-amber-700 font-medium">Item activo (visible en la web)</label>
+                    </div>
+                    
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeMenuItemModal()" 
+                            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-lg transition-colors">
+                            Cancelar
+                        </button>
+                        <button type="submit" 
+                            class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-lg transition-colors">
+                            Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -360,9 +499,11 @@
         
         let currentFilter = 'all';
         let currentOrderFilter = 'all';
+        let currentMenuFilter = 'all';
         let reservations = [];
         let orders = [];
         let events = [];
+        let menuItems = [];
         
         // Verificar sesión al cargar
         document.addEventListener('DOMContentLoaded', async () => {
@@ -438,8 +579,10 @@
             loadReservations();
             loadOrders();
             loadEvents();
+            loadMenuItems();
             setupFilters();
             setupOrderFilters();
+            setupMenuFilters();
         }
         
         // Cambiar entre pestañas
@@ -456,6 +599,7 @@
             document.getElementById('section-reservas').classList.add('hidden');
             document.getElementById('section-pedidos').classList.add('hidden');
             document.getElementById('section-eventos').classList.add('hidden');
+            document.getElementById('section-menu').classList.add('hidden');
             document.getElementById('section-' + tab).classList.remove('hidden');
         }
         
@@ -927,6 +1071,206 @@
             }
             
             await loadEvents();
+        }
+        
+        // ==================== MENÚ ====================
+        
+        // Cargar items del menú
+        async function loadMenuItems() {
+            const { data, error } = await supabaseClient
+                .from('menu_items')
+                .select('*')
+                .order('categoria', { ascending: true })
+                .order('nombre', { ascending: true });
+            
+            if (error) {
+                console.error('Error cargando menú:', error);
+                document.getElementById('menu-items-list').innerHTML = '<p class="text-gray-500 text-center py-8">No se pudieron cargar los items. Verifica que la tabla "menu_items" existe.</p>';
+                return;
+            }
+            
+            menuItems = data || [];
+            updateMenuStats();
+            renderMenuItems();
+        }
+        
+        // Actualizar estadísticas del menú
+        function updateMenuStats() {
+            const total = menuItems.length;
+            const platos = menuItems.filter(m => m.categoria === 'plato').length;
+            const bebidas = menuItems.filter(m => m.categoria === 'bebida').length;
+            const activos = menuItems.filter(m => m.activo).length;
+            
+            document.getElementById('stat-menu-total').textContent = total;
+            document.getElementById('stat-menu-platos').textContent = platos;
+            document.getElementById('stat-menu-bebidas').textContent = bebidas;
+            document.getElementById('stat-menu-activos').textContent = activos;
+        }
+        
+        // Renderizar items del menú
+        function renderMenuItems() {
+            const container = document.getElementById('menu-items-list');
+            
+            let filtered = menuItems;
+            
+            if (currentMenuFilter !== 'all') {
+                filtered = filtered.filter(m => m.categoria === currentMenuFilter);
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No hay items en el menú. ¡Agrega el primero!</p>';
+                return;
+            }
+            
+            container.innerHTML = filtered.map(m => `
+                <div class="reservation-card ${m.activo ? '' : 'cancelada'}">
+                    <div class="flex flex-wrap gap-4">
+                        ${m.imagen_url ? `<img src="${m.imagen_url}" alt="${m.nombre}" class="w-24 h-24 object-cover rounded-lg">` : '<div class="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center text-3xl">🍽️</div>'}
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-lg font-bold text-amber-800">${m.nombre}</h3>
+                                <span class="status-badge ${m.activo ? 'status-confirmada' : 'status-cancelada'}">${m.activo ? 'Activo' : 'Inactivo'}</span>
+                                <span class="text-xs bg-gray-100 px-2 py-1 rounded">${m.categoria}</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2">${m.descripcion || 'Sin descripción'}</p>
+                            <p class="text-amber-600 font-bold text-lg">${m.precio.toFixed(2)} PLN</p>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <button onclick="editMenuItem('${m.id}')" 
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm">
+                                ✏️ Editar
+                            </button>
+                            <button onclick="toggleMenuItemActive('${m.id}', ${!m.activo})" 
+                                class="${m.activo ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-500 hover:bg-green-600'} text-white px-4 py-2 rounded-lg transition-colors text-sm">
+                                ${m.activo ? '⏸️ Desactivar' : '▶️ Activar'}
+                            </button>
+                            <button onclick="deleteMenuItem('${m.id}')" 
+                                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors text-sm">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Mostrar modal de item del menú
+        function showMenuItemModal(itemId = null) {
+            document.getElementById('menu-item-modal').classList.remove('hidden');
+            document.getElementById('menu-item-form').reset();
+            document.getElementById('menu-item-id').value = '';
+            document.getElementById('menu-item-activo').checked = true;
+            document.getElementById('menu-modal-title').textContent = 'Nuevo Plato/Bebida';
+            
+            if (itemId) {
+                const item = menuItems.find(m => m.id === itemId);
+                if (item) {
+                    document.getElementById('menu-modal-title').textContent = 'Editar Item';
+                    document.getElementById('menu-item-id').value = item.id;
+                    document.getElementById('menu-item-nombre').value = item.nombre;
+                    document.getElementById('menu-item-descripcion').value = item.descripcion || '';
+                    document.getElementById('menu-item-precio').value = item.precio;
+                    document.getElementById('menu-item-categoria').value = item.categoria;
+                    document.getElementById('menu-item-imagen').value = item.imagen_url || '';
+                    document.getElementById('menu-item-activo').checked = item.activo;
+                }
+            }
+        }
+        
+        // Cerrar modal del menú
+        function closeMenuItemModal() {
+            document.getElementById('menu-item-modal').classList.add('hidden');
+        }
+        
+        // Editar item del menú
+        function editMenuItem(id) {
+            showMenuItemModal(id);
+        }
+        
+        // Guardar item del menú (crear o actualizar)
+        document.getElementById('menu-item-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const itemId = document.getElementById('menu-item-id').value;
+            const itemData = {
+                nombre: document.getElementById('menu-item-nombre').value,
+                descripcion: document.getElementById('menu-item-descripcion').value || null,
+                precio: parseFloat(document.getElementById('menu-item-precio').value),
+                categoria: document.getElementById('menu-item-categoria').value,
+                imagen_url: document.getElementById('menu-item-imagen').value || null,
+                activo: document.getElementById('menu-item-activo').checked
+            };
+            
+            let error;
+            
+            if (itemId) {
+                // Actualizar
+                const result = await supabaseClient
+                    .from('menu_items')
+                    .update(itemData)
+                    .eq('id', itemId);
+                error = result.error;
+            } else {
+                // Crear nuevo
+                const result = await supabaseClient
+                    .from('menu_items')
+                    .insert([itemData]);
+                error = result.error;
+            }
+            
+            if (error) {
+                alert('Error al guardar: ' + error.message);
+                return;
+            }
+            
+            closeMenuItemModal();
+            await loadMenuItems();
+        });
+        
+        // Activar/Desactivar item del menú
+        async function toggleMenuItemActive(id, newStatus) {
+            const { error } = await supabaseClient
+                .from('menu_items')
+                .update({ activo: newStatus })
+                .eq('id', id);
+            
+            if (error) {
+                alert('Error al actualizar: ' + error.message);
+                return;
+            }
+            
+            await loadMenuItems();
+        }
+        
+        // Eliminar item del menú
+        async function deleteMenuItem(id) {
+            if (!confirm('¿Estás seguro de eliminar este item? Esta acción no se puede deshacer.')) {
+                return;
+            }
+            
+            const { error } = await supabaseClient
+                .from('menu_items')
+                .delete()
+                .eq('id', id);
+            
+            if (error) {
+                alert('Error al eliminar: ' + error.message);
+                return;
+            }
+            
+            await loadMenuItems();
+        }
+        
+        // Configurar filtros del menú
+        function setupMenuFilters() {
+            document.querySelectorAll('.menu-filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.menu-filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentMenuFilter = btn.dataset.filter;
+                    renderMenuItems();
+                });
+            });
         }
     </script>
 </body>
