@@ -43,225 +43,19 @@
         <section id="menu" class="mb-16">
             <h2 class="text-4xl font-bold text-amber-800 mb-8 text-center" data-i18n="menu.title">Nuestro Menú</h2>
             
-            <!-- Platos Principales -->
+            <!-- Platos Principales (dinámico) -->
             <div class="mb-12">
                 <h3 class="text-2xl font-semibold text-amber-700 mb-6 border-b-2 border-amber-200 pb-2" data-i18n="menu.colombianDishes">Platos Típicos Colombianos</h3>
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <!-- Plato 1 -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="components/bandeja-paisa-receta.jpg" alt="Bandeja Paisa" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800" data-i18n="dishes.bandejaPaisa.name">Bandeja Paisa</h4>
-                            <p class="text-gray-600 mb-2" data-i18n="dishes.bandejaPaisa.description">Arroz, frijoles, chicharrón, carne molida, chorizo, huevo, aguacate y arepa.</p>
-                            <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">60,00 PLN</p>
-                            </div>
-                            <button onclick="window.cart.addItem({
-                                id: 'bandeja-paisa',
-                                name: t('dishes.bandejaPaisa.name'),
-                                price: '60,00 PLN',
-                                image: 'components/bandeja-paisa-receta.jpg'
-                            })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Plato 2 -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="ajiaco.jpg" alt="Ajiaco" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800" data-i18n="dishes.ajiaco.name">Ajiaco Santafereño</h4>
-                            <p class="text-gray-600 mb-2" data-i18n="dishes.ajiaco.description">Sopa de pollo con tres tipos de papa, mazorca, guascas, crema de leche y alcaparras.</p>
-                            <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">35,00 PLN</p>
-                            </div>
-                            <button onclick="window.cart.addItem({
-                                id: 'ajiaco',
-                                name: t('dishes.ajiaco.name'),
-                                price: '35,00 PLN',
-                                image: 'ajiaco.jpg'
-                            })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Plato 3 -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="sancocho.jpg" alt="Sancocho" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800" data-i18n="dishes.sancocho.name">Sancocho de Gallina</h4>
-                            <p class="text-gray-600 mb-2" data-i18n="dishes.sancocho.description">Sopa tradicional con gallina criolla, yuca, plátano, mazorca y cilantro.</p>
-                            <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">35,00 PLN</p>
-                            </div>
-                            <button onclick="window.cart.addItem({
-                                id: 'sancocho',
-                                name: t('dishes.sancocho.name'),
-                                price: '35,00 PLN',
-                                image: 'sancocho.jpg'
-                            })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Plato 4 -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="patacones con carne.jpg" alt="Lechona" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800" data-i18n="dishes.patacones.name">Patacones con carne</h4>
-                            <p class="text-gray-600 mb-2" data-i18n="dishes.patacones.description">Los patacones son la especialidad de la casa pueden con carne, vegue o gambas</p>
-                            <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">38,00 PLN</p>
-                            </div>
-                            <button onclick="window.cart.addItem({
-                                id: 'patacones-carne',
-                                name: t('dishes.patacones.name'),
-                                price: '38,00 PLN',
-                                image: 'patacones con carne.jpg'
-                            })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Plato 5 -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="mojarra.jpg" alt="Mojarra" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800" data-i18n="dishes.mojarra.name">Mojarra Frita</h4>
-                            <p class="text-gray-600 mb-2" data-i18n="dishes.mojarra.description">Pescado entero frito acompañado de patacón, arroz con coco y ensalada.</p>
-                            <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">70,00 PLN</p>
-                            </div>
-                            <button onclick="window.cart.addItem({
-                                id: 'mojarra',
-                                name: t('dishes.mojarra.name'),
-                                price: '70,00 PLN',
-                                image: 'mojarra.jpg'
-                            })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Plato 6 -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="shredded-beef-arepas.jpg" alt="Tamal" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800" data-i18n="dishes.arepas.name">Arepas con carne</h4>
-                            <p class="text-gray-600 mb-2" data-i18n="dishes.arepas.description">Las arepas tipicas y tradicionales de colombia asadas te hacen sentir en colombia clima tropical y sabores unicos</p>
-                            <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">30,00 PLN</p>
-                            </div>
-                            <button onclick="window.cart.addItem({
-                                id: 'arepas-carne',
-                                name: t('dishes.arepas.name'),
-                                price: '30,00 PLN',
-                                image: 'shredded-beef-arepas.jpg'
-                            })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
-                            </button>
-                        </div>
-                    </div>
+                <div id="platos-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <p class="text-gray-500 text-center py-8 col-span-full">Cargando platos...</p>
                 </div>
             </div>
             
-            <!-- Bebidas (oculto en móvil) -->
+            <!-- Bebidas (dinámico) -->
             <div class="mb-12 hidden md:block" id="bebidas-section">
                 <h3 class="text-2xl font-semibold text-amber-700 mb-6 border-b-2 border-amber-200 pb-2" data-i18n="menu.drinks">Bebidas y Cócteles</h3>
-                <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    <!-- Cóctel 1 -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="aguardiente.jpg" alt="Aguardiente" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800" data-i18n="drinks.aguardiente.name">Aguardiente Antioqueño</h4>
-                            <p class="text-gray-600 mb-2" data-i18n="drinks.aguardiente.description">Tradicional licor colombiano con sabor a anís.</p>
-                            <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">10,00 PLN</p>
-                            </div>
-                            <button onclick="window.cart.addItem({
-                                id: 'aguardiente',
-                                name: t('drinks.aguardiente.name'),
-                                price: '10,00 PLN',
-                                image: 'aguardiente.jpg'
-                            })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Cóctel 2 -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="mojitodelulo.jpg" alt="Mojito" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800" data-i18n="drinks.mojito.name">Mojito de Lulo</h4>
-                            <p class="text-gray-600 mb-2" data-i18n="drinks.mojito.description">Ron, lulo, hierbabuena, azúcar y soda.</p>
-                            <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">30,00 PLN</p>
-                            </div>
-                            <button onclick="window.cart.addItem({
-                                id: 'mojito-lulo',
-                                name: t('drinks.mojito.name'),
-                                price: '30,00 PLN',
-                                image: 'mojitodelulo.jpg'
-                            })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Cóctel 3 -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="2-ClubColombia-world-brand-design.jpg" alt="Cerveza" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800" data-i18n="drinks.beer.name">Cervezas Importadas</h4>
-                            <p class="text-gray-600 mb-2" data-i18n="drinks.beer.description">Heineken, Corona, Stella Artois, Budweiser.</p>
-                            <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">21,00 PLN</p>
-                            </div>
-                            <button onclick="window.cart.addItem({
-                                id: 'cervezas-importadas',
-                                name: t('drinks.beer.name'),
-                                price: '21,00 PLN',
-                                image: '2-ClubColombia-world-brand-design.jpg'
-                            })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
-                            </button>
-                        </div>
-                    </div>
-                    
-                    <!-- Cóctel 4 -->
-                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                        <img src="cococotail.jpg" alt="Jugo" class="w-full h-48 object-cover">
-                        <div class="p-4">
-                            <h4 class="text-xl font-bold text-amber-800" data-i18n="drinks.juices.name">Jugos Naturales</h4>
-                            <p class="text-gray-600 mb-2" data-i18n="drinks.juices.description">Mango, guanábana, maracuyá, lulo, mora.</p>
-                            <div class="flex justify-between items-center mb-3">
-                                <p class="text-amber-600 font-bold">25,00 PLN</p>
-                            </div>
-                            <button onclick="window.cart.addItem({
-                                id: 'jugos-naturales',
-                                name: t('drinks.juices.name'),
-                                price: '25,00 PLN',
-                                image: 'cococotail.jpg'
-                            })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                                <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                                <span data-i18n="menu.addToCart">Agregar al Carrito</span>
-                            </button>
-                        </div>
-                    </div>
+                <div id="bebidas-container" class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <p class="text-gray-500 text-center py-8 col-span-full">Cargando bebidas...</p>
                 </div>
             </div>
 
@@ -576,6 +370,9 @@
             if (window.cart && typeof window.cart.updateUI === 'function') {
                 window.cart.updateUI();
             }
+            
+            // Cargar menú dinámico desde Supabase
+            loadMenuFromSupabase();
 
             const mesas = document.querySelectorAll('[data-feather="circle"]');
             
@@ -595,6 +392,83 @@
                 });
             });
         });
+        
+        // Función para cargar menú desde Supabase
+        async function loadMenuFromSupabase() {
+            try {
+                const { data: items, error } = await window.supabaseClient
+                    .from('menu_items')
+                    .select('*')
+                    .eq('activo', true)
+                    .order('nombre', { ascending: true });
+                
+                if (error) {
+                    console.error('Error cargando menú:', error);
+                    return;
+                }
+                
+                if (!items || items.length === 0) {
+                    document.getElementById('platos-container').innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay platos disponibles.</p>';
+                    document.getElementById('bebidas-container').innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay bebidas disponibles.</p>';
+                    return;
+                }
+                
+                const platos = items.filter(i => i.categoria === 'plato');
+                const bebidas = items.filter(i => i.categoria === 'bebida');
+                
+                // Renderizar platos
+                const platosContainer = document.getElementById('platos-container');
+                if (platos.length > 0) {
+                    platosContainer.innerHTML = platos.map(item => renderMenuItem(item)).join('');
+                } else {
+                    platosContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay platos disponibles.</p>';
+                }
+                
+                // Renderizar bebidas
+                const bebidasContainer = document.getElementById('bebidas-container');
+                if (bebidas.length > 0) {
+                    bebidasContainer.innerHTML = bebidas.map(item => renderMenuItem(item)).join('');
+                } else {
+                    bebidasContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay bebidas disponibles.</p>';
+                }
+                
+                // Reinicializar feather icons
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+                
+            } catch (err) {
+                console.error('Error en loadMenuFromSupabase:', err);
+            }
+        }
+        
+        // Función para renderizar un item del menú
+        function renderMenuItem(item) {
+            const priceFormatted = item.precio.toFixed(2).replace('.', ',');
+            const itemId = item.nombre.toLowerCase().replace(/\s+/g, '-');
+            
+            return `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    ${item.imagen_url ? `<img src="${item.imagen_url}" alt="${item.nombre}" class="w-full h-48 object-cover">` : '<div class="w-full h-48 bg-gray-200 flex items-center justify-center text-4xl">🍽️</div>'}
+                    <div class="p-4">
+                        <h4 class="text-xl font-bold text-amber-800">${item.nombre}</h4>
+                        <p class="text-gray-600 mb-2">${item.descripcion || ''}</p>
+                        <div class="flex justify-between items-center mb-3">
+                            <p class="text-amber-600 font-bold">${priceFormatted} PLN</p>
+                        </div>
+                        <button onclick="window.cart.addItem({
+                            id: '${itemId}',
+                            name: '${item.nombre.replace(/'/g, "\\'")}',
+                            price: '${priceFormatted} PLN',
+                            image: '${item.imagen_url || ''}'
+                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
+                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
+                            <span>Agregar al Carrito</span>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
     </script>
 </body>
 </html>
