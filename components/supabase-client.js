@@ -31,21 +31,26 @@ const ReservationSystem = {
     }
 
     try {
+      // Preparar datos, convirtiendo strings vacíos a null para campos opcionales
+      const insertData = {
+        nombre: reservationData.nombre,
+        email: reservationData.email,
+        telefono: reservationData.telefono || null,
+        fecha: reservationData.fecha,
+        hora_entrada: reservationData.horaEntrada || null,
+        hora_salida: reservationData.horaSalida || null,
+        personas: parseInt(reservationData.personas) || 1,
+        mesa: reservationData.mesa || null,
+        comentarios: reservationData.comentarios || null,
+        estado: 'pendiente',
+        created_at: new Date().toISOString()
+      };
+      
+      console.log('Datos a insertar:', insertData);
+      
       const { data, error } = await supabaseClient
         .from('reservations')
-        .insert([{
-          nombre: reservationData.nombre,
-          email: reservationData.email,
-          telefono: reservationData.telefono,
-          fecha: reservationData.fecha,
-          hora_entrada: reservationData.horaEntrada,
-          hora_salida: reservationData.horaSalida,
-          personas: reservationData.personas,
-          mesa: reservationData.mesa,
-          comentarios: reservationData.comentarios,
-          estado: 'pendiente',
-          created_at: new Date().toISOString()
-        }])
+        .insert([insertData])
         .select();
 
       if (error) {
