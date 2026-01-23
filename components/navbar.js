@@ -411,7 +411,7 @@ class CustomNavbar extends HTMLElement {
       
       <nav>
         <a href="index.html" class="logo">
-          <img src="http://static.photos/food/200x200/1" alt="Macondo Bar Latino">
+          <img src="logo.pnh.png" alt="Macondo Bar Latino">
           <span class="logo-text">
             <span class="brand">Macondo</span>
             <span class="tagline">Bar Latino</span>

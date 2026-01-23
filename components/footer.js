@@ -202,7 +202,7 @@ class CustomFooter extends HTMLElement {
       <div class="footer-container">
         <div class="footer-about">
           <div class="footer-logo">
-            <img src="http://static.photos/food/200x200/1" alt="Macondo Bar Latino">
+            <img src="logo.pnh.png" alt="Macondo Bar Latino">
             Macondo Bar Latino
           </div>
           <div class="social-links">
