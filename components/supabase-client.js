@@ -88,10 +88,15 @@ const ReservationSystem = {
     }
   },
 
-  // Verificar disponibilidad de mesa
+  // Verificar disponibilidad de mesa (bloqueo de 2 horas)
   async checkTableAvailability(fecha, horaEntrada, horaSalida, mesa) {
     if (!supabaseClient) {
-      return { available: true }; // Si no hay Supabase, asumimos disponible
+      return { available: true };
+    }
+
+    // Si no hay hora de entrada, no podemos verificar
+    if (!horaEntrada) {
+      return { available: true };
     }
 
     try {
@@ -100,21 +105,62 @@ const ReservationSystem = {
         .select('*')
         .eq('fecha', fecha)
         .eq('mesa', mesa)
-        .neq('estado', 'cancelada');
+        .in('estado', ['pendiente', 'confirmada']); // Solo reservas activas
 
       if (error) {
+        console.error('Error verificando disponibilidad:', error);
         return { available: true, error: error.message };
       }
 
-      // Verificar si hay conflicto de horarios
+      if (!data || data.length === 0) {
+        return { available: true };
+      }
+
+      // Convertir hora a minutos para comparación
+      const timeToMinutes = (timeStr) => {
+        if (!timeStr) return null;
+        const [hours, minutes] = timeStr.split(':').map(Number);
+        return hours * 60 + minutes;
+      };
+
+      const newStart = timeToMinutes(horaEntrada);
+      // Si no hay hora de salida, asumir 2 horas de duración
+      const newEnd = horaSalida ? timeToMinutes(horaSalida) : newStart + 120;
+
+      // Verificar conflictos con margen de 2 horas
+      const BUFFER_MINUTES = 120; // 2 horas de margen
+
       const hasConflict = data.some(reservation => {
-        const existingStart = reservation.hora_entrada;
-        const existingEnd = reservation.hora_salida;
-        return (horaEntrada < existingEnd && horaSalida > existingStart);
+        const existingStart = timeToMinutes(reservation.hora_entrada);
+        if (existingStart === null) return false;
+        
+        // Si la reserva existente no tiene hora de salida, asumir 2 horas
+        const existingEnd = reservation.hora_salida 
+          ? timeToMinutes(reservation.hora_salida) 
+          : existingStart + 120;
+
+        // Verificar si hay solapamiento considerando el buffer
+        // La nueva reserva conflicta si:
+        // - Empieza antes de que termine la existente + buffer
+        // - Y termina después de que empiece la existente - buffer
+        const conflictStart = existingStart - BUFFER_MINUTES;
+        const conflictEnd = existingEnd + BUFFER_MINUTES;
+
+        const overlaps = newStart < conflictEnd && newEnd > conflictStart;
+        
+        if (overlaps) {
+          console.log(`Conflicto detectado: Mesa ${mesa} ya reservada de ${reservation.hora_entrada} a ${reservation.hora_salida || 'N/A'}`);
+        }
+        
+        return overlaps;
       });
 
-      return { available: !hasConflict };
+      return { 
+        available: !hasConflict,
+        conflictingReservations: hasConflict ? data : []
+      };
     } catch (err) {
+      console.error('Error inesperado:', err);
       return { available: true, error: err.message };
     }
   },
@@ -185,7 +231,7 @@ function setupReservationForm() {
       );
 
       if (!availability.available) {
-        showNotification('La mesa seleccionada no está disponible en ese horario', 'error');
+        showNotification('La Mesa ' + reservationData.mesa + ' no está disponible en ese horario. Hay una reserva dentro de las 2 horas anteriores o posteriores. Por favor, elige otra mesa u otro horario.', 'error');
         submitBtn.innerHTML = originalText;
         submitBtn.disabled = false;
         return;
