@@ -76,6 +76,31 @@
         .filter-btn:not(.active):hover {
             background: #e5e7eb;
         }
+        
+        .order-filter-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .order-filter-btn.active {
+            background: #d97706;
+            color: white;
+        }
+        
+        .order-filter-btn:not(.active) {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .order-filter-btn:not(.active):hover {
+            background: #e5e7eb;
+        }
+        
+        .status-preparacion { background: #dbeafe; color: #1e40af; }
+        .status-completado { background: #d1fae5; color: #065f46; }
+        .status-cancelado { background: #fee2e2; color: #991b1b; }
     </style>
 </head>
 <body class="bg-amber-50">
@@ -126,38 +151,88 @@
     <!-- Admin Panel -->
     <div id="admin-panel" class="admin-container hidden">
         <div class="container mx-auto">
-            <!-- Stats -->
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <p class="text-gray-500 text-sm">Total Reservas</p>
-                    <p id="stat-total" class="text-3xl font-bold text-amber-800">0</p>
+            <!-- Tabs -->
+            <div class="flex gap-4 mb-6 border-b border-amber-300">
+                <button id="tab-reservas" class="tab-btn active px-6 py-3 font-bold text-amber-800 border-b-2 border-amber-600" onclick="switchTab('reservas')">
+                    🪑 Reservas
+                </button>
+                <button id="tab-pedidos" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600" onclick="switchTab('pedidos')">
+                    🛒 Pedidos Online
+                </button>
+            </div>
+
+            <!-- Reservas Section -->
+            <div id="section-reservas">
+                <!-- Stats Reservas -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Total Reservas</p>
+                        <p id="stat-total" class="text-3xl font-bold text-amber-800">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Pendientes</p>
+                        <p id="stat-pendientes" class="text-3xl font-bold text-yellow-600">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Confirmadas</p>
+                        <p id="stat-confirmadas" class="text-3xl font-bold text-green-600">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Canceladas</p>
+                        <p id="stat-canceladas" class="text-3xl font-bold text-red-600">0</p>
+                    </div>
                 </div>
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <p class="text-gray-500 text-sm">Pendientes</p>
-                    <p id="stat-pendientes" class="text-3xl font-bold text-yellow-600">0</p>
+                
+                <!-- Filters Reservas -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="filter-btn active" data-filter="all">Todas</button>
+                    <button class="filter-btn" data-filter="pendiente">Pendientes</button>
+                    <button class="filter-btn" data-filter="confirmada">Confirmadas</button>
+                    <button class="filter-btn" data-filter="cancelada">Canceladas</button>
+                    <input type="date" id="filter-date" class="ml-auto p-2 border border-amber-300 rounded-lg">
                 </div>
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <p class="text-gray-500 text-sm">Confirmadas</p>
-                    <p id="stat-confirmadas" class="text-3xl font-bold text-green-600">0</p>
-                </div>
-                <div class="bg-white p-4 rounded-lg shadow">
-                    <p class="text-gray-500 text-sm">Canceladas</p>
-                    <p id="stat-canceladas" class="text-3xl font-bold text-red-600">0</p>
+                
+                <!-- Reservations List -->
+                <div id="reservations-list">
+                    <p class="text-gray-500 text-center py-8">Cargando reservas...</p>
                 </div>
             </div>
-            
-            <!-- Filters -->
-            <div class="flex flex-wrap gap-2 mb-6">
-                <button class="filter-btn active" data-filter="all">Todas</button>
-                <button class="filter-btn" data-filter="pendiente">Pendientes</button>
-                <button class="filter-btn" data-filter="confirmada">Confirmadas</button>
-                <button class="filter-btn" data-filter="cancelada">Canceladas</button>
-                <input type="date" id="filter-date" class="ml-auto p-2 border border-amber-300 rounded-lg">
-            </div>
-            
-            <!-- Reservations List -->
-            <div id="reservations-list">
-                <p class="text-gray-500 text-center py-8">Cargando reservas...</p>
+
+            <!-- Pedidos Section -->
+            <div id="section-pedidos" class="hidden">
+                <!-- Stats Pedidos -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Total Pedidos</p>
+                        <p id="stat-orders-total" class="text-3xl font-bold text-amber-800">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Pendientes</p>
+                        <p id="stat-orders-pendientes" class="text-3xl font-bold text-yellow-600">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">En Preparación</p>
+                        <p id="stat-orders-preparacion" class="text-3xl font-bold text-blue-600">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Completados</p>
+                        <p id="stat-orders-completados" class="text-3xl font-bold text-green-600">0</p>
+                    </div>
+                </div>
+                
+                <!-- Filters Pedidos -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="order-filter-btn active" data-filter="all">Todos</button>
+                    <button class="order-filter-btn" data-filter="pendiente">Pendientes</button>
+                    <button class="order-filter-btn" data-filter="preparacion">En Preparación</button>
+                    <button class="order-filter-btn" data-filter="completado">Completados</button>
+                    <button class="order-filter-btn" data-filter="cancelado">Cancelados</button>
+                </div>
+                
+                <!-- Orders List -->
+                <div id="orders-list">
+                    <p class="text-gray-500 text-center py-8">Cargando pedidos...</p>
+                </div>
             </div>
         </div>
     </div>
@@ -170,7 +245,9 @@
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
         
         let currentFilter = 'all';
+        let currentOrderFilter = 'all';
         let reservations = [];
+        let orders = [];
         
         // Verificar sesión al cargar
         document.addEventListener('DOMContentLoaded', async () => {
@@ -244,7 +321,25 @@
             document.getElementById('user-email').textContent = email;
             
             loadReservations();
+            loadOrders();
             setupFilters();
+            setupOrderFilters();
+        }
+        
+        // Cambiar entre pestañas
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('active', 'text-amber-800', 'border-amber-600');
+                btn.classList.add('text-gray-500', 'border-transparent');
+            });
+            
+            const activeTab = document.getElementById('tab-' + tab);
+            activeTab.classList.add('active', 'text-amber-800', 'border-amber-600');
+            activeTab.classList.remove('text-gray-500', 'border-transparent');
+            
+            document.getElementById('section-reservas').classList.add('hidden');
+            document.getElementById('section-pedidos').classList.add('hidden');
+            document.getElementById('section-' + tab).classList.remove('hidden');
         }
         
         // Logout
@@ -396,6 +491,132 @@
             
             document.getElementById('filter-date').addEventListener('change', () => {
                 renderReservations();
+            });
+        }
+        
+        // ==================== PEDIDOS ====================
+        
+        // Cargar pedidos
+        async function loadOrders() {
+            const { data, error } = await supabaseClient
+                .from('orders')
+                .select('*')
+                .order('created_at', { ascending: false });
+            
+            if (error) {
+                console.error('Error cargando pedidos:', error);
+                document.getElementById('orders-list').innerHTML = '<p class="text-gray-500 text-center py-8">No se pudieron cargar los pedidos. Verifica que la tabla "orders" existe.</p>';
+                return;
+            }
+            
+            orders = data || [];
+            updateOrderStats();
+            renderOrders();
+        }
+        
+        // Actualizar estadísticas de pedidos
+        function updateOrderStats() {
+            const total = orders.length;
+            const pendientes = orders.filter(o => o.status === 'pendiente').length;
+            const preparacion = orders.filter(o => o.status === 'preparacion').length;
+            const completados = orders.filter(o => o.status === 'completado').length;
+            
+            document.getElementById('stat-orders-total').textContent = total;
+            document.getElementById('stat-orders-pendientes').textContent = pendientes;
+            document.getElementById('stat-orders-preparacion').textContent = preparacion;
+            document.getElementById('stat-orders-completados').textContent = completados;
+        }
+        
+        // Renderizar pedidos
+        function renderOrders() {
+            const container = document.getElementById('orders-list');
+            
+            let filtered = orders;
+            
+            if (currentOrderFilter !== 'all') {
+                filtered = filtered.filter(o => o.status === currentOrderFilter);
+            }
+            
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No hay pedidos para mostrar</p>';
+                return;
+            }
+            
+            container.innerHTML = filtered.map(o => {
+                const items = typeof o.items === 'string' ? JSON.parse(o.items) : o.items;
+                const itemsList = Array.isArray(items) ? items.map(i => `${i.name} x${i.quantity || 1}`).join(', ') : 'Sin items';
+                
+                return `
+                <div class="reservation-card ${o.status === 'completado' ? 'confirmada' : o.status === 'cancelado' ? 'cancelada' : ''}">
+                    <div class="flex flex-wrap justify-between items-start gap-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-lg font-bold text-amber-800">${o.customer_name}</h3>
+                                <span class="status-badge status-${o.status === 'preparacion' ? 'pendiente' : o.status === 'completado' ? 'confirmada' : o.status}">${o.status}</span>
+                                <span class="text-sm text-gray-500">#${o.id.slice(0, 8)}</span>
+                            </div>
+                            <div class="text-sm text-gray-600 mb-2">
+                                <p><strong>🛒 Items:</strong> ${itemsList}</p>
+                                <p><strong>💰 Total:</strong> ${o.total} PLN</p>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                <p><strong>📧</strong> ${o.customer_email} ${o.customer_phone ? `| <strong>📱</strong> ${o.customer_phone}` : ''}</p>
+                                <p><strong>🕐</strong> ${new Date(o.created_at).toLocaleString('es-ES')}</p>
+                            </div>
+                        </div>
+                        <div class="flex gap-2 flex-wrap">
+                            ${o.status === 'pendiente' ? `
+                                <button onclick="updateOrderStatus('${o.id}', 'preparacion')" 
+                                    class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                    👨‍🍳 Preparar
+                                </button>
+                                <button onclick="updateOrderStatus('${o.id}', 'cancelado')"
+                                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                    ✕ Cancelar
+                                </button>
+                            ` : ''}
+                            ${o.status === 'preparacion' ? `
+                                <button onclick="updateOrderStatus('${o.id}', 'completado')" 
+                                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                    ✓ Completado
+                                </button>
+                            ` : ''}
+                            ${o.status === 'cancelado' ? `
+                                <button onclick="updateOrderStatus('${o.id}', 'pendiente')"
+                                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                    ↺ Reactivar
+                                </button>
+                            ` : ''}
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        }
+        
+        // Actualizar estado de pedido
+        async function updateOrderStatus(id, newStatus) {
+            const { error } = await supabaseClient
+                .from('orders')
+                .update({ status: newStatus })
+                .eq('id', id);
+            
+            if (error) {
+                alert('Error al actualizar: ' + error.message);
+                return;
+            }
+            
+            await loadOrders();
+        }
+        
+        // Configurar filtros de pedidos
+        function setupOrderFilters() {
+            document.querySelectorAll('.order-filter-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.order-filter-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    currentOrderFilter = btn.dataset.filter;
+                    renderOrders();
+                });
             });
         }
     </script>
