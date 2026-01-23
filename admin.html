@@ -152,12 +152,15 @@
     <div id="admin-panel" class="admin-container hidden">
         <div class="container mx-auto">
             <!-- Tabs -->
-            <div class="flex gap-4 mb-6 border-b border-amber-300">
-                <button id="tab-reservas" class="tab-btn active px-6 py-3 font-bold text-amber-800 border-b-2 border-amber-600" onclick="switchTab('reservas')">
+            <div class="flex gap-4 mb-6 border-b border-amber-300 overflow-x-auto">
+                <button id="tab-reservas" class="tab-btn active px-6 py-3 font-bold text-amber-800 border-b-2 border-amber-600 whitespace-nowrap" onclick="switchTab('reservas')">
                     🪑 Reservas
                 </button>
-                <button id="tab-pedidos" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600" onclick="switchTab('pedidos')">
+                <button id="tab-pedidos" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('pedidos')">
                     🛒 Pedidos Online
+                </button>
+                <button id="tab-eventos" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('eventos')">
+                    🎉 Eventos
                 </button>
             </div>
 
@@ -234,6 +237,117 @@
                     <p class="text-gray-500 text-center py-8">Cargando pedidos...</p>
                 </div>
             </div>
+
+            <!-- Eventos Section -->
+            <div id="section-eventos" class="hidden">
+                <!-- Header con botón agregar -->
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-amber-800">Gestión de Eventos</h2>
+                    <button onclick="showEventModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                        <span>+</span> Nuevo Evento
+                    </button>
+                </div>
+                
+                <!-- Stats Eventos -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Total Eventos</p>
+                        <p id="stat-events-total" class="text-3xl font-bold text-amber-800">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Activos</p>
+                        <p id="stat-events-activos" class="text-3xl font-bold text-green-600">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Próximos 7 días</p>
+                        <p id="stat-events-proximos" class="text-3xl font-bold text-blue-600">0</p>
+                    </div>
+                </div>
+                
+                <!-- Events List -->
+                <div id="events-list">
+                    <p class="text-gray-500 text-center py-8">Cargando eventos...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para crear/editar evento -->
+    <div id="event-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="modal-title" class="text-xl font-bold text-amber-800">Nuevo Evento</h3>
+                    <button onclick="closeEventModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                
+                <form id="event-form" class="space-y-4">
+                    <input type="hidden" id="event-id">
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Título *</label>
+                        <input type="text" id="event-titulo" required
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="Ej: Noche de Salsa">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Descripción</label>
+                        <textarea id="event-descripcion" rows="3"
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="Describe el evento..."></textarea>
+                    </div>
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Fecha *</label>
+                            <input type="date" id="event-fecha" required
+                                class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Hora</label>
+                            <input type="time" id="event-hora"
+                                class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">URL de Imagen</label>
+                        <input type="url" id="event-imagen"
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="https://ejemplo.com/imagen.jpg">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Ubicación</label>
+                        <input type="text" id="event-ubicacion" value="Macondo Bar Latino"
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Precio</label>
+                        <input type="text" id="event-precio"
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="Ej: Gratis, 20 PLN, etc.">
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="event-activo" checked class="w-5 h-5 text-amber-600">
+                        <label for="event-activo" class="text-amber-700 font-medium">Evento activo (visible en la web)</label>
+                    </div>
+                    
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeEventModal()" 
+                            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-lg transition-colors">
+                            Cancelar
+                        </button>
+                        <button type="submit" 
+                            class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-lg transition-colors">
+                            Guardar Evento
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -248,6 +362,7 @@
         let currentOrderFilter = 'all';
         let reservations = [];
         let orders = [];
+        let events = [];
         
         // Verificar sesión al cargar
         document.addEventListener('DOMContentLoaded', async () => {
@@ -322,6 +437,7 @@
             
             loadReservations();
             loadOrders();
+            loadEvents();
             setupFilters();
             setupOrderFilters();
         }
@@ -339,6 +455,7 @@
             
             document.getElementById('section-reservas').classList.add('hidden');
             document.getElementById('section-pedidos').classList.add('hidden');
+            document.getElementById('section-eventos').classList.add('hidden');
             document.getElementById('section-' + tab).classList.remove('hidden');
         }
         
@@ -618,6 +735,198 @@
                     renderOrders();
                 });
             });
+        }
+        
+        // ==================== EVENTOS ====================
+        
+        // Cargar eventos
+        async function loadEvents() {
+            const { data, error } = await supabaseClient
+                .from('events')
+                .select('*')
+                .order('fecha', { ascending: true });
+            
+            if (error) {
+                console.error('Error cargando eventos:', error);
+                document.getElementById('events-list').innerHTML = '<p class="text-gray-500 text-center py-8">No se pudieron cargar los eventos. Verifica que la tabla "events" existe.</p>';
+                return;
+            }
+            
+            events = data || [];
+            updateEventStats();
+            renderEvents();
+        }
+        
+        // Actualizar estadísticas de eventos
+        function updateEventStats() {
+            const total = events.length;
+            const activos = events.filter(e => e.activo).length;
+            const hoy = new Date();
+            const en7dias = new Date(hoy.getTime() + 7 * 24 * 60 * 60 * 1000);
+            const proximos = events.filter(e => {
+                const fechaEvento = new Date(e.fecha);
+                return fechaEvento >= hoy && fechaEvento <= en7dias && e.activo;
+            }).length;
+            
+            document.getElementById('stat-events-total').textContent = total;
+            document.getElementById('stat-events-activos').textContent = activos;
+            document.getElementById('stat-events-proximos').textContent = proximos;
+        }
+        
+        // Renderizar eventos
+        function renderEvents() {
+            const container = document.getElementById('events-list');
+            
+            if (events.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-8">No hay eventos. ¡Crea el primero!</p>';
+                return;
+            }
+            
+            container.innerHTML = events.map(e => `
+                <div class="reservation-card ${e.activo ? '' : 'cancelada'}">
+                    <div class="flex flex-wrap gap-4">
+                        ${e.imagen_url ? `<img src="${e.imagen_url}" alt="${e.titulo}" class="w-32 h-24 object-cover rounded-lg">` : ''}
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-lg font-bold text-amber-800">${e.titulo}</h3>
+                                <span class="status-badge ${e.activo ? 'status-confirmada' : 'status-cancelada'}">${e.activo ? 'Activo' : 'Inactivo'}</span>
+                            </div>
+                            <p class="text-gray-600 text-sm mb-2">${e.descripcion || 'Sin descripción'}</p>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-600">
+                                <p><strong>📅</strong> ${formatDate(e.fecha)}</p>
+                                <p><strong>🕐</strong> ${e.hora || 'Sin hora'}</p>
+                                <p><strong>📍</strong> ${e.ubicacion || 'Macondo'}</p>
+                                <p><strong>💰</strong> ${e.precio || 'Gratis'}</p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-2">
+                            <button onclick="editEvent('${e.id}')" 
+                                class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors text-sm">
+                                ✏️ Editar
+                            </button>
+                            <button onclick="toggleEventActive('${e.id}', ${!e.activo})" 
+                                class="${e.activo ? 'bg-yellow-500 hover:bg-yellow-600' : 'bg-green-500 hover:bg-green-600'} text-white px-4 py-2 rounded-lg transition-colors text-sm">
+                                ${e.activo ? '⏸️ Desactivar' : '▶️ Activar'}
+                            </button>
+                            <button onclick="deleteEvent('${e.id}')" 
+                                class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors text-sm">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // Mostrar modal de evento
+        function showEventModal(eventId = null) {
+            document.getElementById('event-modal').classList.remove('hidden');
+            document.getElementById('event-form').reset();
+            document.getElementById('event-id').value = '';
+            document.getElementById('event-activo').checked = true;
+            document.getElementById('modal-title').textContent = 'Nuevo Evento';
+            
+            if (eventId) {
+                const event = events.find(e => e.id === eventId);
+                if (event) {
+                    document.getElementById('modal-title').textContent = 'Editar Evento';
+                    document.getElementById('event-id').value = event.id;
+                    document.getElementById('event-titulo').value = event.titulo;
+                    document.getElementById('event-descripcion').value = event.descripcion || '';
+                    document.getElementById('event-fecha').value = event.fecha;
+                    document.getElementById('event-hora').value = event.hora || '';
+                    document.getElementById('event-imagen').value = event.imagen_url || '';
+                    document.getElementById('event-ubicacion').value = event.ubicacion || 'Macondo Bar Latino';
+                    document.getElementById('event-precio').value = event.precio || '';
+                    document.getElementById('event-activo').checked = event.activo;
+                }
+            }
+        }
+        
+        // Cerrar modal
+        function closeEventModal() {
+            document.getElementById('event-modal').classList.add('hidden');
+        }
+        
+        // Editar evento
+        function editEvent(id) {
+            showEventModal(id);
+        }
+        
+        // Guardar evento (crear o actualizar)
+        document.getElementById('event-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const eventId = document.getElementById('event-id').value;
+            const eventData = {
+                titulo: document.getElementById('event-titulo').value,
+                descripcion: document.getElementById('event-descripcion').value || null,
+                fecha: document.getElementById('event-fecha').value,
+                hora: document.getElementById('event-hora').value || null,
+                imagen_url: document.getElementById('event-imagen').value || null,
+                ubicacion: document.getElementById('event-ubicacion').value || 'Macondo Bar Latino',
+                precio: document.getElementById('event-precio').value || null,
+                activo: document.getElementById('event-activo').checked
+            };
+            
+            let error;
+            
+            if (eventId) {
+                // Actualizar
+                const result = await supabaseClient
+                    .from('events')
+                    .update(eventData)
+                    .eq('id', eventId);
+                error = result.error;
+            } else {
+                // Crear nuevo
+                const result = await supabaseClient
+                    .from('events')
+                    .insert([eventData]);
+                error = result.error;
+            }
+            
+            if (error) {
+                alert('Error al guardar: ' + error.message);
+                return;
+            }
+            
+            closeEventModal();
+            await loadEvents();
+        });
+        
+        // Activar/Desactivar evento
+        async function toggleEventActive(id, newStatus) {
+            const { error } = await supabaseClient
+                .from('events')
+                .update({ activo: newStatus })
+                .eq('id', id);
+            
+            if (error) {
+                alert('Error al actualizar: ' + error.message);
+                return;
+            }
+            
+            await loadEvents();
+        }
+        
+        // Eliminar evento
+        async function deleteEvent(id) {
+            if (!confirm('¿Estás seguro de eliminar este evento? Esta acción no se puede deshacer.')) {
+                return;
+            }
+            
+            const { error } = await supabaseClient
+                .from('events')
+                .delete()
+                .eq('id', id);
+            
+            if (error) {
+                alert('Error al eliminar: ' + error.message);
+                return;
+            }
+            
+            await loadEvents();
         }
     </script>
 </body>
