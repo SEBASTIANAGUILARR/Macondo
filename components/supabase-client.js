@@ -2,15 +2,17 @@
 const SUPABASE_URL = 'https://imqcifvmklkccwagpkee.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltcWNpZnZta2xrY2N3YWdwa2VlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxMjMzNDIsImV4cCI6MjA4NDY5OTM0Mn0.fP4S0VfaC823LKUvh6HcybS_ze9uWWrBKgC4SsQBiRU';
 
-// Inicializar cliente de Supabase
+// Inicializar cliente de Supabase inmediatamente si el SDK está disponible
 let supabaseClient = null;
 
 function initSupabase() {
+  if (supabaseClient) return true; // Ya inicializado
+  
   if (typeof supabase !== 'undefined' && supabase.createClient) {
     try {
       supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      window.supabaseClient = supabaseClient; // Exponer globalmente
       console.log('✅ Supabase inicializado correctamente');
-      console.log('URL:', SUPABASE_URL);
       return true;
     } catch (err) {
       console.error('❌ Error al inicializar Supabase:', err);
@@ -20,6 +22,9 @@ function initSupabase() {
   console.warn('⚠️ Supabase SDK no cargado. Verifica que el script esté incluido.');
   return false;
 }
+
+// Intentar inicializar inmediatamente
+initSupabase();
 
 // Sistema de Reservas con Supabase
 const ReservationSystem = {
