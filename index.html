@@ -286,45 +286,8 @@
         <section id="eventos" class="mb-16">
             <h2 class="text-4xl font-bold text-amber-800 mb-8 text-center" data-i18n="events.title">Eventos y Noches Especiales</h2>
             
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <!-- Evento 1 -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                    <img src="nochedevallenato.png" alt="Música Viva" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h4 class="text-xl font-bold text-amber-800" data-i18n="events.vallenatoNight.name">Noche de Vallenato</h4>
-                        <p class="text-gray-600 mb-2" data-i18n="events.vallenatoNight.date">Viernes 15 de Julio, 8:00 PM</p>
-                        <p class="text-gray-700 mb-4" data-i18n="events.vallenatoNight.description">Disfruta de la mejor música vallenata en vivo con el grupo "Los Diablitos del Vallenato".</p>
-                        <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded">
-                            <span data-i18n="events.reserveNow">Reservar Ahora</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Evento 2 -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                    <img src="salsa.jpg" alt="DJ" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h4 class="text-xl font-bold text-amber-800" data-i18n="events.salsaSaturday.name">Sábado de Salsa</h4>
-                        <p class="text-gray-600 mb-2" data-i18n="events.salsaSaturday.date">Sábado 16 de Julio, 9:00 PM</p>
-                        <p class="text-gray-700 mb-4" data-i18n="events.salsaSaturday.description">DJ especializado en salsa clásica y moderna. Pista de baile y cócteles especiales.</p>
-                        <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded">
-                            <span data-i18n="events.reserveNow">Reservar Ahora</span>
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Evento 3 -->
-                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                    <img src="fiesta.jpg" alt="Fiesta" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h4 class="text-xl font-bold text-amber-800" data-i18n="events.djUro.name">DJ Uro</h4>
-                        <p class="text-gray-600 mb-2" data-i18n="events.djUro.date">Sábado 23 de Julio, 8:00 PM</p>
-                        <p class="text-gray-700 mb-4" data-i18n="events.djUro.description">Celebración con música tropical, platos especiales y promociones en bebidas.</p>
-                        <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded">
-                            <span data-i18n="events.reserveNow">Reservar Ahora</span>
-                        </button>
-                    </div>
-                </div>
+            <div id="eventos-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <p class="text-gray-500 text-center py-8 col-span-full">Cargando eventos...</p>
             </div>
             
             <div class="mt-8 text-center">
@@ -371,8 +334,9 @@
                 window.cart.updateUI();
             }
             
-            // Cargar menú dinámico desde Supabase
+            // Cargar menú y eventos dinámicos desde Supabase
             loadMenuFromSupabase();
+            loadEventsFromSupabase();
 
             const mesas = document.querySelectorAll('[data-feather="circle"]');
             
@@ -413,8 +377,8 @@
                     return;
                 }
                 
-                const platos = items.filter(i => i.categoria === 'plato');
-                const bebidas = items.filter(i => i.categoria === 'bebida');
+                const platos = items.filter(i => i.categoria === 'plato').slice(0, 6); // Máximo 6 platos
+                const bebidas = items.filter(i => i.categoria === 'bebida').slice(0, 4); // Máximo 4 bebidas
                 
                 // Renderizar platos
                 const platosContainer = document.getElementById('platos-container');
@@ -465,6 +429,62 @@
                             <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
                             <span>Agregar al Carrito</span>
                         </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Función para cargar eventos desde Supabase
+        async function loadEventsFromSupabase() {
+            try {
+                const { data: events, error } = await window.supabaseClient
+                    .from('events')
+                    .select('*')
+                    .eq('activo', true)
+                    .order('fecha', { ascending: true })
+                    .limit(3); // Máximo 3 eventos
+                
+                if (error) {
+                    console.error('Error cargando eventos:', error);
+                    return;
+                }
+                
+                const container = document.getElementById('eventos-container');
+                
+                if (!events || events.length === 0) {
+                    container.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay eventos programados.</p>';
+                    return;
+                }
+                
+                container.innerHTML = events.map(event => renderEvent(event)).join('');
+                
+                if (typeof feather !== 'undefined') {
+                    feather.replace();
+                }
+                
+            } catch (err) {
+                console.error('Error en loadEventsFromSupabase:', err);
+            }
+        }
+        
+        // Función para renderizar un evento
+        function renderEvent(event) {
+            const formatDate = (dateStr) => {
+                const date = new Date(dateStr);
+                const options = { weekday: 'long', day: 'numeric', month: 'long' };
+                return date.toLocaleDateString('es-ES', options);
+            };
+            
+            return `
+                <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+                    ${event.imagen_url ? `<img src="${event.imagen_url}" alt="${event.titulo}" class="w-full h-48 object-cover">` : '<div class="w-full h-48 bg-gradient-to-r from-amber-400 to-amber-600 flex items-center justify-center text-4xl text-white">🎉</div>'}
+                    <div class="p-4">
+                        <h4 class="text-xl font-bold text-amber-800">${event.titulo}</h4>
+                        <p class="text-gray-600 mb-2">${formatDate(event.fecha)}${event.hora ? ', ' + event.hora : ''}</p>
+                        <p class="text-gray-700 mb-4">${event.descripcion || ''}</p>
+                        <a href="#reservas" class="inline-block bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded transition-colors">
+                            Reservar Ahora
+                        </a>
                     </div>
                 </div>
             `;
