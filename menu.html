@@ -17,6 +17,7 @@
     <script src="components/orders.js"></script>
     <script src="components/checkout.js"></script>
     <script src="components/user-panel.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -77,182 +78,7 @@
         <section class="mb-16">
             <h2 class="text-3xl font-bold text-amber-800 mb-8 text-center">Platos Típicos Colombianos</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="platos-section">
-                
-                <!-- Bandeja Paisa -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="platos">
-                    <img src="components/bandeja-paisa-receta.jpg" alt="Bandeja Paisa" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Bandeja Paisa</h3>
-                        <p class="text-gray-600 mb-3">Arroz, frijoles, chicharrón, carne molida, chorizo, huevo, aguacate y arepa.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">60,00 PLN</span>
-                            <span class="text-sm text-gray-500">Porción abundante</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'bandeja-paisa',
-                            name: 'Bandeja Paisa',
-                            price: '60,00 PLN',
-                            image: 'components/bandeja-paisa-receta.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Ajiaco -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="platos">
-                    <img src="ajiaco.jpg" alt="Ajiaco" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Ajiaco Santafereño</h3>
-                        <p class="text-gray-600 mb-3">Sopa de pollo con tres tipos de papa, mazorca, guascas, crema de leche y alcaparras.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">35,00 PLN</span>
-                            <span class="text-sm text-gray-500">Porción generosa</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'ajiaco',
-                            name: 'Ajiaco Santafereño',
-                            price: '35,00 PLN',
-                            image: 'ajiaco.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Sancocho -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="platos">
-                    <img src="sancocho.jpg" alt="Sancocho" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Sancocho de Gallina</h3>
-                        <p class="text-gray-600 mb-3">Sopa tradicional con gallina criolla, yuca, plátano, mazorca y cilantro.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">35,00 PLN</span>
-                            <span class="text-sm text-gray-500">Para compartir</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'sancocho',
-                            name: 'Sancocho de Gallina',
-                            price: '35,00 PLN',
-                            image: 'sancocho.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Lechona -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="platos">
-                    <img src="mojarra.jpg" alt="Lechona" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Lechona Tolimense</h3>
-                        <p class="text-gray-600 mb-3">Cerdo relleno con arroz, arvejas, huevos y especias, horneado lentamente.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">75,00 PLN</span>
-                            <span class="text-sm text-gray-500">Porción completa</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'lechona',
-                            name: 'Lechona Tolimense',
-                            price: '75,00 PLN',
-                            image: 'mojarra.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Mondongo -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="platos">
-                    <img src="patacones con carne.jpg" alt="Mondongo" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Mondongo</h3>
-                        <p class="text-gray-600 mb-3">Sopa de frijoles negros con carne, plátano y yuca, acompañada de arroz.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">28,00 PLN</span>
-                            <span class="text-sm text-gray-500">Tradicional</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'mondongo',
-                            name: 'Mondongo',
-                            price: '28,00 PLN',
-                            image: 'patacones con carne.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tamal -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="platos">
-                    <img src="shredded-beef-arepas.jpg" alt="Tamal" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Tamal Tolimense</h3>
-                        <p class="text-gray-600 mb-3">Masa de maíz rellena de cerdo, pollo o verduras, envuelta en hoja de bijao.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">25,00 PLN</span>
-                            <span class="text-sm text-gray-500">Unidad</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'tamal',
-                            name: 'Tamal Tolimense',
-                            price: '25,00 PLN',
-                            image: 'shredded-beef-arepas.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Arepas -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="platos">
-                    <img src="ajiaco.jpg" alt="Arepas" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Arepas Colombianas</h3>
-                        <p class="text-gray-600 mb-3">Arepas de maíz blanco o amarillo, con queso, huevos o carne.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">18,00 PLN</span>
-                            <span class="text-sm text-gray-500">Par de arepas</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'arepas',
-                            name: 'Arepas Colombianas',
-                            price: '18,00 PLN',
-                            image: 'ajiaco.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Empanadas -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="platos">
-                    <img src="sancocho.jpg" alt="Empanadas" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Empanadas Colombianas</h3>
-                        <p class="text-gray-600 mb-3">Masa de maíz o harina rellena de carne, pollo o queso, fritas o horneadas.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">22,00 PLN</span>
-                            <span class="text-sm text-gray-500">Por 6 unidades</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'empanadas',
-                            name: 'Empanadas Colombianas',
-                            price: '22,00 PLN',
-                            image: 'sancocho.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
+                <p class="text-gray-500 text-center py-8 col-span-full">Cargando platos...</p>
             </div>
         </section>
 
@@ -260,211 +86,15 @@
         <section class="mb-16">
             <h2 class="text-3xl font-bold text-amber-800 mb-8 text-center">Bebidas y Cócteles</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="bebidas-section">
-                
-                <!-- Aguardiente -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="bebidas">
-                    <img src="aguardiente.jpg" alt="Aguardiente" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Aguardiente Antioqueño</h3>
-                        <p class="text-gray-600 mb-3">Tradicional licor colombiano con sabor a anís, 40° de alcohol.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">10,00 PLN</span>
-                            <span class="text-sm text-gray-500">Por copa</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'aguardiente',
-                            name: 'Aguardiente Antioqueño',
-                            price: '10,00 PLN',
-                            image: 'aguardiente.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Ron -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="bebidas">
-                    <img src="mojitodelulo.jpg" alt="Ron" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Ron Medellín</h3>
-                        <p class="text-gray-600 mb-3">Ron añejo colombiano, suave y con notas de vainilla y caramelo.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">35,00 PLN</span>
-                            <span class="text-sm text-gray-500">Por botella</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'ron-medellin',
-                            name: 'Ron Medellín',
-                            price: '35,00 PLN',
-                            image: 'mojitodelulo.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Cervezas Artesanales -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="bebidas">
-                    <img src="2-ClubColombia-world-brand-design.jpg" alt="Cervezas" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Cervezas Colombianas</h3>
-                        <p class="text-gray-600 mb-3">Selección de cervezas artesanales colombianas: Club Colombia, Águila, Poker.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">18,00 PLN</span>
-                            <span class="text-sm text-gray-500">Por unidad</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'cervezas-colombianas',
-                            name: 'Cervezas Colombianas',
-                            price: '18,00 PLN',
-                            image: '2-ClubColombia-world-brand-design.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Jugos Naturales -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="bebidas">
-                    <img src="cococotail.jpg" alt="Jugos" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Jugos Tropicales</h3>
-                        <p class="text-gray-600 mb-3">Jugos frescos de mango, guanábana, maracuyá, lulo, mora y papaya.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">15,00 PLN</span>
-                            <span class="text-sm text-gray-500">Por vaso</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'jugos-tropicales',
-                            name: 'Jugos Tropicales',
-                            price: '15,00 PLN',
-                            image: 'cococotail.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Lulada -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="bebidas">
-                    <img src="mojitodelulo.jpg" alt="Lulada" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Lulada</h3>
-                        <p class="text-gray-600 mb-3">Bebida refrescante con lulo, limón y azúcar, servida con hielo.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">20,00 PLN</span>
-                            <span class="text-sm text-gray-500">Por vaso grande</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'lulada',
-                            name: 'Lulada',
-                            price: '20,00 PLN',
-                            image: 'mojitodelulo.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
+                <p class="text-gray-500 text-center py-8 col-span-full">Cargando bebidas...</p>
             </div>
         </section>
 
-        <!-- Postres -->
+        <!-- Ofertas -->
         <section class="mb-16">
-            <h2 class="text-3xl font-bold text-amber-800 mb-8 text-center">Postres Colombianos</h2>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="postres-section">
-                
-                <!-- Arequipe -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="postres">
-                    <img src="cococotail.jpg" alt="Arequipe" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Arequipe</h3>
-                        <p class="text-gray-600 mb-3">Dulce tradicional colombiano hecho con panela, leche y esencias.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">12,00 PLN</span>
-                            <span class="text-sm text-gray-500">Por porción</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'arequipe',
-                            name: 'Arequipe',
-                            price: '12,00 PLN',
-                            image: 'cococotail.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Cocadas -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="postres">
-                    <img src="aguardiente.jpg" alt="Cocadas" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Cocadas</h3>
-                        <p class="text-gray-600 mb-3">Dulce de coco rallado con panela, servido en copas.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">15,00 PLN</span>
-                            <span class="text-sm text-gray-500">Por 2 unidades</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'cocadas',
-                            name: 'Cocadas',
-                            price: '15,00 PLN',
-                            image: 'aguardiente.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Brevas con Queso -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="postres">
-                    <img src="2-ClubColombia-world-brand-design.jpg" alt="Brevas" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Brevas con Queso</h3>
-                        <p class="text-gray-600 mb-3">Fresas silvestres frescas acompañadas con queso campesino.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">18,00 PLN</span>
-                            <span class="text-sm text-gray-500">Por porción</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'brevas-queso',
-                            name: 'Brevas con Queso',
-                            price: '18,00 PLN',
-                            image: '2-ClubColombia-world-brand-design.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Tres Leches -->
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="postres">
-                    <img src="mojitodelulo.jpg" alt="Tres Leches" class="w-full h-48 object-cover">
-                    <div class="p-4">
-                        <h3 class="text-xl font-bold text-amber-800 mb-2">Tres Leches</h3>
-                        <p class="text-gray-600 mb-3">Postre con capas de leche, arequipe y merengue.</p>
-                        <div class="flex justify-between items-center mb-3">
-                            <span class="text-amber-600 font-bold text-lg">22,00 PLN</span>
-                            <span class="text-sm text-gray-500">Por vaso</span>
-                        </div>
-                        <button onclick="window.cart.addItem({
-                            id: 'tres-leches',
-                            name: 'Tres Leches',
-                            price: '22,00 PLN',
-                            image: 'mojitodelulo.jpg'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
-                    </div>
-                </div>
+            <h2 class="text-3xl font-bold text-amber-800 mb-8 text-center">Ofertas Especiales</h2>
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="ofertas-section">
+                <p class="text-gray-500 text-center py-8 col-span-full">Cargando ofertas...</p>
             </div>
         </section>
 
@@ -480,14 +110,123 @@
     <custom-footer></custom-footer>
 
     <script>
+        // Configuración de Supabase
+        const SUPABASE_URL = 'https://imqcifvmklkccwagpkee.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltcWNpZnZta2xrY2N3YWdwa2VlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxMjMzNDIsImV4cCI6MjA4NDY5OTM0Mn0.fP4S0VfaC823LKUvh6HcybS_ze9uWWrBKgC4SsQBiRU';
+        
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        let allMenuItems = [];
+        let currentFilter = 'all';
+
+        // Cargar menú desde Supabase
+        async function loadMenu() {
+            try {
+                const { data: items, error } = await supabaseClient
+                    .from('menu_items')
+                    .select('*')
+                    .eq('activo', true)
+                    .order('nombre', { ascending: true });
+                
+                if (error) {
+                    console.error('Error cargando menú:', error);
+                    return;
+                }
+                
+                allMenuItems = items || [];
+                renderMenu();
+                
+            } catch (err) {
+                console.error('Error en loadMenu:', err);
+            }
+        }
+        
+        // Renderizar menú
+        function renderMenu() {
+            const platos = allMenuItems.filter(i => i.categoria === 'plato');
+            const bebidas = allMenuItems.filter(i => i.categoria === 'bebida');
+            const ofertas = allMenuItems.filter(i => i.categoria === 'oferta');
+            
+            // Renderizar platos
+            const platosContainer = document.getElementById('platos-section');
+            if (platos.length > 0) {
+                platosContainer.innerHTML = platos.map(item => renderMenuItem(item, 'platos')).join('');
+            } else {
+                platosContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay platos disponibles.</p>';
+            }
+            
+            // Renderizar bebidas
+            const bebidasContainer = document.getElementById('bebidas-section');
+            if (bebidas.length > 0) {
+                bebidasContainer.innerHTML = bebidas.map(item => renderMenuItem(item, 'bebidas')).join('');
+            } else {
+                bebidasContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay bebidas disponibles.</p>';
+            }
+            
+            // Renderizar ofertas
+            const ofertasContainer = document.getElementById('ofertas-section');
+            if (ofertas.length > 0) {
+                ofertasContainer.innerHTML = ofertas.map(item => renderMenuItem(item, 'ofertas')).join('');
+            } else {
+                ofertasContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay ofertas disponibles.</p>';
+            }
+            
+            // Reinicializar feather icons
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+            
+            // Aplicar filtro actual
+            applyFilter();
+        }
+        
+        // Renderizar un item del menú
+        function renderMenuItem(item, category) {
+            const priceFormatted = item.precio.toFixed(2).replace('.', ',');
+            const itemId = item.nombre.toLowerCase().replace(/\s+/g, '-');
+            
+            return `
+                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="${category}">
+                    ${item.imagen_url ? `<img src="${item.imagen_url}" alt="${item.nombre}" class="w-full h-48 object-cover">` : '<div class="w-full h-48 bg-gray-200 flex items-center justify-center text-4xl">🍽️</div>'}
+                    <div class="p-4">
+                        <h3 class="text-xl font-bold text-amber-800 mb-2">${item.nombre}</h3>
+                        <p class="text-gray-600 mb-3">${item.descripcion || ''}</p>
+                        <div class="flex justify-between items-center mb-3">
+                            <span class="text-amber-600 font-bold text-lg">${priceFormatted} PLN</span>
+                        </div>
+                        <button onclick="window.cart.addItem({
+                            id: '${itemId}',
+                            name: '${item.nombre.replace(/'/g, "\\'")}',
+                            price: '${priceFormatted} PLN',
+                            image: '${item.imagen_url || ''}'
+                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
+                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
+                            Agregar al Carrito
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+        
+        // Aplicar filtro
+        function applyFilter() {
+            const menuItems = document.querySelectorAll('.menu-item');
+            menuItems.forEach(item => {
+                if (currentFilter === 'all' || item.dataset.category === currentFilter) {
+                    item.style.display = 'block';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        }
+
         // Sistema de filtros
         document.addEventListener('DOMContentLoaded', function() {
             const filterBtns = document.querySelectorAll('.filter-btn');
-            const menuItems = document.querySelectorAll('.menu-item');
 
             filterBtns.forEach(btn => {
                 btn.addEventListener('click', () => {
-                    const category = btn.dataset.category;
+                    currentFilter = btn.dataset.category;
                     
                     // Actualizar botones
                     filterBtns.forEach(b => {
@@ -497,17 +236,13 @@
                     btn.classList.remove('bg-gray-200', 'text-gray-700');
                     btn.classList.add('bg-amber-600', 'text-white');
 
-                    // Filtrar items
-                    menuItems.forEach(item => {
-                        if (category === 'all' || item.dataset.category === category) {
-                            item.style.display = 'block';
-                        } else {
-                            item.style.display = 'none';
-                        }
-                    });
+                    applyFilter();
                 });
             });
 
+            // Cargar menú dinámico
+            loadMenu();
+            
             // Reemplazar feather icons
             feather.replace();
         });
