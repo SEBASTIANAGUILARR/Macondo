@@ -1,13 +1,12 @@
 // Supabase Client Configuration
-// IMPORTANTE: Reemplaza estos valores con tus credenciales de Supabase
-const SUPABASE_URL = 'TU_SUPABASE_URL'; // Ejemplo: https://xxxxx.supabase.co
-const SUPABASE_ANON_KEY = 'TU_SUPABASE_ANON_KEY';
+const SUPABASE_URL = 'https://imqcifvmklkccwagpkee.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltcWNpZnZta2xrY2N3YWdwa2VlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxMjMzNDIsImV4cCI6MjA4NDY5OTM0Mn0.fP4S0VfaC823LKUvh6HcybS_ze9uWWrBKgC4SsQBiRU';
 
 // Inicializar cliente de Supabase
 let supabaseClient = null;
 
 function initSupabase() {
-  if (typeof supabase !== 'undefined' && SUPABASE_URL !== 'TU_SUPABASE_URL') {
+  if (typeof supabase !== 'undefined') {
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     console.log('Supabase inicializado correctamente');
     return true;
