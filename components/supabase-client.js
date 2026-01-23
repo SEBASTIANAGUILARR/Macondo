@@ -6,12 +6,18 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 let supabaseClient = null;
 
 function initSupabase() {
-  if (typeof supabase !== 'undefined') {
-    supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('Supabase inicializado correctamente');
-    return true;
+  if (typeof supabase !== 'undefined' && supabase.createClient) {
+    try {
+      supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('✅ Supabase inicializado correctamente');
+      console.log('URL:', SUPABASE_URL);
+      return true;
+    } catch (err) {
+      console.error('❌ Error al inicializar Supabase:', err);
+      return false;
+    }
   }
-  console.warn('Supabase no configurado. Por favor, configura SUPABASE_URL y SUPABASE_ANON_KEY');
+  console.warn('⚠️ Supabase SDK no cargado. Verifica que el script esté incluido.');
   return false;
 }
 
@@ -182,7 +188,9 @@ function setupReservationForm() {
     }
 
     // Crear reserva
+    console.log('Enviando reserva a Supabase:', reservationData);
     const result = await ReservationSystem.createReservation(reservationData);
+    console.log('Resultado de Supabase:', result);
 
     if (result.success) {
       showNotification('¡Reserva realizada con éxito! Te contactaremos pronto.', 'success');
@@ -191,7 +199,8 @@ function setupReservationForm() {
       // Limpiar selección de mesa visualmente
       document.querySelectorAll('.table-selected').forEach(el => el.classList.remove('table-selected'));
     } else {
-      showNotification('Error al realizar la reserva. Por favor, intenta de nuevo.', 'error');
+      console.error('Error detallado:', result.error);
+      showNotification(`Error: ${result.error || 'Error desconocido'}`, 'error');
     }
 
     submitBtn.innerHTML = originalText;
