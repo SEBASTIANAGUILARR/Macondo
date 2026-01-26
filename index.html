@@ -150,136 +150,61 @@
         <section id="reservas" class="mb-16 bg-white p-8 rounded-lg shadow-lg">
             <h2 class="text-4xl font-bold text-amber-800 mb-8 text-center" data-i18n="reservations.title">Reserva tu Mesa</h2>
             
-            <div class="grid md:grid-cols-2 gap-8">
-                <!-- Formulario -->
-                <div>
-                    <form class="space-y-4">
+            <div class="max-w-2xl mx-auto">
+                <form id="reservation-form" class="space-y-4">
+                    <div class="grid md:grid-cols-2 gap-4">
                         <div>
                             <label for="nombre" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.fullName">Nombre Completo</label>
-                            <input type="text" id="nombre" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <input type="text" id="nombre" required class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                         </div>
                         
                         <div>
                             <label for="email" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.email">Correo Electrónico</label>
-                            <input type="email" id="email" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
-                        </div>
-                        
-                        <div>
-                            <label for="telefono" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.phone">Teléfono</label>
-                            <input type="tel" id="telefono" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label for="fecha" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.date">Fecha</label>
-                                <input type="date" id="fecha" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            </div>
-                            
-                            <div>
-                                <label for="personas" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.people">Personas</label>
-                                <select id="personas" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
-                                    <option value="1" data-i18n="reservations.person1">1 persona</option>
-                                    <option value="2" data-i18n="reservations.person2">2 personas</option>
-                                    <option value="3" data-i18n="reservations.person3">3 personas</option>
-                                    <option value="4" data-i18n="reservations.person4">4 personas</option>
-                                    <option value="5" data-i18n="reservations.person5">5 personas</option>
-                                    <option value="6" data-i18n="reservations.person6">6 personas</option>
-                                    <option value="7" data-i18n="reservations.person7plus">7+ personas</option>
-                                </select>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-2 gap-4">
-                            <div>
-                                <label for="hora-entrada" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.entryTime">Hora de Entrada</label>
-                                <input type="time" id="hora-entrada" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            </div>
-                            
-                            <div>
-                                <label for="hora-salida" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.exitTime">Hora de Salida</label>
-                                <input type="time" id="hora-salida" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
-                            </div>
-                        </div>
-                        
-                        <div>
-                            <label for="comentarios" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.comments">Comentarios Especiales</label>
-                            <textarea id="comentarios" rows="3" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"></textarea>
-                        </div>
-                        
-                        <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
-                            <span data-i18n="reservations.reserveButton">Reservar Mesa</span>
-                        </button>
-                    </form>
-                </div>
-                
-                <!-- Mapa de Mesas -->
-                <div>
-                    <h3 class="text-xl font-bold text-amber-800 mb-4" data-i18n="reservations.selectTable">Selecciona tu Mesa</h3>
-                    <div class="bg-amber-100 p-4 rounded-lg">
-                        <div class="grid grid-cols-4 gap-4 mb-4">
-                            <!-- Mesa 1 -->
-                            <div class="bg-white p-3 rounded-lg shadow text-center cursor-pointer hover:bg-amber-200 transition-colors">
-                                <i data-feather="circle" class="text-green-500 mx-auto"></i>
-                                <p class="mt-1 font-medium">Mesa 1</p>
-                            </div>
-                            
-                            <!-- Mesa 2 -->
-                            <div class="bg-white p-3 rounded-lg shadow text-center cursor-pointer hover:bg-amber-200 transition-colors">
-                                <i data-feather="circle" class="text-green-500 mx-auto"></i>
-                                <p class="mt-1 font-medium">Mesa 2</p>
-                            </div>
-                            
-                            <!-- Mesa 3 -->
-                            <div class="bg-white p-3 rounded-lg shadow text-center cursor-pointer hover:bg-amber-200 transition-colors">
-                                <i data-feather="circle" class="text-green-500 mx-auto"></i>
-                                <p class="mt-1 font-medium">Mesa 3</p>
-                            </div>
-                            
-                            <!-- Mesa 4 -->
-                            <div class="bg-white p-3 rounded-lg shadow text-center cursor-pointer hover:bg-amber-200 transition-colors">
-                                <i data-feather="circle" class="text-green-500 mx-auto"></i>
-                                <p class="mt-1 font-medium">Mesa 4</p>
-                            </div>
-                        </div>
-                        
-                        <div class="grid grid-cols-4 gap-4 mb-4">
-                            <!-- Mesa 5 -->
-                            <div class="bg-white p-3 rounded-lg shadow text-center cursor-pointer hover:bg-amber-200 transition-colors">
-                                <i data-feather="circle" class="text-green-500 mx-auto"></i>
-                                <p class="mt-1 font-medium">Mesa 5</p>
-                            </div>
-                            
-                            <!-- Mesa 6 -->
-                            <div class="bg-white p-3 rounded-lg shadow text-center cursor-pointer hover:bg-amber-200 transition-colors">
-                                <i data-feather="circle" class="text-green-500 mx-auto"></i>
-                                <p class="mt-1 font-medium">Mesa 6</p>
-                            </div>
-                            
-                            <!-- Mesa 7 -->
-                            <div class="bg-white p-3 rounded-lg shadow text-center cursor-pointer hover:bg-amber-200 transition-colors">
-                                <i data-feather="circle" class="text-green-500 mx-auto"></i>
-                                <p class="mt-1 font-medium">Mesa 7</p>
-                            </div>
-                            
-                            <!-- Mesa 8 -->
-                            <div class="bg-white p-3 rounded-lg shadow text-center cursor-pointer hover:bg-amber-200 transition-colors">
-                                <i data-feather="circle" class="text-green-500 mx-auto"></i>
-                                <p class="mt-1 font-medium">Mesa 8</p>
-                            </div>
-                        </div>
-                        
-                        <div class="flex justify-center space-x-4">
-                            <div class="flex items-center">
-                                <i data-feather="circle" class="text-green-500 mr-2"></i>
-                                <span data-i18n="reservations.available">Disponible</span>
-                            </div>
-                            <div class="flex items-center">
-                                <i data-feather="circle" class="text-red-500 mr-2"></i>
-                                <span data-i18n="reservations.occupied">Ocupado</span>
-                            </div>
+                            <input type="email" id="email" required class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                         </div>
                     </div>
-                </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="telefono" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.phone">Teléfono</label>
+                            <input type="tel" id="telefono" required class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        
+                        <div>
+                            <label for="personas" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.people">Personas</label>
+                            <select id="personas" required class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="1" data-i18n="reservations.person1">1 persona</option>
+                                <option value="2" data-i18n="reservations.person2">2 personas</option>
+                                <option value="3" data-i18n="reservations.person3">3 personas</option>
+                                <option value="4" data-i18n="reservations.person4">4 personas</option>
+                                <option value="5" data-i18n="reservations.person5">5 personas</option>
+                                <option value="6" data-i18n="reservations.person6">6 personas</option>
+                                <option value="7" data-i18n="reservations.person7plus">7+ personas</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="fecha" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.date">Fecha</label>
+                            <input type="date" id="fecha" required class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        
+                        <div>
+                            <label for="hora-entrada" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.entryTime">Hora</label>
+                            <input type="time" id="hora-entrada" required class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label for="comentarios" class="block text-amber-700 font-medium mb-1" data-i18n="reservations.comments">Comentarios Especiales</label>
+                        <textarea id="comentarios" rows="3" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Alergias, ocasión especial, preferencias..."></textarea>
+                    </div>
+                    
+                    <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
+                        <span data-i18n="reservations.reserveButton">Reservar Mesa</span>
+                    </button>
+                </form>
             </div>
         </section>
         
@@ -339,23 +264,6 @@
             loadMenuFromSupabase();
             loadEventsFromSupabase();
 
-            const mesas = document.querySelectorAll('[data-feather="circle"]');
-            
-            mesas.forEach(mesa => {
-                mesa.addEventListener('click', function() {
-                    if (this.classList.contains('text-green-500')) {
-                        // Deseleccionar todas las mesas primero
-                        mesas.forEach(m => {
-                            m.classList.remove('text-amber-600');
-                            m.classList.add('text-green-500');
-                        });
-                        
-                        // Seleccionar esta mesa
-                        this.classList.remove('text-green-500');
-                        this.classList.add('text-amber-600');
-                    }
-                });
-            });
         });
         
         // Función para cargar menú desde Supabase

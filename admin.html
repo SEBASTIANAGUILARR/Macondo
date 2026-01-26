@@ -210,6 +210,9 @@
                 <button id="tab-analytics" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('analytics')">
                     📊 Analíticas
                 </button>
+                <button id="tab-clientes" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('clientes')">
+                    👥 Clientes
+                </button>
             </div>
 
             <!-- Reservas Section -->
@@ -609,6 +612,224 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Clientes Section -->
+            <div id="section-clientes" class="hidden">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold text-amber-800">👥 Gestión de Clientes</h2>
+                    <div class="flex flex-wrap gap-2">
+                        <button onclick="showClientModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                            <span>+</span> Agregar Cliente
+                        </button>
+                        <button onclick="exportClientsExcel()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                            📊 Exportar Excel
+                        </button>
+                        <button onclick="exportClientsPDF()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                            📄 Exportar PDF
+                        </button>
+                        <button onclick="showEmailMarketingModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                            ✉️ Email Marketing
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Stats Clientes -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Total Clientes</p>
+                        <p id="stat-clientes-total" class="text-3xl font-bold text-amber-800">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Nuevos (Este Mes)</p>
+                        <p id="stat-clientes-nuevos" class="text-3xl font-bold text-green-600">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Con Reservas</p>
+                        <p id="stat-clientes-reservas" class="text-3xl font-bold text-blue-600">0</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-sm">Con Pedidos</p>
+                        <p id="stat-clientes-pedidos" class="text-3xl font-bold text-purple-600">0</p>
+                    </div>
+                </div>
+                
+                <!-- Búsqueda y filtros -->
+                <div class="bg-white p-4 rounded-lg shadow mb-6">
+                    <div class="flex flex-wrap gap-4">
+                        <input type="text" id="client-search" placeholder="Buscar por nombre, email o teléfono..." 
+                            class="flex-1 min-w-[200px] p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            oninput="filterClients()">
+                        <select id="client-filter" class="p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" onchange="filterClients()">
+                            <option value="all">Todos los clientes</option>
+                            <option value="with-reservations">Con reservas</option>
+                            <option value="with-orders">Con pedidos</option>
+                            <option value="subscribed">Suscritos a newsletter</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <!-- Lista de Clientes -->
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-amber-100">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-amber-800 font-semibold">Cliente</th>
+                                    <th class="px-4 py-3 text-left text-amber-800 font-semibold">Contacto</th>
+                                    <th class="px-4 py-3 text-left text-amber-800 font-semibold">Reservas</th>
+                                    <th class="px-4 py-3 text-left text-amber-800 font-semibold">Pedidos</th>
+                                    <th class="px-4 py-3 text-left text-amber-800 font-semibold">Newsletter</th>
+                                    <th class="px-4 py-3 text-left text-amber-800 font-semibold">Registro</th>
+                                    <th class="px-4 py-3 text-center text-amber-800 font-semibold">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="clients-list">
+                                <tr>
+                                    <td colspan="7" class="px-4 py-8 text-center text-gray-500">Cargando clientes...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para agregar/editar cliente -->
+    <div id="client-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 id="client-modal-title" class="text-xl font-bold text-amber-800">Nuevo Cliente</h3>
+                    <button onclick="closeClientModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                
+                <form id="client-form" class="space-y-4">
+                    <input type="hidden" id="client-id">
+                    
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Nombre *</label>
+                            <input type="text" id="client-nombre" required
+                                class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                placeholder="Nombre completo">
+                        </div>
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Teléfono</label>
+                            <input type="tel" id="client-telefono"
+                                class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                                placeholder="+48 123 456 789">
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Email *</label>
+                        <input type="email" id="client-email" required
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="cliente@email.com">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Dirección</label>
+                        <input type="text" id="client-direccion"
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="Dirección completa">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Notas</label>
+                        <textarea id="client-notas" rows="2"
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="Preferencias, alergias, notas especiales..."></textarea>
+                    </div>
+                    
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="client-newsletter" checked
+                            class="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500">
+                        <label for="client-newsletter" class="text-amber-700">Suscrito a newsletter y promociones</label>
+                    </div>
+                    
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeClientModal()" 
+                            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-lg transition-colors">
+                            Cancelar
+                        </button>
+                        <button type="submit" 
+                            class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-lg transition-colors">
+                            Guardar Cliente
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para Email Marketing -->
+    <div id="email-marketing-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-amber-800">✉️ Enviar Email Marketing</h3>
+                    <button onclick="closeEmailMarketingModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+                
+                <form id="email-marketing-form" class="space-y-4">
+                    <div class="bg-amber-50 p-4 rounded-lg mb-4">
+                        <p class="text-amber-800 font-medium">📧 Destinatarios: <span id="email-recipients-count">0</span> clientes suscritos</p>
+                        <p class="text-sm text-amber-600 mt-1">Solo se enviará a clientes que aceptaron recibir comunicaciones.</p>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Tipo de Campaña *</label>
+                        <select id="email-campaign-type" required
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            onchange="updateEmailTemplate()">
+                            <option value="">Selecciona un tipo...</option>
+                            <option value="nuevo-plato">🍽️ Nuevo Plato</option>
+                            <option value="nuevo-evento">🎉 Nuevo Evento</option>
+                            <option value="promocion">🏷️ Promoción Especial</option>
+                            <option value="newsletter">📰 Newsletter General</option>
+                            <option value="custom">✏️ Mensaje Personalizado</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Asunto del Email *</label>
+                        <input type="text" id="email-subject" required
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="Ej: ¡Nuevo plato en Macondo Bar Latino!">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Contenido del Email *</label>
+                        <textarea id="email-content" rows="8" required
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            placeholder="Escribe el contenido de tu email..."></textarea>
+                    </div>
+                    
+                    <div class="bg-gray-50 p-4 rounded-lg">
+                        <p class="text-sm text-gray-600 mb-2">📝 <strong>Vista previa:</strong></p>
+                        <div id="email-preview" class="bg-white p-4 rounded border text-sm">
+                            <p class="text-gray-400 italic">Selecciona un tipo de campaña para ver la vista previa...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3 pt-4">
+                        <button type="button" onclick="closeEmailMarketingModal()" 
+                            class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-lg transition-colors">
+                            Cancelar
+                        </button>
+                        <button type="button" onclick="sendTestEmail()"
+                            class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                            📧 Enviar Prueba
+                        </button>
+                        <button type="submit" 
+                            class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-lg transition-colors">
+                            🚀 Enviar a Todos
+                        </button>
+                    </div>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -891,10 +1112,14 @@
             document.getElementById('section-eventos').classList.add('hidden');
             document.getElementById('section-menu').classList.add('hidden');
             document.getElementById('section-analytics').classList.add('hidden');
+            document.getElementById('section-clientes').classList.add('hidden');
             document.getElementById('section-' + tab).classList.remove('hidden');
             
             if (tab === 'analytics') {
                 loadAnalytics();
+            }
+            if (tab === 'clientes') {
+                loadClients();
             }
         }
         
@@ -1978,6 +2203,438 @@
                 console.error('Error cargando conversiones:', err);
             }
         }
+        
+        // ==================== GESTIÓN DE CLIENTES ====================
+        
+        let clients = [];
+        let filteredClients = [];
+        
+        // Cargar clientes
+        async function loadClients() {
+            try {
+                // Cargar clientes de la tabla clients
+                const { data: clientsData, error } = await supabaseClient
+                    .from('clients')
+                    .select('*')
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('Error cargando clientes:', error);
+                    return;
+                }
+                
+                clients = clientsData || [];
+                filteredClients = [...clients];
+                
+                // Actualizar estadísticas
+                updateClientStats();
+                
+                // Renderizar lista
+                renderClients();
+                
+            } catch (err) {
+                console.error('Error en loadClients:', err);
+            }
+        }
+        
+        // Actualizar estadísticas de clientes
+        async function updateClientStats() {
+            const total = clients.length;
+            const thisMonth = new Date();
+            thisMonth.setDate(1);
+            thisMonth.setHours(0, 0, 0, 0);
+            
+            const nuevos = clients.filter(c => new Date(c.created_at) >= thisMonth).length;
+            const conReservas = clients.filter(c => c.total_reservas > 0).length;
+            const conPedidos = clients.filter(c => c.total_pedidos > 0).length;
+            
+            document.getElementById('stat-clientes-total').textContent = total;
+            document.getElementById('stat-clientes-nuevos').textContent = nuevos;
+            document.getElementById('stat-clientes-reservas').textContent = conReservas;
+            document.getElementById('stat-clientes-pedidos').textContent = conPedidos;
+        }
+        
+        // Renderizar lista de clientes
+        function renderClients() {
+            const container = document.getElementById('clients-list');
+            
+            if (filteredClients.length === 0) {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="7" class="px-4 py-8 text-center text-gray-500">No hay clientes registrados.</td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            container.innerHTML = filteredClients.map(client => `
+                <tr class="border-b hover:bg-amber-50">
+                    <td class="px-4 py-3">
+                        <div class="font-medium text-gray-900">${client.nombre}</div>
+                        ${client.notas ? `<div class="text-xs text-gray-500">${client.notas.substring(0, 50)}...</div>` : ''}
+                    </td>
+                    <td class="px-4 py-3">
+                        <div class="text-sm">${client.email}</div>
+                        <div class="text-xs text-gray-500">${client.telefono || '-'}</div>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <span class="bg-blue-100 text-blue-800 px-2 py-1 rounded-full text-sm">${client.total_reservas || 0}</span>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <span class="bg-purple-100 text-purple-800 px-2 py-1 rounded-full text-sm">${client.total_pedidos || 0}</span>
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        ${client.newsletter ? '<span class="text-green-600">✓ Suscrito</span>' : '<span class="text-gray-400">No</span>'}
+                    </td>
+                    <td class="px-4 py-3 text-sm text-gray-500">
+                        ${new Date(client.created_at).toLocaleDateString('es-ES')}
+                    </td>
+                    <td class="px-4 py-3 text-center">
+                        <button onclick="editClient('${client.id}')" class="text-amber-600 hover:text-amber-800 mr-2" title="Editar">✏️</button>
+                        <button onclick="deleteClient('${client.id}')" class="text-red-600 hover:text-red-800" title="Eliminar">🗑️</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+        
+        // Filtrar clientes
+        function filterClients() {
+            const search = document.getElementById('client-search').value.toLowerCase();
+            const filter = document.getElementById('client-filter').value;
+            
+            filteredClients = clients.filter(client => {
+                const matchesSearch = 
+                    client.nombre.toLowerCase().includes(search) ||
+                    client.email.toLowerCase().includes(search) ||
+                    (client.telefono && client.telefono.includes(search));
+                
+                let matchesFilter = true;
+                if (filter === 'with-reservations') matchesFilter = client.total_reservas > 0;
+                if (filter === 'with-orders') matchesFilter = client.total_pedidos > 0;
+                if (filter === 'subscribed') matchesFilter = client.newsletter === true;
+                
+                return matchesSearch && matchesFilter;
+            });
+            
+            renderClients();
+        }
+        
+        // Mostrar modal de cliente
+        function showClientModal(clientId = null) {
+            document.getElementById('client-modal').classList.remove('hidden');
+            document.getElementById('client-form').reset();
+            document.getElementById('client-id').value = '';
+            document.getElementById('client-modal-title').textContent = 'Nuevo Cliente';
+            document.getElementById('client-newsletter').checked = true;
+            
+            if (clientId) {
+                const client = clients.find(c => c.id === clientId);
+                if (client) {
+                    document.getElementById('client-modal-title').textContent = 'Editar Cliente';
+                    document.getElementById('client-id').value = client.id;
+                    document.getElementById('client-nombre').value = client.nombre;
+                    document.getElementById('client-email').value = client.email;
+                    document.getElementById('client-telefono').value = client.telefono || '';
+                    document.getElementById('client-direccion').value = client.direccion || '';
+                    document.getElementById('client-notas').value = client.notas || '';
+                    document.getElementById('client-newsletter').checked = client.newsletter;
+                }
+            }
+        }
+        
+        function editClient(clientId) {
+            showClientModal(clientId);
+        }
+        
+        function closeClientModal() {
+            document.getElementById('client-modal').classList.add('hidden');
+        }
+        
+        // Guardar cliente
+        document.getElementById('client-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const clientId = document.getElementById('client-id').value;
+            const clientData = {
+                nombre: document.getElementById('client-nombre').value,
+                email: document.getElementById('client-email').value,
+                telefono: document.getElementById('client-telefono').value || null,
+                direccion: document.getElementById('client-direccion').value || null,
+                notas: document.getElementById('client-notas').value || null,
+                newsletter: document.getElementById('client-newsletter').checked
+            };
+            
+            let error;
+            
+            if (clientId) {
+                const result = await supabaseClient
+                    .from('clients')
+                    .update(clientData)
+                    .eq('id', clientId);
+                error = result.error;
+            } else {
+                clientData.total_reservas = 0;
+                clientData.total_pedidos = 0;
+                const result = await supabaseClient
+                    .from('clients')
+                    .insert([clientData]);
+                error = result.error;
+            }
+            
+            if (error) {
+                alert('Error al guardar cliente: ' + error.message);
+                return;
+            }
+            
+            closeClientModal();
+            loadClients();
+        });
+        
+        // Eliminar cliente
+        async function deleteClient(clientId) {
+            if (!confirm('¿Estás seguro de eliminar este cliente?')) return;
+            
+            const { error } = await supabaseClient
+                .from('clients')
+                .delete()
+                .eq('id', clientId);
+            
+            if (error) {
+                alert('Error al eliminar cliente: ' + error.message);
+                return;
+            }
+            
+            loadClients();
+        }
+        
+        // Exportar a Excel
+        function exportClientsExcel() {
+            const data = filteredClients.map(c => ({
+                'Nombre': c.nombre,
+                'Email': c.email,
+                'Teléfono': c.telefono || '',
+                'Dirección': c.direccion || '',
+                'Reservas': c.total_reservas || 0,
+                'Pedidos': c.total_pedidos || 0,
+                'Newsletter': c.newsletter ? 'Sí' : 'No',
+                'Fecha Registro': new Date(c.created_at).toLocaleDateString('es-ES'),
+                'Notas': c.notas || ''
+            }));
+            
+            // Crear CSV
+            const headers = Object.keys(data[0] || {});
+            const csv = [
+                headers.join(','),
+                ...data.map(row => headers.map(h => `"${(row[h] || '').toString().replace(/"/g, '""')}"`).join(','))
+            ].join('\n');
+            
+            // Descargar
+            const blob = new Blob(['\ufeff' + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = `clientes_macondo_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+        }
+        
+        // Exportar a PDF
+        function exportClientsPDF() {
+            const printWindow = window.open('', '_blank');
+            const logoUrl = 'favicon.png';
+            
+            const html = `
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <title>Lista de Clientes - Macondo Bar Latino</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; }
+                        .header { text-align: center; margin-bottom: 30px; border-bottom: 2px solid #d97706; padding-bottom: 20px; }
+                        .header img { width: 80px; height: 80px; }
+                        .header h1 { color: #92400e; margin: 10px 0 5px; }
+                        .header p { color: #666; margin: 0; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+                        th { background: #fef3c7; color: #92400e; padding: 10px; text-align: left; border: 1px solid #ddd; }
+                        td { padding: 8px 10px; border: 1px solid #ddd; }
+                        tr:nth-child(even) { background: #fafafa; }
+                        .footer { margin-top: 30px; text-align: center; color: #666; font-size: 12px; }
+                        @media print { body { padding: 0; } }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <img src="${logoUrl}" alt="Macondo Logo">
+                        <h1>Macondo Bar Latino</h1>
+                        <p>Lista de Clientes - Generado el ${new Date().toLocaleDateString('es-ES')}</p>
+                    </div>
+                    
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                                <th>Teléfono</th>
+                                <th>Reservas</th>
+                                <th>Pedidos</th>
+                                <th>Newsletter</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${filteredClients.map(c => `
+                                <tr>
+                                    <td>${c.nombre}</td>
+                                    <td>${c.email}</td>
+                                    <td>${c.telefono || '-'}</td>
+                                    <td>${c.total_reservas || 0}</td>
+                                    <td>${c.total_pedidos || 0}</td>
+                                    <td>${c.newsletter ? 'Sí' : 'No'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                    
+                    <div class="footer">
+                        <p>Total de clientes: ${filteredClients.length}</p>
+                        <p>Macondo Bar Latino - ul. Przykładowa 123, Warszawa</p>
+                    </div>
+                    
+                    <script>window.onload = function() { window.print(); }</script>
+                </body>
+                </html>
+            `;
+            
+            printWindow.document.write(html);
+            printWindow.document.close();
+        }
+        
+        // ==================== EMAIL MARKETING ====================
+        
+        function showEmailMarketingModal() {
+            document.getElementById('email-marketing-modal').classList.remove('hidden');
+            document.getElementById('email-marketing-form').reset();
+            
+            // Contar destinatarios suscritos
+            const subscribedCount = clients.filter(c => c.newsletter).length;
+            document.getElementById('email-recipients-count').textContent = subscribedCount;
+        }
+        
+        function closeEmailMarketingModal() {
+            document.getElementById('email-marketing-modal').classList.add('hidden');
+        }
+        
+        // Actualizar plantilla según tipo de campaña
+        function updateEmailTemplate() {
+            const type = document.getElementById('email-campaign-type').value;
+            const subjectInput = document.getElementById('email-subject');
+            const contentInput = document.getElementById('email-content');
+            const preview = document.getElementById('email-preview');
+            
+            const templates = {
+                'nuevo-plato': {
+                    subject: '🍽️ ¡Nuevo plato en Macondo Bar Latino!',
+                    content: 'Hola,\n\nTenemos el placer de presentarte nuestro nuevo plato:\n\n[NOMBRE DEL PLATO]\n\n[DESCRIPCIÓN]\n\nVen a probarlo y disfruta de los auténticos sabores colombianos.\n\n¡Te esperamos!\n\nMacondo Bar Latino'
+                },
+                'nuevo-evento': {
+                    subject: '🎉 ¡Nuevo evento en Macondo Bar Latino!',
+                    content: 'Hola,\n\nTe invitamos a nuestro próximo evento:\n\n[NOMBRE DEL EVENTO]\nFecha: [FECHA]\nHora: [HORA]\n\n[DESCRIPCIÓN]\n\nReserva tu mesa y no te lo pierdas.\n\n¡Te esperamos!\n\nMacondo Bar Latino'
+                },
+                'promocion': {
+                    subject: '🏷️ ¡Promoción especial en Macondo Bar Latino!',
+                    content: 'Hola,\n\nTenemos una promoción especial para ti:\n\n[NOMBRE DE LA PROMOCIÓN]\n\n[DESCRIPCIÓN Y CONDICIONES]\n\nVálido hasta: [FECHA]\n\n¡No te lo pierdas!\n\nMacondo Bar Latino'
+                },
+                'newsletter': {
+                    subject: '📰 Novedades de Macondo Bar Latino',
+                    content: 'Hola,\n\nTe traemos las últimas novedades de Macondo Bar Latino:\n\n[CONTENIDO]\n\nGracias por ser parte de nuestra familia.\n\n¡Te esperamos pronto!\n\nMacondo Bar Latino'
+                },
+                'custom': {
+                    subject: '',
+                    content: ''
+                }
+            };
+            
+            if (templates[type]) {
+                subjectInput.value = templates[type].subject;
+                contentInput.value = templates[type].content;
+                updateEmailPreview();
+            }
+        }
+        
+        // Actualizar vista previa
+        function updateEmailPreview() {
+            const subject = document.getElementById('email-subject').value;
+            const content = document.getElementById('email-content').value;
+            const preview = document.getElementById('email-preview');
+            
+            if (!subject && !content) {
+                preview.innerHTML = '<p class="text-gray-400 italic">Selecciona un tipo de campaña para ver la vista previa...</p>';
+                return;
+            }
+            
+            preview.innerHTML = `
+                <div style="border-bottom: 1px solid #eee; padding-bottom: 10px; margin-bottom: 10px;">
+                    <strong>Asunto:</strong> ${subject}
+                </div>
+                <div style="white-space: pre-wrap;">${content}</div>
+            `;
+        }
+        
+        // Escuchar cambios en el contenido
+        document.getElementById('email-subject').addEventListener('input', updateEmailPreview);
+        document.getElementById('email-content').addEventListener('input', updateEmailPreview);
+        
+        // Enviar email de prueba
+        async function sendTestEmail() {
+            const subject = document.getElementById('email-subject').value;
+            const content = document.getElementById('email-content').value;
+            
+            if (!subject || !content) {
+                alert('Por favor completa el asunto y contenido del email.');
+                return;
+            }
+            
+            const testEmail = prompt('Ingresa tu email para recibir la prueba:');
+            if (!testEmail) return;
+            
+            // Aquí se integraría con un servicio de email como SendGrid, Mailgun, etc.
+            alert(`Email de prueba enviado a: ${testEmail}\n\nNota: Para enviar emails reales, necesitas configurar un servicio de email como SendGrid o Mailgun.`);
+        }
+        
+        // Enviar campaña de email
+        document.getElementById('email-marketing-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const subject = document.getElementById('email-subject').value;
+            const content = document.getElementById('email-content').value;
+            const recipients = clients.filter(c => c.newsletter);
+            
+            if (recipients.length === 0) {
+                alert('No hay clientes suscritos para enviar el email.');
+                return;
+            }
+            
+            if (!confirm(`¿Estás seguro de enviar este email a ${recipients.length} clientes?`)) {
+                return;
+            }
+            
+            // Guardar campaña en la base de datos
+            const { data, error } = await supabaseClient
+                .from('email_campaigns')
+                .insert([{
+                    subject,
+                    content,
+                    recipients_count: recipients.length,
+                    campaign_type: document.getElementById('email-campaign-type').value,
+                    status: 'pending'
+                }]);
+            
+            if (error) {
+                console.error('Error guardando campaña:', error);
+            }
+            
+            // Aquí se integraría con un servicio de email
+            alert(`Campaña de email creada para ${recipients.length} destinatarios.\n\nNota: Para enviar emails reales, necesitas configurar un servicio de email como SendGrid, Resend o Mailgun y crear una función serverless o Edge Function en Supabase.`);
+            
+            closeEmailMarketingModal();
+        });
     </script>
 </body>
 </html>
