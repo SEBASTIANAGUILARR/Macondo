@@ -122,6 +122,27 @@
         .menu-filter-btn:not(.active):hover {
             background: #e5e7eb;
         }
+        
+        .analytics-period-btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+        
+        .analytics-period-btn.active {
+            background: #d97706;
+            color: white;
+        }
+        
+        .analytics-period-btn:not(.active) {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .analytics-period-btn:not(.active):hover {
+            background: #e5e7eb;
+        }
     </style>
 </head>
 <body class="bg-amber-50">
@@ -185,6 +206,9 @@
                 </button>
                 <button id="tab-menu" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('menu')">
                     🍽️ Menú
+                </button>
+                <button id="tab-analytics" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('analytics')">
+                    📊 Analíticas
                 </button>
             </div>
 
@@ -335,6 +359,254 @@
                 <!-- Menu Items List -->
                 <div id="menu-items-list">
                     <p class="text-gray-500 text-center py-8">Cargando menú...</p>
+                </div>
+            </div>
+
+            <!-- Analytics Section -->
+            <div id="section-analytics" class="hidden">
+                <h2 class="text-2xl font-bold text-amber-800 mb-6">📊 Panel de Analíticas</h2>
+                
+                <!-- Selector de período -->
+                <div class="flex flex-wrap gap-2 mb-6">
+                    <button class="analytics-period-btn active" data-period="today">Hoy</button>
+                    <button class="analytics-period-btn" data-period="week">Esta Semana</button>
+                    <button class="analytics-period-btn" data-period="month">Este Mes</button>
+                    <button class="analytics-period-btn" data-period="year">Este Año</button>
+                </div>
+                
+                <!-- Stats principales -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Visitas Totales</p>
+                                <p id="stat-visits" class="text-3xl font-bold text-amber-800">0</p>
+                            </div>
+                            <span class="text-4xl">👥</span>
+                        </div>
+                        <p id="stat-visits-change" class="text-sm text-green-600 mt-2">+0% vs período anterior</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Visitantes Únicos</p>
+                                <p id="stat-unique-visitors" class="text-3xl font-bold text-blue-600">0</p>
+                            </div>
+                            <span class="text-4xl">🧑</span>
+                        </div>
+                        <p id="stat-unique-change" class="text-sm text-green-600 mt-2">+0% vs período anterior</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Páginas Vistas</p>
+                                <p id="stat-pageviews" class="text-3xl font-bold text-purple-600">0</p>
+                            </div>
+                            <span class="text-4xl">📄</span>
+                        </div>
+                        <p id="stat-pageviews-change" class="text-sm text-green-600 mt-2">+0% vs período anterior</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Tiempo Promedio</p>
+                                <p id="stat-avg-time" class="text-3xl font-bold text-green-600">0:00</p>
+                            </div>
+                            <span class="text-4xl">⏱️</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2">minutos en el sitio</p>
+                    </div>
+                </div>
+                
+                <!-- Segunda fila de stats -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Clicks Totales</p>
+                                <p id="stat-clicks" class="text-3xl font-bold text-orange-600">0</p>
+                            </div>
+                            <span class="text-4xl">👆</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Tasa de Rebote</p>
+                                <p id="stat-bounce-rate" class="text-3xl font-bold text-red-600">0%</p>
+                            </div>
+                            <span class="text-4xl">↩️</span>
+                        </div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Conversiones</p>
+                                <p id="stat-conversions" class="text-3xl font-bold text-emerald-600">0</p>
+                            </div>
+                            <span class="text-4xl">🎯</span>
+                        </div>
+                        <p class="text-sm text-gray-500 mt-2">pedidos + reservas</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <p class="text-gray-500 text-sm">Tasa Conversión</p>
+                                <p id="stat-conversion-rate" class="text-3xl font-bold text-teal-600">0%</p>
+                            </div>
+                            <span class="text-4xl">📈</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Gráficos y tablas -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Visitas por día -->
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-bold text-amber-800 mb-4">📅 Visitas por Día de la Semana</h3>
+                        <div id="chart-days" class="space-y-2">
+                            <div class="flex items-center gap-2">
+                                <span class="w-20 text-sm">Lunes</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-6">
+                                    <div id="bar-lunes" class="bg-amber-500 h-6 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <span id="count-lunes" class="w-12 text-sm text-right">0</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-20 text-sm">Martes</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-6">
+                                    <div id="bar-martes" class="bg-amber-500 h-6 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <span id="count-martes" class="w-12 text-sm text-right">0</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-20 text-sm">Miércoles</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-6">
+                                    <div id="bar-miercoles" class="bg-amber-500 h-6 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <span id="count-miercoles" class="w-12 text-sm text-right">0</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-20 text-sm">Jueves</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-6">
+                                    <div id="bar-jueves" class="bg-amber-500 h-6 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <span id="count-jueves" class="w-12 text-sm text-right">0</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-20 text-sm">Viernes</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-6">
+                                    <div id="bar-viernes" class="bg-amber-500 h-6 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <span id="count-viernes" class="w-12 text-sm text-right">0</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-20 text-sm">Sábado</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-6">
+                                    <div id="bar-sabado" class="bg-amber-600 h-6 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <span id="count-sabado" class="w-12 text-sm text-right">0</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="w-20 text-sm">Domingo</span>
+                                <div class="flex-1 bg-gray-200 rounded-full h-6">
+                                    <div id="bar-domingo" class="bg-amber-600 h-6 rounded-full" style="width: 0%"></div>
+                                </div>
+                                <span id="count-domingo" class="w-12 text-sm text-right">0</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Páginas más visitadas -->
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-bold text-amber-800 mb-4">🔥 Páginas Más Visitadas</h3>
+                        <div id="top-pages" class="space-y-3">
+                            <p class="text-gray-500 text-center py-4">Cargando...</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Más estadísticas -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+                    <!-- Dispositivos -->
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-bold text-amber-800 mb-4">📱 Dispositivos</h3>
+                        <div id="devices-stats" class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">📱</span>
+                                    <span>Móvil</span>
+                                </div>
+                                <div class="text-right">
+                                    <span id="device-mobile" class="font-bold text-amber-800">0%</span>
+                                    <span id="device-mobile-count" class="text-sm text-gray-500 ml-2">(0)</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">💻</span>
+                                    <span>Desktop</span>
+                                </div>
+                                <div class="text-right">
+                                    <span id="device-desktop" class="font-bold text-amber-800">0%</span>
+                                    <span id="device-desktop-count" class="text-sm text-gray-500 ml-2">(0)</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">📟</span>
+                                    <span>Tablet</span>
+                                </div>
+                                <div class="text-right">
+                                    <span id="device-tablet" class="font-bold text-amber-800">0%</span>
+                                    <span id="device-tablet-count" class="text-sm text-gray-500 ml-2">(0)</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Fuentes de tráfico -->
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-bold text-amber-800 mb-4">🌐 Fuentes de Tráfico</h3>
+                        <div id="traffic-sources" class="space-y-3">
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">🔍</span>
+                                    <span>Búsqueda Orgánica</span>
+                                </div>
+                                <span id="source-organic" class="font-bold text-amber-800">0%</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">🔗</span>
+                                    <span>Directo</span>
+                                </div>
+                                <span id="source-direct" class="font-bold text-amber-800">0%</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">📱</span>
+                                    <span>Redes Sociales</span>
+                                </div>
+                                <span id="source-social" class="font-bold text-amber-800">0%</span>
+                            </div>
+                            <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-2xl">📧</span>
+                                    <span>Referidos</span>
+                                </div>
+                                <span id="source-referral" class="font-bold text-amber-800">0%</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Actividad reciente -->
+                <div class="bg-white p-6 rounded-lg shadow">
+                    <h3 class="text-lg font-bold text-amber-800 mb-4">⚡ Actividad Reciente</h3>
+                    <div id="recent-activity" class="space-y-2 max-h-96 overflow-y-auto">
+                        <p class="text-gray-500 text-center py-4">Cargando actividad...</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -618,7 +890,12 @@
             document.getElementById('section-pedidos').classList.add('hidden');
             document.getElementById('section-eventos').classList.add('hidden');
             document.getElementById('section-menu').classList.add('hidden');
+            document.getElementById('section-analytics').classList.add('hidden');
             document.getElementById('section-' + tab).classList.remove('hidden');
+            
+            if (tab === 'analytics') {
+                loadAnalytics();
+            }
         }
         
         // Logout
@@ -1413,6 +1690,294 @@
             document.getElementById('event-image-preview').classList.add('hidden');
             originalShowEventModal(eventId);
         };
+        
+        // ==================== ANALÍTICAS ====================
+        
+        let currentAnalyticsPeriod = 'today';
+        let analyticsData = [];
+        
+        // Configurar filtros de período
+        document.querySelectorAll('.analytics-period-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.analytics-period-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentAnalyticsPeriod = btn.dataset.period;
+                loadAnalytics();
+            });
+        });
+        
+        // Cargar analíticas
+        async function loadAnalytics() {
+            const dateRange = getDateRange(currentAnalyticsPeriod);
+            
+            try {
+                // Cargar datos de analytics
+                const { data: analytics, error } = await supabaseClient
+                    .from('analytics')
+                    .select('*')
+                    .gte('created_at', dateRange.start)
+                    .lte('created_at', dateRange.end)
+                    .order('created_at', { ascending: false });
+                
+                if (error) {
+                    console.error('Error cargando analytics:', error);
+                    return;
+                }
+                
+                analyticsData = analytics || [];
+                
+                // Calcular estadísticas
+                updateAnalyticsStats(analyticsData);
+                updateDayChart(analyticsData);
+                updateTopPages(analyticsData);
+                updateDeviceStats(analyticsData);
+                updateTrafficSources(analyticsData);
+                updateRecentActivity(analyticsData);
+                
+                // Cargar conversiones (pedidos + reservas)
+                await loadConversions(dateRange);
+                
+            } catch (err) {
+                console.error('Error en loadAnalytics:', err);
+            }
+        }
+        
+        // Obtener rango de fechas según período
+        function getDateRange(period) {
+            const now = new Date();
+            let start, end;
+            
+            switch(period) {
+                case 'today':
+                    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+                    break;
+                case 'week':
+                    const dayOfWeek = now.getDay();
+                    const diffToMonday = dayOfWeek === 0 ? 6 : dayOfWeek - 1;
+                    start = new Date(now.getFullYear(), now.getMonth(), now.getDate() - diffToMonday);
+                    end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+                    break;
+                case 'month':
+                    start = new Date(now.getFullYear(), now.getMonth(), 1);
+                    end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+                    break;
+                case 'year':
+                    start = new Date(now.getFullYear(), 0, 1);
+                    end = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59);
+                    break;
+                default:
+                    start = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+                    end = now;
+            }
+            
+            return {
+                start: start.toISOString(),
+                end: end.toISOString()
+            };
+        }
+        
+        // Actualizar estadísticas principales
+        function updateAnalyticsStats(data) {
+            const totalVisits = data.length;
+            const uniqueVisitors = new Set(data.map(d => d.visitor_id || d.session_id)).size;
+            const pageviews = data.filter(d => d.event_type === 'pageview').length;
+            const clicks = data.filter(d => d.event_type === 'click').length;
+            
+            // Calcular tiempo promedio (en minutos)
+            const sessions = {};
+            data.forEach(d => {
+                const sid = d.session_id;
+                if (!sessions[sid]) sessions[sid] = { start: d.created_at, end: d.created_at };
+                if (d.created_at < sessions[sid].start) sessions[sid].start = d.created_at;
+                if (d.created_at > sessions[sid].end) sessions[sid].end = d.created_at;
+            });
+            
+            let totalTime = 0;
+            Object.values(sessions).forEach(s => {
+                totalTime += (new Date(s.end) - new Date(s.start)) / 1000 / 60;
+            });
+            const avgTime = Object.keys(sessions).length > 0 ? totalTime / Object.keys(sessions).length : 0;
+            
+            // Tasa de rebote (sesiones con solo 1 evento)
+            const sessionCounts = {};
+            data.forEach(d => {
+                sessionCounts[d.session_id] = (sessionCounts[d.session_id] || 0) + 1;
+            });
+            const bounceSessions = Object.values(sessionCounts).filter(c => c === 1).length;
+            const bounceRate = Object.keys(sessionCounts).length > 0 
+                ? (bounceSessions / Object.keys(sessionCounts).length * 100).toFixed(1) 
+                : 0;
+            
+            // Actualizar UI
+            document.getElementById('stat-visits').textContent = totalVisits.toLocaleString();
+            document.getElementById('stat-unique-visitors').textContent = uniqueVisitors.toLocaleString();
+            document.getElementById('stat-pageviews').textContent = pageviews.toLocaleString();
+            document.getElementById('stat-clicks').textContent = clicks.toLocaleString();
+            document.getElementById('stat-avg-time').textContent = avgTime.toFixed(1) + ' min';
+            document.getElementById('stat-bounce-rate').textContent = bounceRate + '%';
+        }
+        
+        // Actualizar gráfico de días
+        function updateDayChart(data) {
+            const days = ['domingo', 'lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado'];
+            const dayCounts = { lunes: 0, martes: 0, miercoles: 0, jueves: 0, viernes: 0, sabado: 0, domingo: 0 };
+            
+            data.forEach(d => {
+                const dayIndex = new Date(d.created_at).getDay();
+                const dayName = days[dayIndex];
+                dayCounts[dayName]++;
+            });
+            
+            const maxCount = Math.max(...Object.values(dayCounts), 1);
+            
+            Object.keys(dayCounts).forEach(day => {
+                const bar = document.getElementById(`bar-${day}`);
+                const count = document.getElementById(`count-${day}`);
+                if (bar && count) {
+                    const percentage = (dayCounts[day] / maxCount * 100).toFixed(0);
+                    bar.style.width = percentage + '%';
+                    count.textContent = dayCounts[day];
+                }
+            });
+        }
+        
+        // Actualizar páginas más visitadas
+        function updateTopPages(data) {
+            const pageCounts = {};
+            data.filter(d => d.event_type === 'pageview').forEach(d => {
+                const page = d.page_url || d.page || 'Desconocida';
+                pageCounts[page] = (pageCounts[page] || 0) + 1;
+            });
+            
+            const sorted = Object.entries(pageCounts)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 5);
+            
+            const container = document.getElementById('top-pages');
+            
+            if (sorted.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No hay datos de páginas</p>';
+                return;
+            }
+            
+            container.innerHTML = sorted.map(([page, count], index) => `
+                <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 bg-amber-500 text-white rounded-full flex items-center justify-center text-sm font-bold">${index + 1}</span>
+                        <span class="truncate max-w-[200px]">${page}</span>
+                    </div>
+                    <span class="font-bold text-amber-800">${count}</span>
+                </div>
+            `).join('');
+        }
+        
+        // Actualizar estadísticas de dispositivos
+        function updateDeviceStats(data) {
+            const devices = { mobile: 0, desktop: 0, tablet: 0 };
+            
+            data.forEach(d => {
+                const device = (d.device_type || 'desktop').toLowerCase();
+                if (device.includes('mobile') || device.includes('phone')) devices.mobile++;
+                else if (device.includes('tablet') || device.includes('ipad')) devices.tablet++;
+                else devices.desktop++;
+            });
+            
+            const total = data.length || 1;
+            
+            document.getElementById('device-mobile').textContent = (devices.mobile / total * 100).toFixed(1) + '%';
+            document.getElementById('device-mobile-count').textContent = `(${devices.mobile})`;
+            document.getElementById('device-desktop').textContent = (devices.desktop / total * 100).toFixed(1) + '%';
+            document.getElementById('device-desktop-count').textContent = `(${devices.desktop})`;
+            document.getElementById('device-tablet').textContent = (devices.tablet / total * 100).toFixed(1) + '%';
+            document.getElementById('device-tablet-count').textContent = `(${devices.tablet})`;
+        }
+        
+        // Actualizar fuentes de tráfico
+        function updateTrafficSources(data) {
+            const sources = { organic: 0, direct: 0, social: 0, referral: 0 };
+            
+            data.forEach(d => {
+                const source = (d.traffic_source || d.referrer || 'direct').toLowerCase();
+                if (source.includes('google') || source.includes('bing') || source.includes('search')) sources.organic++;
+                else if (source.includes('facebook') || source.includes('instagram') || source.includes('twitter') || source.includes('tiktok')) sources.social++;
+                else if (source === 'direct' || source === '' || source === 'null') sources.direct++;
+                else sources.referral++;
+            });
+            
+            const total = data.length || 1;
+            
+            document.getElementById('source-organic').textContent = (sources.organic / total * 100).toFixed(1) + '%';
+            document.getElementById('source-direct').textContent = (sources.direct / total * 100).toFixed(1) + '%';
+            document.getElementById('source-social').textContent = (sources.social / total * 100).toFixed(1) + '%';
+            document.getElementById('source-referral').textContent = (sources.referral / total * 100).toFixed(1) + '%';
+        }
+        
+        // Actualizar actividad reciente
+        function updateRecentActivity(data) {
+            const container = document.getElementById('recent-activity');
+            const recent = data.slice(0, 20);
+            
+            if (recent.length === 0) {
+                container.innerHTML = '<p class="text-gray-500 text-center py-4">No hay actividad reciente</p>';
+                return;
+            }
+            
+            container.innerHTML = recent.map(d => {
+                const time = new Date(d.created_at).toLocaleString('es-ES', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    day: '2-digit',
+                    month: '2-digit'
+                });
+                const icon = d.event_type === 'click' ? '👆' : d.event_type === 'pageview' ? '📄' : '⚡';
+                const page = d.page_url || d.page || 'Página desconocida';
+                
+                return `
+                    <div class="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg">
+                        <span class="text-xl">${icon}</span>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium truncate">${d.event_type}: ${page}</p>
+                            <p class="text-xs text-gray-500">${d.device_type || 'Desktop'} • ${d.traffic_source || 'Directo'}</p>
+                        </div>
+                        <span class="text-xs text-gray-400 whitespace-nowrap">${time}</span>
+                    </div>
+                `;
+            }).join('');
+        }
+        
+        // Cargar conversiones
+        async function loadConversions(dateRange) {
+            try {
+                // Contar pedidos
+                const { data: orders, error: ordersError } = await supabaseClient
+                    .from('orders')
+                    .select('id')
+                    .gte('created_at', dateRange.start)
+                    .lte('created_at', dateRange.end);
+                
+                // Contar reservas
+                const { data: reservas, error: reservasError } = await supabaseClient
+                    .from('reservations')
+                    .select('id')
+                    .gte('created_at', dateRange.start)
+                    .lte('created_at', dateRange.end);
+                
+                const totalOrders = orders?.length || 0;
+                const totalReservas = reservas?.length || 0;
+                const conversions = totalOrders + totalReservas;
+                
+                document.getElementById('stat-conversions').textContent = conversions;
+                
+                // Tasa de conversión
+                const uniqueVisitors = parseInt(document.getElementById('stat-unique-visitors').textContent.replace(/,/g, '')) || 1;
+                const conversionRate = (conversions / uniqueVisitors * 100).toFixed(2);
+                document.getElementById('stat-conversion-rate').textContent = conversionRate + '%';
+                
+            } catch (err) {
+                console.error('Error cargando conversiones:', err);
+            }
+        }
     </script>
 </body>
 </html>
