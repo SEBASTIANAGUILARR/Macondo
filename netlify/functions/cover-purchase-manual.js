@@ -69,6 +69,8 @@ exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return json(200, { ok: true });
   if (event.httpMethod !== 'POST') return json(405, { error: 'Method not allowed' });
 
+  return json(410, { error: 'Compra manual deshabilitada. Usa pago online.' });
+
   try {
     const body = JSON.parse(event.body || '{}');
     const buyer_name = String(body.buyer_name || '').trim();
