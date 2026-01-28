@@ -109,8 +109,13 @@ async function supabaseRestInsert(table, rows) {
 }
 
 async function sendZeptoMail({ to, subject, htmlbody }) {
-  const token = process.env.ZEPTOMAIL_TOKEN;
-  if (!token) throw new Error('Missing ZEPTOMAIL_TOKEN env var');
+  const rawToken = process.env.ZEPTOMAIL_TOKEN;
+  if (!rawToken) throw new Error('Missing ZEPTOMAIL_TOKEN env var');
+
+  const token = String(rawToken)
+    .trim()
+    .replace(/^zoho-enczapikey\s+/i, '')
+    .trim();
 
   const fromAddress = process.env.ZEPTOMAIL_FROM_ADDRESS || 'events@macondo.pl';
   const fromName = process.env.ZEPTOMAIL_FROM_NAME || 'Macondo Bar Latino';
@@ -137,12 +142,30 @@ async function sendZeptoMail({ to, subject, htmlbody }) {
     body: JSON.stringify(payload),
   });
 
-  const data = await resp.json().catch(() => ({}));
-  if (!resp.ok) {
-    throw new Error(`ZeptoMail error: ${resp.status} ${JSON.stringify(data)}`);
+  const contentType = resp.headers.get('content-type') || '';
+  let parsed = null;
+  let text = null;
+
+  if (contentType.includes('application/json')) {
+    parsed = await resp.json().catch(() => null);
+  } else {
+    text = await resp.text().catch(() => null);
   }
 
-  return data;
+  if (!resp.ok) {
+    const details = parsed ? JSON.stringify(parsed) : (text || '');
+    console.error('ZeptoMail request failed', {
+      status: resp.status,
+      details,
+      fromAddress,
+      toCount: to.length,
+      subject,
+      host,
+    });
+    throw new Error(`ZeptoMail error: ${resp.status} ${details}`);
+  }
+
+  return parsed || { ok: true };
 }
 
 exports.handler = async (event) => {
