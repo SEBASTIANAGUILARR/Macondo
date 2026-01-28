@@ -427,7 +427,7 @@ class CustomNavbar extends HTMLElement {
           <a href="menu.html" data-i18n="navbar.menu">Menú</a>
           <a href="#reservas" data-i18n="navbar.reservations">Reservas</a>
           <a href="events.html" data-i18n="navbar.events">Eventos</a>
-          <a href="#contacto" data-i18n="navbar.contact">Contacto</a>
+          <a href="index.html#contacto" data-i18n="navbar.contact">Contacto</a>
           
           <!-- Selector de idioma -->
           <div class="language-selector-container">
