@@ -232,9 +232,9 @@
             </div>
 
             <!-- Reservas Section -->
-            <div id="section-reservas">
+            <div id="section-reservas" class="flex flex-col">
                 <!-- Stats Reservas -->
-                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-8">
+                <div class="order-2 sm:order-1 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-8">
                     <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
                         <p class="text-gray-500 text-xs sm:text-sm">Total Reservas</p>
                         <p id="stat-total" class="text-2xl sm:text-3xl font-bold text-amber-800">0</p>
@@ -254,7 +254,7 @@
                 </div>
                 
                 <!-- Filters Reservas -->
-                <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mb-4 sm:mb-6">
+                <div class="order-3 sm:order-2 grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mb-4 sm:mb-6">
                     <button class="filter-btn active text-sm py-2" data-filter="all">Todas</button>
                     <button class="filter-btn text-sm py-2" data-filter="pendiente">Pendientes</button>
                     <button class="filter-btn text-sm py-2" data-filter="confirmada">Confirmadas</button>
@@ -263,8 +263,8 @@
                 </div>
                 
                 <!-- Reservations List -->
-                <div id="reservations-list">
-                    <p class="text-gray-500 text-center py-8">Cargando reservas...</p>
+                <div id="reservations-list" class="order-1 sm:order-3">
+                    <p class="text-gray-500 text-center py-4 sm:py-8">Cargando reservas...</p>
                 </div>
             </div>
 
