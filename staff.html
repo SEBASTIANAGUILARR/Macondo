@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Staff - Validación QR</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body class="bg-amber-50 min-h-screen">
+  <main class="container mx-auto px-4 py-8">
+    <div class="max-w-4xl mx-auto">
+      <h1 class="text-3xl font-bold text-amber-800 mb-2">Validación de Covers (Staff)</h1>
+      <p class="text-gray-600 mb-6">Escanea el QR para validar. Un ticket solo se puede usar una vez.</p>
+
+      <div id="login-card" class="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 class="text-xl font-bold text-amber-800 mb-4">Login Staff</h2>
+        <form id="login-form" class="grid md:grid-cols-3 gap-3">
+          <input id="staff-username" type="text" placeholder="Usuario" class="p-3 border border-amber-300 rounded-lg" required>
+          <input id="staff-pin" type="password" placeholder="PIN" class="p-3 border border-amber-300 rounded-lg" required>
+          <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg">Entrar</button>
+        </form>
+        <div id="login-error" class="mt-3 p-3 bg-red-50 text-red-700 rounded-lg hidden"></div>
+      </div>
+
+      <div id="app" class="hidden">
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div class="text-sm text-gray-600">Staff: <span id="staff-name" class="font-bold text-amber-800"></span></div>
+          <button id="logout" class="bg-gray-800 hover:bg-black text-white font-bold px-4 py-2 rounded-lg">Salir</button>
+        </div>
+
+        <div class="grid lg:grid-cols-2 gap-6">
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold text-amber-800 mb-4">Escáner QR</h2>
+            <div id="reader" class="w-full"></div>
+            <div id="scan-status" class="mt-4 p-3 rounded-lg bg-amber-50 text-amber-900">Listo para escanear.</div>
+          </div>
+
+          <div class="bg-white rounded-lg shadow p-6">
+            <h2 class="text-xl font-bold text-amber-800 mb-4">Lista (hoy)</h2>
+            <button id="refresh" class="mb-3 bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg">Actualizar</button>
+            <div id="tickets" class="space-y-2 max-h-[60vh] overflow-y-auto">
+              <p class="text-gray-500">Cargando...</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    function setLoginError(msg) {
+      const el = document.getElementById('login-error');
+      el.textContent = msg;
+      el.classList.remove('hidden');
+    }
+
+    function setScanStatus(msg, type) {
+      const el = document.getElementById('scan-status');
+      if (type === 'error') el.className = 'mt-4 p-3 rounded-lg bg-red-50 text-red-700';
+      else if (type === 'success') el.className = 'mt-4 p-3 rounded-lg bg-green-50 text-green-700';
+      else el.className = 'mt-4 p-3 rounded-lg bg-amber-50 text-amber-900';
+      el.textContent = msg;
+    }
+
+    function getStaffToken() {
+      return localStorage.getItem('macondo_staff_token');
+    }
+
+    function setStaffToken(token, username) {
+      localStorage.setItem('macondo_staff_token', token);
+      localStorage.setItem('macondo_staff_username', username);
+    }
+
+    function clearStaffToken() {
+      localStorage.removeItem('macondo_staff_token');
+      localStorage.removeItem('macondo_staff_username');
+    }
+
+    async function staffFetch(path, options) {
+      const token = getStaffToken();
+      const headers = Object.assign({ 'Content-Type': 'application/json' }, (options && options.headers) || {});
+      if (token) headers['Authorization'] = 'Staff ' + token;
+      return fetch(path, Object.assign({}, options || {}, { headers }));
+    }
+
+    async function loadTickets() {
+      const ticketsEl = document.getElementById('tickets');
+      ticketsEl.innerHTML = '<p class="text-gray-500">Cargando...</p>';
+      const resp = await staffFetch('/.netlify/functions/staff-tickets', { method: 'GET' });
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok) {
+        ticketsEl.innerHTML = `<p class="text-red-600">${data.error || 'No se pudo cargar'}</p>`;
+        return;
+      }
+
+      const rows = data.tickets || [];
+      if (rows.length === 0) {
+        ticketsEl.innerHTML = '<p class="text-gray-500">No hay tickets hoy.</p>';
+        return;
+      }
+
+      ticketsEl.innerHTML = rows.map(t => {
+        const used = !!t.used_at;
+        return `
+          <div class="p-3 border rounded-lg ${used ? 'bg-gray-50' : 'bg-white'}">
+            <div class="flex justify-between gap-3">
+              <div>
+                <div class="font-bold text-amber-800">${t.person_name || '—'}</div>
+                <div class="text-sm text-gray-600">${t.person_email || ''} ${t.person_phone ? ' | ' + t.person_phone : ''}</div>
+              </div>
+              <div class="text-sm font-bold ${used ? 'text-gray-500' : 'text-green-700'}">${used ? 'USADO' : 'VÁLIDO'}</div>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    let qrScanner = null;
+
+    async function startScanner() {
+      if (qrScanner) return;
+      qrScanner = new Html5Qrcode('reader');
+
+      const config = { fps: 10, qrbox: 220 };
+      const onScanSuccess = async (decodedText) => {
+        if (!decodedText || !decodedText.startsWith('MACONDO_COVER:')) return;
+        const token = decodedText.slice('MACONDO_COVER:'.length).trim();
+        if (!token) return;
+
+        setScanStatus('Validando...', 'info');
+
+        const resp = await staffFetch('/.netlify/functions/cover-redeem', {
+          method: 'POST',
+          body: JSON.stringify({ token })
+        });
+
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+          setScanStatus(data.error || 'No válido', 'error');
+          return;
+        }
+
+        setScanStatus('✅ Válido. Marcado como usado.', 'success');
+        await loadTickets();
+      };
+
+      const devices = await Html5Qrcode.getCameras().catch(() => []);
+      const cameraId = devices && devices[0] ? devices[0].id : null;
+      if (!cameraId) {
+        setScanStatus('No se encontró cámara disponible.', 'error');
+        return;
+      }
+
+      await qrScanner.start(cameraId, config, onScanSuccess);
+      setScanStatus('Listo para escanear.', 'info');
+    }
+
+    function showApp() {
+      document.getElementById('login-card').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      document.getElementById('staff-name').textContent = localStorage.getItem('macondo_staff_username') || '';
+    }
+
+    function showLogin() {
+      document.getElementById('login-card').classList.remove('hidden');
+      document.getElementById('app').classList.add('hidden');
+    }
+
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      document.getElementById('login-error').classList.add('hidden');
+
+      const username = document.getElementById('staff-username').value.trim();
+      const pin = document.getElementById('staff-pin').value.trim();
+
+      const resp = await fetch('/.netlify/functions/staff-login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username, pin })
+      });
+
+      const data = await resp.json().catch(() => ({}));
+      if (!resp.ok) {
+        setLoginError(data.error || 'Login inválido');
+        return;
+      }
+
+      setStaffToken(data.token, username);
+      showApp();
+      await loadTickets();
+      await startScanner();
+    });
+
+    document.getElementById('logout').addEventListener('click', async () => {
+      clearStaffToken();
+      if (qrScanner) {
+        try { await qrScanner.stop(); } catch (e) {}
+        try { await qrScanner.clear(); } catch (e) {}
+        qrScanner = null;
+      }
+      showLogin();
+    });
+
+    document.getElementById('refresh').addEventListener('click', async () => {
+      await loadTickets();
+    });
+
+    (async function init() {
+      if (getStaffToken()) {
+        showApp();
+        await loadTickets();
+        await startScanner();
+      }
+    })();
+  </script>
+</body>
+</html>

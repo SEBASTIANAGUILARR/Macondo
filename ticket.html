@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ticket Cover - Macondo</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+</head>
+<body class="bg-amber-50 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white rounded-lg shadow-lg max-w-xl w-full p-8">
+    <h1 class="text-2xl font-bold text-amber-800 mb-2">Ticket Cover</h1>
+    <p class="text-gray-600 mb-6">Muestra este QR en la entrada del sótano.</p>
+
+    <div id="status" class="p-4 rounded-lg bg-amber-50 text-amber-900 mb-6">Cargando...</div>
+
+    <div class="flex items-center justify-center">
+      <div id="qrcode" class="p-4 bg-white border rounded-lg"></div>
+    </div>
+
+    <div class="mt-6 text-sm text-gray-600">
+      <p><strong>Importante:</strong> este QR es válido una sola vez.</p>
+    </div>
+
+    <div class="mt-6">
+      <a href="index.html" class="inline-block bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Volver al inicio</a>
+    </div>
+  </div>
+
+  <script>
+    function setStatus(text, type) {
+      const el = document.getElementById('status');
+      if (type === 'error') {
+        el.className = 'p-4 rounded-lg bg-red-50 text-red-700 mb-6';
+      } else if (type === 'success') {
+        el.className = 'p-4 rounded-lg bg-green-50 text-green-700 mb-6';
+      } else {
+        el.className = 'p-4 rounded-lg bg-amber-50 text-amber-900 mb-6';
+      }
+      el.textContent = text;
+    }
+
+    async function run() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      if (!token) {
+        setStatus('Falta el token del ticket.', 'error');
+        return;
+      }
+
+      setStatus('Ticket listo. Presenta este QR.', 'success');
+
+      const payload = `MACONDO_COVER:${token}`;
+      const container = document.getElementById('qrcode');
+      container.innerHTML = '';
+      new QRCode(container, {
+        text: payload,
+        width: 240,
+        height: 240,
+        correctLevel: QRCode.CorrectLevel.M,
+      });
+    }
+
+    run();
+  </script>
+</body>
+</html>

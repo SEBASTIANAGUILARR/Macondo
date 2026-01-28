@@ -213,6 +213,9 @@
                 <button id="tab-clientes" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('clientes')">
                     👥 Clientes
                 </button>
+                <button id="tab-cover" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('cover')">
+                    🎟️ Covers / Staff
+                </button>
             </div>
 
             <!-- Reservas Section -->
@@ -700,6 +703,57 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Cover/Staff Section -->
+            <div id="section-cover" class="hidden">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold text-amber-800">🎟️ Covers / Staff</h2>
+                    <a href="staff.html" target="_blank" rel="noopener noreferrer" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
+                        Abrir página Staff
+                    </a>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-bold text-amber-800 mb-4">Configuración Cover (DJ + Precio)</h3>
+                        <form id="cover-config-form" class="space-y-4">
+                            <div>
+                                <label class="block text-amber-700 font-medium mb-1">DJ del finde</label>
+                                <input type="text" id="cover-dj" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej: Dj Micke">
+                            </div>
+                            <div>
+                                <label class="block text-amber-700 font-medium mb-1">Precio (PLN)</label>
+                                <input type="number" id="cover-price" min="1" step="1" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="30">
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="checkbox" id="cover-active" class="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500" checked>
+                                <label for="cover-active" class="text-amber-700">Cover activo</label>
+                            </div>
+                            <div class="flex gap-3">
+                                <button type="button" onclick="loadCoverConfigAdmin()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-lg transition-colors">Recargar</button>
+                                <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">Guardar</button>
+                            </div>
+                            <div id="cover-config-status" class="text-sm text-gray-500"></div>
+                        </form>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-lg shadow">
+                        <h3 class="text-lg font-bold text-amber-800 mb-4">Usuarios Staff (login PIN)</h3>
+                        <form id="staff-create-form" class="grid md:grid-cols-3 gap-3 mb-4">
+                            <input id="staff-username" type="text" placeholder="usuario" class="p-3 border border-amber-300 rounded-lg" required>
+                            <input id="staff-pin" type="password" placeholder="PIN" class="p-3 border border-amber-300 rounded-lg" required>
+                            <button class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg">Crear</button>
+                        </form>
+                        <div class="flex gap-3 mb-4">
+                            <button type="button" onclick="loadStaffUsers()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition-colors">Recargar lista</button>
+                        </div>
+                        <div id="staff-users-status" class="text-sm text-gray-500 mb-3"></div>
+                        <div id="staff-users-list" class="space-y-2">
+                            <p class="text-gray-500">Cargando...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1123,6 +1177,7 @@
             document.getElementById('section-menu').classList.add('hidden');
             document.getElementById('section-analytics').classList.add('hidden');
             document.getElementById('section-clientes').classList.add('hidden');
+            document.getElementById('section-cover').classList.add('hidden');
             document.getElementById('section-' + tab).classList.remove('hidden');
             
             if (tab === 'analytics') {
@@ -1131,6 +1186,10 @@
             }
             if (tab === 'clientes') {
                 loadClients();
+            }
+            if (tab === 'cover') {
+                loadCoverConfigAdmin();
+                loadStaffUsers();
             }
         }
 
@@ -2636,6 +2695,192 @@
             } catch (e) {
                 return null;
             }
+        }
+
+        async function loadCoverConfigAdmin() {
+            const statusEl = document.getElementById('cover-config-status');
+            if (statusEl) statusEl.textContent = 'Cargando...';
+
+            try {
+                const resp = await fetch('/.netlify/functions/cover-config', { method: 'GET' });
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    if (statusEl) statusEl.textContent = data.error || 'No se pudo cargar la configuración.';
+                    return;
+                }
+
+                const cfg = data.config || {};
+                const dj = document.getElementById('cover-dj');
+                const price = document.getElementById('cover-price');
+                const active = document.getElementById('cover-active');
+
+                if (dj) dj.value = cfg.dj_name || 'Dj Micke';
+                if (price) price.value = Number(cfg.price_pln || 30);
+                if (active) active.checked = cfg.active !== false;
+
+                if (statusEl) statusEl.textContent = 'OK';
+            } catch (e) {
+                if (statusEl) statusEl.textContent = e.message || String(e);
+            }
+        }
+
+        const coverConfigForm = document.getElementById('cover-config-form');
+        if (coverConfigForm) {
+            coverConfigForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const statusEl = document.getElementById('cover-config-status');
+                if (statusEl) statusEl.textContent = 'Guardando...';
+
+                const accessToken = await getAdminAccessToken();
+                if (!accessToken) {
+                    if (statusEl) statusEl.textContent = 'Sesión inválida. Vuelve a iniciar sesión.';
+                    return;
+                }
+
+                const dj_name = String(document.getElementById('cover-dj')?.value || '').trim();
+                const price_pln = Number(document.getElementById('cover-price')?.value);
+                const active = !!document.getElementById('cover-active')?.checked;
+
+                try {
+                    const resp = await fetch('/.netlify/functions/admin-cover-config', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + accessToken
+                        },
+                        body: JSON.stringify({ dj_name, price_pln, active })
+                    });
+
+                    const data = await resp.json().catch(() => ({}));
+                    if (!resp.ok) {
+                        if (statusEl) statusEl.textContent = data.error || 'No se pudo guardar.';
+                        return;
+                    }
+
+                    if (statusEl) statusEl.textContent = '✅ Guardado';
+                } catch (err) {
+                    if (statusEl) statusEl.textContent = err.message || String(err);
+                }
+            });
+        }
+
+        async function loadStaffUsers() {
+            const statusEl = document.getElementById('staff-users-status');
+            const listEl = document.getElementById('staff-users-list');
+            if (statusEl) statusEl.textContent = '';
+            if (listEl) listEl.innerHTML = '<p class="text-gray-500">Cargando...</p>';
+
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) {
+                if (statusEl) statusEl.textContent = 'Sesión inválida. Vuelve a iniciar sesión.';
+                if (listEl) listEl.innerHTML = '';
+                return;
+            }
+
+            try {
+                const resp = await fetch('/.netlify/functions/admin-staff-users', {
+                    method: 'GET',
+                    headers: { 'Authorization': 'Bearer ' + accessToken }
+                });
+
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    if (statusEl) statusEl.textContent = data.error || 'No se pudo cargar.';
+                    if (listEl) listEl.innerHTML = '';
+                    return;
+                }
+
+                const staff = data.staff || [];
+                if (!listEl) return;
+
+                if (staff.length === 0) {
+                    listEl.innerHTML = '<p class="text-gray-500">No hay usuarios staff.</p>';
+                    return;
+                }
+
+                listEl.innerHTML = staff.map(s => `
+                    <div class="p-3 border rounded-lg flex items-center justify-between gap-3">
+                        <div>
+                            <div class="font-bold text-amber-800">${s.username}</div>
+                            <div class="text-sm text-gray-600">${s.active ? 'Activo' : 'Inactivo'}</div>
+                        </div>
+                        <div class="flex flex-wrap gap-2">
+                            <button onclick="staffSetActive('${s.username}', ${s.active ? 'false' : 'true'})" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-3 py-2 rounded-lg">${s.active ? 'Desactivar' : 'Activar'}</button>
+                            <button onclick="staffResetPin('${s.username}')" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-2 rounded-lg">Reset PIN</button>
+                            <button onclick="staffDeleteUser('${s.username}')" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-lg">Eliminar</button>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (err) {
+                if (statusEl) statusEl.textContent = err.message || String(err);
+                if (listEl) listEl.innerHTML = '';
+            }
+        }
+
+        async function staffAction(action, payload) {
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) {
+                alert('Sesión inválida. Vuelve a iniciar sesión.');
+                return false;
+            }
+
+            const resp = await fetch('/.netlify/functions/admin-staff-users', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                },
+                body: JSON.stringify({ action, ...payload })
+            });
+
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                alert(data.error || 'Error');
+                return false;
+            }
+            return true;
+        }
+
+        async function staffResetPin(username) {
+            const pin = prompt('Nuevo PIN para ' + username + ':');
+            if (!pin) return;
+            const ok = await staffAction('reset_pin', { username, pin });
+            if (ok) {
+                await loadStaffUsers();
+                alert('✅ PIN actualizado');
+            }
+        }
+
+        async function staffDeleteUser(username) {
+            if (!confirm('¿Eliminar usuario staff ' + username + '?')) return;
+            const ok = await staffAction('delete', { username });
+            if (ok) {
+                await loadStaffUsers();
+            }
+        }
+
+        async function staffSetActive(username, active) {
+            const ok = await staffAction('set_active', { username, active });
+            if (ok) {
+                await loadStaffUsers();
+            }
+        }
+
+        const staffCreateForm = document.getElementById('staff-create-form');
+        if (staffCreateForm) {
+            staffCreateForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const username = String(document.getElementById('staff-username')?.value || '').trim();
+                const pin = String(document.getElementById('staff-pin')?.value || '').trim();
+                if (!username || !pin) return;
+
+                const ok = await staffAction('create', { username, pin });
+                if (ok) {
+                    staffCreateForm.reset();
+                    await loadStaffUsers();
+                    alert('✅ Usuario staff creado');
+                }
+            });
         }
 
         async function clearAnalytics() {

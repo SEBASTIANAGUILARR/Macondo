@@ -31,6 +31,46 @@
 
         <div class="grid lg:grid-cols-3 gap-8">
             <section class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                    <div class="flex flex-wrap items-start justify-between gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-amber-800">🎧 DJ del finde (Sótano)</h2>
+                            <p class="text-gray-600 mt-1">Compra tu cover online y recibe tu QR por email.</p>
+                            <div class="mt-3 text-sm text-gray-700">
+                                <div><strong>DJ:</strong> <span id="cover-dj-name">Dj Micke</span></div>
+                                <div><strong>Precio:</strong> <span id="cover-price">30</span> PLN por persona</div>
+                            </div>
+                        </div>
+                        <a href="ticket.html" class="text-amber-700 hover:text-amber-800 font-bold">Ver un ticket</a>
+                    </div>
+
+                    <form id="cover-form" class="mt-6 space-y-4">
+                        <div class="grid md:grid-cols-3 gap-3">
+                            <input id="buyer-name" type="text" placeholder="Nombre comprador" class="p-3 border border-amber-300 rounded-lg" required>
+                            <input id="buyer-email" type="email" placeholder="Email comprador" class="p-3 border border-amber-300 rounded-lg" required>
+                            <input id="buyer-phone" type="tel" placeholder="Teléfono comprador" class="p-3 border border-amber-300 rounded-lg">
+                        </div>
+
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="text-lg font-bold text-amber-800">Personas (1 QR por persona)</h3>
+                            <button type="button" id="add-person" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg">+ Añadir persona</button>
+                        </div>
+
+                        <div id="people-list" class="space-y-3"></div>
+
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div class="text-sm text-gray-700">
+                                Total: <strong><span id="cover-total">0</span> PLN</strong>
+                            </div>
+                            <button id="cover-submit" type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                                Comprar Cover (manual)
+                            </button>
+                        </div>
+
+                        <div id="cover-status" class="text-sm text-gray-600"></div>
+                    </form>
+                </div>
+
                 <div id="events-container" class="space-y-8">
                     <p class="text-gray-500 text-center py-8">Cargando eventos...</p>
                 </div>
@@ -74,6 +114,69 @@
         const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltcWNpZnZta2xrY2N3YWdwa2VlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxMjMzNDIsImV4cCI6MjA4NDY5OTM0Mn0.fP4S0VfaC823LKUvh6HcybS_ze9uWWrBKgC4SsQBiRU';
         
         const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        let coverConfig = { dj_name: 'Dj Micke', price_pln: 30, active: true };
+
+        function renderPersonRow(index) {
+            return `
+                <div class="p-4 border border-amber-200 rounded-lg bg-amber-50">
+                    <div class="flex items-center justify-between gap-3 mb-3">
+                        <div class="font-bold text-amber-800">Persona #${index + 1}</div>
+                        <button type="button" class="remove-person text-red-600 hover:text-red-700 font-bold" data-index="${index}">Eliminar</button>
+                    </div>
+                    <div class="grid md:grid-cols-3 gap-3">
+                        <input data-field="name" type="text" placeholder="Nombre" class="p-3 border border-amber-300 rounded-lg" required>
+                        <input data-field="email" type="email" placeholder="Email" class="p-3 border border-amber-300 rounded-lg" required>
+                        <input data-field="phone" type="tel" placeholder="Teléfono" class="p-3 border border-amber-300 rounded-lg" required>
+                    </div>
+                </div>
+            `;
+        }
+
+        function updateCoverTotal() {
+            const count = document.querySelectorAll('#people-list > div').length;
+            const total = count * Number(coverConfig.price_pln || 0);
+            const totalEl = document.getElementById('cover-total');
+            if (totalEl) totalEl.textContent = String(total);
+        }
+
+        async function loadCoverConfig() {
+            try {
+                const resp = await fetch('/.netlify/functions/cover-config');
+                const data = await resp.json().catch(() => ({}));
+                if (resp.ok && data.config) {
+                    coverConfig = data.config;
+                }
+
+                document.getElementById('cover-dj-name').textContent = coverConfig.dj_name || 'Dj Micke';
+                document.getElementById('cover-price').textContent = String(coverConfig.price_pln || 30);
+                updateCoverTotal();
+            } catch (e) {
+                // fallback silencioso
+            }
+        }
+
+        function addPerson() {
+            const list = document.getElementById('people-list');
+            if (!list) return;
+            const idx = list.children.length;
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = renderPersonRow(idx);
+            list.appendChild(wrapper.firstElementChild);
+            updateCoverTotal();
+        }
+
+        function rebuildPersonIndexes() {
+            const list = document.getElementById('people-list');
+            if (!list) return;
+            Array.from(list.children).forEach((child, i) => {
+                const title = child.querySelector('.font-bold.text-amber-800');
+                if (title) title.textContent = `Persona #${i + 1}`;
+                const btn = child.querySelector('.remove-person');
+                if (btn) btn.dataset.index = String(i);
+            });
+            updateCoverTotal();
+        }
 
         // Cargar eventos desde Supabase
         async function loadEvents() {
@@ -133,6 +236,109 @@
             
             // Cargar eventos dinámicamente
             loadEvents();
+
+            // Inicializar cover
+            loadCoverConfig();
+            addPerson();
+
+            const addBtn = document.getElementById('add-person');
+            if (addBtn) {
+                addBtn.addEventListener('click', () => addPerson());
+            }
+
+            const peopleList = document.getElementById('people-list');
+            if (peopleList) {
+                peopleList.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.remove-person');
+                    if (!btn) return;
+                    const idx = Number(btn.dataset.index);
+                    const children = Array.from(peopleList.children);
+                    if (children[idx]) {
+                        children[idx].remove();
+                        rebuildPersonIndexes();
+                    }
+                });
+            }
+
+            const coverForm = document.getElementById('cover-form');
+            if (coverForm) {
+                coverForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const statusEl = document.getElementById('cover-status');
+                    const submitBtn = document.getElementById('cover-submit');
+                    if (statusEl) statusEl.textContent = '';
+
+                    if (coverConfig.active === false) {
+                        if (statusEl) statusEl.textContent = 'Cover no disponible ahora mismo.';
+                        return;
+                    }
+
+                    const buyer_name = document.getElementById('buyer-name').value.trim();
+                    const buyer_email = document.getElementById('buyer-email').value.trim();
+                    const buyer_phone = document.getElementById('buyer-phone').value.trim();
+
+                    const people = Array.from(document.querySelectorAll('#people-list > div')).map(row => {
+                        return {
+                            name: row.querySelector('[data-field="name"]').value.trim(),
+                            email: row.querySelector('[data-field="email"]').value.trim(),
+                            phone: row.querySelector('[data-field="phone"]').value.trim(),
+                        };
+                    });
+
+                    if (!buyer_name || !buyer_email) {
+                        if (statusEl) statusEl.textContent = 'Completa el nombre y email del comprador.';
+                        return;
+                    }
+
+                    if (people.length === 0) {
+                        if (statusEl) statusEl.textContent = 'Añade al menos una persona.';
+                        return;
+                    }
+
+                    for (const p of people) {
+                        if (!p.name || !p.email || !p.phone) {
+                            if (statusEl) statusEl.textContent = 'Cada persona debe tener nombre, email y teléfono.';
+                            return;
+                        }
+                    }
+
+                    try {
+                        if (submitBtn) {
+                            submitBtn.disabled = true;
+                            submitBtn.textContent = 'Procesando...';
+                        }
+
+                        const resp = await fetch('/.netlify/functions/cover-purchase-manual', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ buyer_name, buyer_email, buyer_phone, people })
+                        });
+
+                        const data = await resp.json().catch(() => ({}));
+                        if (!resp.ok) {
+                            if (statusEl) statusEl.textContent = data.error || 'No se pudo completar la compra.';
+                            return;
+                        }
+
+                        if (statusEl) statusEl.textContent = `✅ Tickets generados y enviados por email: ${data.count || 0}`;
+                        coverForm.reset();
+                        const list = document.getElementById('people-list');
+                        if (list) {
+                            list.innerHTML = '';
+                            addPerson();
+                        }
+                        updateCoverTotal();
+                    } catch (err) {
+                        if (statusEl) statusEl.textContent = err.message || String(err);
+                    } finally {
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Comprar Cover (manual)';
+                        }
+                    }
+                });
+            }
 
             try {
                 window.authModal = new AuthModal();
