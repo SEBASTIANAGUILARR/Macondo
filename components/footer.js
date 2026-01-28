@@ -7,220 +7,103 @@ class CustomFooter extends HTMLElement {
           display: block;
           background-color: #92400e;
           color: white;
-          padding: 3rem 2rem;
+          padding: 2.5rem 1.5rem;
         }
-        
+
         .footer-container {
-          max-width: 1200px;
+          max-width: 900px;
           margin: 0 auto;
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-          gap: 2rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 1.25rem;
         }
-        
+
         .footer-logo {
-          font-size: 1.5rem;
-          font-weight: 700;
-          margin-bottom: 1rem;
-          display: flex;
-          align-items: center;
-        }
-        
-        .footer-logo img {
-          height: 40px;
-          margin-right: 0.5rem;
-        }
-        
-        .footer-about p {
-          margin-bottom: 1rem;
-          line-height: 1.6;
-        }
-        
-        .footer-links h3, .footer-contact h3 {
-          font-size: 1.25rem;
-          font-weight: 600;
-          margin-bottom: 1.5rem;
-          position: relative;
-          padding-bottom: 0.5rem;
-        }
-        
-        .footer-links h3::after, .footer-contact h3::after {
-          content: '';
-          position: absolute;
-          bottom: 0;
-          left: 0;
-          width: 50px;
-          height: 2px;
-          background-color: #f59e0b;
-        }
-        
-        .footer-links ul {
-          list-style: none;
-          padding: 0;
-        }
-        
-        .footer-links li {
-          margin-bottom: 0.75rem;
-        }
-        
-        .footer-links a {
-          color: white;
-          text-decoration: none;
-          transition: color 0.3s ease;
-        }
-        
-        .footer-links a:hover {
-          color: #fcd34d;
-        }
-        
-        .footer-contact p {
-          margin-bottom: 1rem;
-          display: flex;
-          align-items: center;
-        }
-        
-        .footer-contact i {
-          margin-right: 0.5rem;
-          color: #f59e0b;
-        }
-        
-        .social-links {
-          display: flex;
-          gap: 1rem;
-          margin-top: 1.5rem;
-        }
-        
-        .social-links a {
-          color: white;
-          background-color: rgba(255, 255, 255, 0.1);
-          width: 40px;
-          height: 40px;
-          border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all 0.3s ease;
         }
-        
-        .social-links a:hover {
+
+        .footer-logo img {
+          height: 56px;
+          width: auto;
+        }
+
+        .map-card {
+          width: 100%;
+          background: rgba(255, 255, 255, 0.08);
+          border: 1px solid rgba(255, 255, 255, 0.18);
+          border-radius: 12px;
+          overflow: hidden;
+        }
+
+        .map-frame {
+          width: 100%;
+          height: 320px;
+          border: 0;
+        }
+
+        .map-actions {
+          width: 100%;
+          display: flex;
+          justify-content: center;
+          padding: 1rem;
+          background: rgba(0, 0, 0, 0.08);
+        }
+
+        .map-button {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
           background-color: #f59e0b;
-          transform: translateY(-3px);
+          color: #5a2e0a;
+          font-weight: 800;
+          text-decoration: none;
+          padding: 0.75rem 1.25rem;
+          border-radius: 0.75rem;
+          transition: transform 0.15s ease, background-color 0.2s ease;
         }
-        
-        .footer-bottom {
-          text-align: center;
-          margin-top: 3rem;
-          padding-top: 1.5rem;
-          border-top: 1px solid rgba(255, 255, 255, 0.1);
+
+        .map-button:hover {
+          background-color: #fbbf24;
+          transform: translateY(-1px);
         }
-        
+
         @media (max-width: 768px) {
           :host {
             padding: 2rem 1rem;
           }
-          
-          .footer-container {
-            grid-template-columns: 1fr;
-            gap: 1.5rem;
-            text-align: center;
-          }
-          
-          .footer-logo {
-            justify-content: center;
-            font-size: 1.25rem;
-          }
-          
-          .footer-about p {
-            font-size: 0.9rem;
-          }
-          
-          .footer-links h3::after, .footer-contact h3::after {
-            left: 50%;
-            transform: translateX(-50%);
-          }
-          
-          .footer-links ul {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            gap: 0.5rem 1rem;
-          }
-          
-          .footer-links li {
-            margin-bottom: 0;
-          }
-          
-          .footer-links a {
-            padding: 0.5rem;
-            display: inline-block;
-          }
-          
-          .footer-contact p {
-            justify-content: center;
-            font-size: 0.9rem;
-          }
-          
-          .social-links {
-            justify-content: center;
-          }
-          
-          .social-links a {
-            width: 44px;
-            height: 44px;
-          }
-          
-          .footer-bottom {
-            margin-top: 2rem;
-            padding-top: 1rem;
-          }
-          
-          .footer-bottom p {
-            font-size: 0.85rem;
-          }
-        }
-        
-        @media (max-width: 480px) {
-          :host {
-            padding: 1.5rem 0.75rem;
-          }
-          
-          .footer-logo {
-            font-size: 1.1rem;
-          }
-          
+
           .footer-logo img {
-            height: 32px;
+            height: 52px;
           }
-          
-          .footer-links h3, .footer-contact h3 {
-            font-size: 1.1rem;
-            margin-bottom: 1rem;
+
+          .map-frame {
+            height: 280px;
           }
         }
       </style>
       
       <div class="footer-container">
-        <div class="footer-about">
-          <div class="footer-logo">
-            <img src="logo.pnh.png" alt="Macondo Bar Latino">
-            Macondo Bar Latino
-          </div>
-          <div class="social-links">
-            <a href="#"><i data-feather="facebook"></i></a>
-            <a href="#"><i data-feather="instagram"></i></a>
+        <div class="footer-logo">
+          <img src="logo.pnh.png" alt="Macondo Bar Latino">
+        </div>
+
+        <div class="map-card">
+          <iframe
+            class="map-frame"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            src="https://www.google.com/maps?output=embed&q=https%3A%2F%2Fmaps.app.goo.gl%2FSubxFp7CB7s8yKdz7">
+          </iframe>
+          <div class="map-actions">
+            <a class="map-button" href="https://maps.app.goo.gl/SubxFp7CB7s8yKdz7" target="_blank" rel="noopener noreferrer">
+              Ir a Macondo
+            </a>
           </div>
         </div>
-        
-        <div class="footer-contact">
-          <h3 data-i18n="navbar.contact">Contacto</h3>
-          <p><i data-feather="map-pin"></i> Calle 85 #12-45, Bogotá</p>
-          <p><i data-feather="phone"></i> +57 1 345 6789</p>
-          <p><i data-feather="mail"></i> info@macondobar.com</p>
-        </div>
-      </div>
-      
-      <div class="footer-bottom">
-        <p>&copy; <span id="current-year">2023</span> Macondo Bar Latino. <span data-i18n="footer.rights">Todos los derechos reservados.</span></p>
       </div>
     `;
     
