@@ -2581,6 +2581,16 @@
         document.getElementById('email-subject').addEventListener('input', updateEmailPreview);
         document.getElementById('email-content').addEventListener('input', updateEmailPreview);
         
+        async function getAdminAccessToken() {
+            try {
+                const { data, error } = await supabaseClient.auth.getSession();
+                if (error) return null;
+                return data?.session?.access_token || null;
+            } catch (e) {
+                return null;
+            }
+        }
+        
         // Enviar email de prueba
         async function sendTestEmail() {
             const subject = document.getElementById('email-subject').value;
@@ -2594,8 +2604,37 @@
             const testEmail = prompt('Ingresa tu email para recibir la prueba:');
             if (!testEmail) return;
             
-            // Aquí se integraría con un servicio de email como SendGrid, Mailgun, etc.
-            alert(`Email de prueba enviado a: ${testEmail}\n\nNota: Para enviar emails reales, necesitas configurar un servicio de email como SendGrid o Mailgun.`);
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) {
+                alert('Tu sesión no es válida. Vuelve a iniciar sesión en el panel admin.');
+                return;
+            }
+            
+            try {
+                const resp = await fetch('/.netlify/functions/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + accessToken
+                    },
+                    body: JSON.stringify({
+                        mode: 'test',
+                        testEmail,
+                        subject,
+                        content
+                    })
+                });
+                
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    alert('Error enviando prueba: ' + (data.error || resp.statusText));
+                    return;
+                }
+                
+                alert('✅ Email de prueba enviado a: ' + testEmail);
+            } catch (e) {
+                alert('Error enviando prueba: ' + (e.message || e));
+            }
         }
         
         // Enviar campaña de email
@@ -2615,25 +2654,38 @@
                 return;
             }
             
-            // Guardar campaña en la base de datos
-            const { data, error } = await supabaseClient
-                .from('email_campaigns')
-                .insert([{
-                    subject,
-                    content,
-                    recipients_count: recipients.length,
-                    campaign_type: document.getElementById('email-campaign-type').value,
-                    status: 'pending'
-                }]);
-            
-            if (error) {
-                console.error('Error guardando campaña:', error);
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) {
+                alert('Tu sesión no es válida. Vuelve a iniciar sesión en el panel admin.');
+                return;
             }
             
-            // Aquí se integraría con un servicio de email
-            alert(`Campaña de email creada para ${recipients.length} destinatarios.\n\nNota: Para enviar emails reales, necesitas configurar un servicio de email como SendGrid, Resend o Mailgun y crear una función serverless o Edge Function en Supabase.`);
-            
-            closeEmailMarketingModal();
+            try {
+                const resp = await fetch('/.netlify/functions/send-email', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + accessToken
+                    },
+                    body: JSON.stringify({
+                        mode: 'campaign',
+                        subject,
+                        content,
+                        campaignType: document.getElementById('email-campaign-type').value
+                    })
+                });
+                
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    alert('Error enviando campaña: ' + (data.error || resp.statusText));
+                    return;
+                }
+                
+                alert(`✅ Campaña enviada. Total: ${data.totalRecipients || 0}, Enviados: ${data.sent || 0}, Fallos: ${data.failures || 0}`);
+                closeEmailMarketingModal();
+            } catch (e) {
+                alert('Error enviando campaña: ' + (e.message || e));
+            }
         });
     </script>
 </body>
