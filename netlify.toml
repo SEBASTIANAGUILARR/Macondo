@@ -6,3 +6,8 @@
 
 [functions."send-email"]
   node_bundler = "esbuild"
+
+[[redirects]]
+  from = "/index.html"
+  to = "/"
+  status = 301
