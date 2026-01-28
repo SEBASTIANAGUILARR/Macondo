@@ -152,7 +152,7 @@
             <h1 class="text-2xl font-bold">🍽️ Panel de Administración</h1>
             <div id="user-info" class="hidden">
                 <span id="user-email" class="mr-4"></span>
-                <button onclick="logout()" class="bg-amber-600 hover:bg-amber-700 px-4 py-2 rounded-lg transition-colors">
+                <button onclick="logout()" class="bg-amber-600 hover:bg-amber-700 px-3 py-1 sm:px-4 sm:py-2 rounded-lg transition-colors text-sm sm:text-base">
                     Cerrar Sesión
                 </button>
             </div>
@@ -234,7 +234,7 @@
             <!-- Reservas Section -->
             <div id="section-reservas">
                 <!-- Stats Reservas -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-8">
                     <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
                         <p class="text-gray-500 text-xs sm:text-sm">Total Reservas</p>
                         <p id="stat-total" class="text-2xl sm:text-3xl font-bold text-amber-800">0</p>
@@ -254,12 +254,12 @@
                 </div>
                 
                 <!-- Filters Reservas -->
-                <div class="flex flex-wrap gap-2 mb-6">
-                    <button class="filter-btn active" data-filter="all">Todas</button>
-                    <button class="filter-btn" data-filter="pendiente">Pendientes</button>
-                    <button class="filter-btn" data-filter="confirmada">Confirmadas</button>
-                    <button class="filter-btn" data-filter="cancelada">Canceladas</button>
-                    <input type="date" id="filter-date" class="ml-auto p-2 border border-amber-300 rounded-lg">
+                <div class="grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mb-4 sm:mb-6">
+                    <button class="filter-btn active text-sm py-2" data-filter="all">Todas</button>
+                    <button class="filter-btn text-sm py-2" data-filter="pendiente">Pendientes</button>
+                    <button class="filter-btn text-sm py-2" data-filter="confirmada">Confirmadas</button>
+                    <button class="filter-btn text-sm py-2" data-filter="cancelada">Canceladas</button>
+                    <input type="date" id="filter-date" class="sm:ml-auto p-2 border border-amber-300 rounded-lg">
                 </div>
                 
                 <!-- Reservations List -->
