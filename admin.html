@@ -194,7 +194,20 @@
     <div id="admin-panel" class="admin-container hidden">
         <div class="container mx-auto">
             <!-- Tabs -->
-            <div class="flex gap-4 mb-6 border-b border-amber-300 overflow-x-auto">
+            <div class="sm:hidden mb-4">
+                <label for="mobile-tab-select" class="block text-sm font-bold text-amber-800 mb-2">Sección</label>
+                <select id="mobile-tab-select" class="w-full p-3 border border-amber-300 rounded-lg bg-white">
+                    <option value="reservas">🪑 Reservas</option>
+                    <option value="pedidos">🛒 Pedidos Online</option>
+                    <option value="eventos">🎉 Eventos</option>
+                    <option value="menu">🍽️ Menú</option>
+                    <option value="analytics">📊 Analíticas</option>
+                    <option value="clientes">👥 Clientes</option>
+                    <option value="cover">🎟️ Covers / Staff</option>
+                </select>
+            </div>
+
+            <div class="hidden sm:flex gap-4 mb-6 border-b border-amber-300 overflow-x-auto">
                 <button id="tab-reservas" class="tab-btn active px-6 py-3 font-bold text-amber-800 border-b-2 border-amber-600 whitespace-nowrap" onclick="switchTab('reservas')">
                     🪑 Reservas
                 </button>
@@ -222,21 +235,21 @@
             <div id="section-reservas">
                 <!-- Stats Reservas -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Total Reservas</p>
-                        <p id="stat-total" class="text-3xl font-bold text-amber-800">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Total Reservas</p>
+                        <p id="stat-total" class="text-2xl sm:text-3xl font-bold text-amber-800">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Pendientes</p>
-                        <p id="stat-pendientes" class="text-3xl font-bold text-yellow-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Pendientes</p>
+                        <p id="stat-pendientes" class="text-2xl sm:text-3xl font-bold text-yellow-600">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Confirmadas</p>
-                        <p id="stat-confirmadas" class="text-3xl font-bold text-green-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Confirmadas</p>
+                        <p id="stat-confirmadas" class="text-2xl sm:text-3xl font-bold text-green-600">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Canceladas</p>
-                        <p id="stat-canceladas" class="text-3xl font-bold text-red-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Canceladas</p>
+                        <p id="stat-canceladas" class="text-2xl sm:text-3xl font-bold text-red-600">0</p>
                     </div>
                 </div>
                 
@@ -259,21 +272,21 @@
             <div id="section-pedidos" class="hidden">
                 <!-- Stats Pedidos -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Total Pedidos</p>
-                        <p id="stat-orders-total" class="text-3xl font-bold text-amber-800">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Total Pedidos</p>
+                        <p id="stat-orders-total" class="text-2xl sm:text-3xl font-bold text-amber-800">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Pendientes</p>
-                        <p id="stat-orders-pendientes" class="text-3xl font-bold text-yellow-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Pendientes</p>
+                        <p id="stat-orders-pendientes" class="text-2xl sm:text-3xl font-bold text-yellow-600">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">En Preparación</p>
-                        <p id="stat-orders-preparacion" class="text-3xl font-bold text-blue-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">En Preparación</p>
+                        <p id="stat-orders-preparacion" class="text-2xl sm:text-3xl font-bold text-blue-600">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Completados</p>
-                        <p id="stat-orders-completados" class="text-3xl font-bold text-green-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Completados</p>
+                        <p id="stat-orders-completados" class="text-2xl sm:text-3xl font-bold text-green-600">0</p>
                     </div>
                 </div>
                 
@@ -304,17 +317,17 @@
                 
                 <!-- Stats Eventos -->
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Total Eventos</p>
-                        <p id="stat-events-total" class="text-3xl font-bold text-amber-800">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Total Eventos</p>
+                        <p id="stat-events-total" class="text-2xl sm:text-3xl font-bold text-amber-800">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Activos</p>
-                        <p id="stat-events-activos" class="text-3xl font-bold text-green-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Activos</p>
+                        <p id="stat-events-activos" class="text-2xl sm:text-3xl font-bold text-green-600">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Próximos 7 días</p>
-                        <p id="stat-events-proximos" class="text-3xl font-bold text-blue-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Próximos 7 días</p>
+                        <p id="stat-events-proximos" class="text-2xl sm:text-3xl font-bold text-blue-600">0</p>
                     </div>
                 </div>
                 
@@ -336,21 +349,21 @@
                 
                 <!-- Stats Menú -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Total Items</p>
-                        <p id="stat-menu-total" class="text-3xl font-bold text-amber-800">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Total Items</p>
+                        <p id="stat-menu-total" class="text-2xl sm:text-3xl font-bold text-amber-800">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Platos</p>
-                        <p id="stat-menu-platos" class="text-3xl font-bold text-orange-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Platos</p>
+                        <p id="stat-menu-platos" class="text-2xl sm:text-3xl font-bold text-orange-600">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Bebidas</p>
-                        <p id="stat-menu-bebidas" class="text-3xl font-bold text-blue-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Bebidas</p>
+                        <p id="stat-menu-bebidas" class="text-2xl sm:text-3xl font-bold text-blue-600">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Activos</p>
-                        <p id="stat-menu-activos" class="text-3xl font-bold text-green-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Activos</p>
+                        <p id="stat-menu-activos" class="text-2xl sm:text-3xl font-bold text-green-600">0</p>
                     </div>
                 </div>
                 
@@ -646,21 +659,21 @@
                 
                 <!-- Stats Clientes -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Total Clientes</p>
-                        <p id="stat-clientes-total" class="text-3xl font-bold text-amber-800">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Total Clientes</p>
+                        <p id="stat-clientes-total" class="text-2xl sm:text-3xl font-bold text-amber-800">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Nuevos (Este Mes)</p>
-                        <p id="stat-clientes-nuevos" class="text-3xl font-bold text-green-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Nuevos (Este Mes)</p>
+                        <p id="stat-clientes-nuevos" class="text-2xl sm:text-3xl font-bold text-green-600">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Con Reservas</p>
-                        <p id="stat-clientes-reservas" class="text-3xl font-bold text-blue-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Con Reservas</p>
+                        <p id="stat-clientes-reservas" class="text-2xl sm:text-3xl font-bold text-blue-600">0</p>
                     </div>
-                    <div class="bg-white p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-sm">Con Pedidos</p>
-                        <p id="stat-clientes-pedidos" class="text-3xl font-bold text-purple-600">0</p>
+                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
+                        <p class="text-gray-500 text-xs sm:text-sm">Con Pedidos</p>
+                        <p id="stat-clientes-pedidos" class="text-2xl sm:text-3xl font-bold text-purple-600">0</p>
                     </div>
                 </div>
                 
@@ -1168,8 +1181,10 @@
             });
             
             const activeTab = document.getElementById('tab-' + tab);
-            activeTab.classList.add('active', 'text-amber-800', 'border-amber-600');
-            activeTab.classList.remove('text-gray-500', 'border-transparent');
+            if (activeTab) {
+                activeTab.classList.add('active', 'text-amber-800', 'border-amber-600');
+                activeTab.classList.remove('text-gray-500', 'border-transparent');
+            }
             
             document.getElementById('section-reservas').classList.add('hidden');
             document.getElementById('section-pedidos').classList.add('hidden');
@@ -1191,6 +1206,18 @@
                 loadCoverConfigAdmin();
                 loadStaffUsers();
             }
+
+            const mobileSelect = document.getElementById('mobile-tab-select');
+            if (mobileSelect) {
+                mobileSelect.value = tab;
+            }
+        }
+
+        const mobileTabSelect = document.getElementById('mobile-tab-select');
+        if (mobileTabSelect) {
+            mobileTabSelect.addEventListener('change', (e) => {
+                switchTab(e.target.value);
+            });
         }
 
         function updateOwnerControls(email) {
