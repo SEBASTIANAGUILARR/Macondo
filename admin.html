@@ -202,6 +202,7 @@
                     <option value="eventos">🎉 Eventos</option>
                     <option value="menu">🍽️ Menú</option>
                     <option value="analytics">📊 Analíticas</option>
+                    <option value="basement">🪩 Sótano</option>
                     <option value="clientes">👥 Clientes</option>
                     <option value="cover">🎟️ Covers / Staff</option>
                 </select>
@@ -222,6 +223,9 @@
                 </button>
                 <button id="tab-analytics" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('analytics')">
                     📊 Analíticas
+                </button>
+                <button id="tab-basement" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('basement')">
+                    🪩 Sótano
                 </button>
                 <button id="tab-clientes" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('clientes')">
                     👥 Clientes
@@ -630,6 +634,70 @@
                     <h3 class="text-lg font-bold text-amber-800 mb-4">⚡ Actividad Reciente</h3>
                     <div id="recent-activity" class="space-y-2 max-h-96 overflow-y-auto">
                         <p class="text-gray-500 text-center py-4">Cargando actividad...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Basement Analytics Section -->
+            <div id="section-basement" class="hidden">
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                    <h2 class="text-2xl font-bold text-amber-800">🪩 Analíticas Sótano (Cover)</h2>
+                    <button onclick="loadBasementAnalytics()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg transition-colors">
+                        🔄 Actualizar
+                    </button>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg shadow mb-6">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+                        <div>
+                            <label class="block text-sm font-bold text-amber-800 mb-1">Rango (días)</label>
+                            <input id="basement-days" type="number" min="1" max="365" value="30" class="w-full p-2 border border-amber-300 rounded-lg">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-bold text-amber-800 mb-1">Top clientes</label>
+                            <input id="basement-top" type="number" min="5" max="200" value="30" class="w-full p-2 border border-amber-300 rounded-lg">
+                        </div>
+                        <div class="col-span-2 md:col-span-2 flex items-end">
+                            <div id="basement-status" class="text-sm text-gray-600"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="text-lg font-bold text-amber-800 mb-4">Covers vendidos por día</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-amber-100">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left text-amber-800 font-semibold">Día</th>
+                                        <th class="px-3 py-2 text-left text-amber-800 font-semibold">Covers</th>
+                                        <th class="px-3 py-2 text-left text-amber-800 font-semibold">Ingresos (PLN)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="basement-daily">
+                                    <tr><td colspan="3" class="px-3 py-6 text-center text-gray-500">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="text-lg font-bold text-amber-800 mb-4">Clientes más frecuentes (covers)</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-amber-100">
+                                    <tr>
+                                        <th class="px-3 py-2 text-left text-amber-800 font-semibold">Email</th>
+                                        <th class="px-3 py-2 text-left text-amber-800 font-semibold">Covers</th>
+                                        <th class="px-3 py-2 text-left text-amber-800 font-semibold">Reservas</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="basement-customers">
+                                    <tr><td colspan="3" class="px-3 py-6 text-center text-gray-500">Cargando...</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -1191,6 +1259,7 @@
             document.getElementById('section-eventos').classList.add('hidden');
             document.getElementById('section-menu').classList.add('hidden');
             document.getElementById('section-analytics').classList.add('hidden');
+            document.getElementById('section-basement').classList.add('hidden');
             document.getElementById('section-clientes').classList.add('hidden');
             document.getElementById('section-cover').classList.add('hidden');
             document.getElementById('section-' + tab).classList.remove('hidden');
@@ -1198,6 +1267,9 @@
             if (tab === 'analytics') {
                 updateOwnerControls(document.getElementById('user-email')?.textContent || '');
                 loadAnalytics();
+            }
+            if (tab === 'basement') {
+                loadBasementAnalytics();
             }
             if (tab === 'clientes') {
                 loadClients();
@@ -1218,6 +1290,73 @@
             mobileTabSelect.addEventListener('change', (e) => {
                 switchTab(e.target.value);
             });
+        }
+
+        async function loadBasementAnalytics() {
+            const statusEl = document.getElementById('basement-status');
+            const tbodyDaily = document.getElementById('basement-daily');
+            const tbodyCustomers = document.getElementById('basement-customers');
+
+            if (statusEl) statusEl.textContent = 'Cargando...';
+            if (tbodyDaily) tbodyDaily.innerHTML = '<tr><td colspan="3" class="px-3 py-6 text-center text-gray-500">Cargando...</td></tr>';
+            if (tbodyCustomers) tbodyCustomers.innerHTML = '<tr><td colspan="3" class="px-3 py-6 text-center text-gray-500">Cargando...</td></tr>';
+
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) {
+                if (statusEl) statusEl.textContent = 'Sesión inválida. Vuelve a iniciar sesión.';
+                return;
+            }
+
+            const days = Number(document.getElementById('basement-days')?.value || 30);
+            const top = Number(document.getElementById('basement-top')?.value || 30);
+
+            try {
+                const resp = await fetch(`/.netlify/functions/basement-analytics?days=${encodeURIComponent(days)}&top=${encodeURIComponent(top)}`, {
+                    method: 'GET',
+                    headers: { 'Authorization': 'Bearer ' + accessToken }
+                });
+
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    if (statusEl) statusEl.textContent = data.error || 'No se pudo cargar.';
+                    return;
+                }
+
+                const daily = Array.isArray(data.daily) ? data.daily : [];
+                const customers = Array.isArray(data.customers) ? data.customers : [];
+
+                if (tbodyDaily) {
+                    if (daily.length === 0) {
+                        tbodyDaily.innerHTML = '<tr><td colspan="3" class="px-3 py-6 text-center text-gray-500">Sin datos</td></tr>';
+                    } else {
+                        tbodyDaily.innerHTML = daily.map(r => `
+                            <tr class="border-t">
+                                <td class="px-3 py-2">${r.date}</td>
+                                <td class="px-3 py-2">${r.sold}</td>
+                                <td class="px-3 py-2">${Number(r.revenue_pln || 0).toFixed(0)}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+
+                if (tbodyCustomers) {
+                    if (customers.length === 0) {
+                        tbodyCustomers.innerHTML = '<tr><td colspan="3" class="px-3 py-6 text-center text-gray-500">Sin datos</td></tr>';
+                    } else {
+                        tbodyCustomers.innerHTML = customers.map(c => `
+                            <tr class="border-t">
+                                <td class="px-3 py-2">${c.email}</td>
+                                <td class="px-3 py-2">${c.covers}</td>
+                                <td class="px-3 py-2">${c.reservations === null ? '-' : c.reservations}</td>
+                            </tr>
+                        `).join('');
+                    }
+                }
+
+                if (statusEl) statusEl.textContent = `OK (${data.range_days || days} días)`;
+            } catch (e) {
+                if (statusEl) statusEl.textContent = e.message || String(e);
+            }
         }
 
         function updateOwnerControls(email) {
