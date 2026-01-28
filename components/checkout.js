@@ -110,8 +110,13 @@ class CheckoutSystem {
                         </div>
 
                         <label class="flex items-start gap-3 text-sm text-gray-700">
-                            <input id="checkout-consent" type="checkbox" required class="mt-1">
-                            <span>Acepto que usemos mi correo para enviarme confirmaciones de pedidos e información de eventos y promociones.</span>
+                            <input id="checkout-consent-confirm" type="checkbox" required class="mt-1">
+                            <span>Acepto recibir confirmaciones relacionadas con mi pedido.</span>
+                        </label>
+
+                        <label class="flex items-start gap-3 text-sm text-gray-700">
+                            <input id="checkout-consent-marketing" type="checkbox" class="mt-1">
+                            <span>Acepto recibir promociones y los próximos eventos.</span>
                         </label>
 
                         <!-- Botones -->
@@ -214,11 +219,13 @@ class CheckoutSystem {
         const deliveryType = formData.get('delivery-type');
         const paymentMethod = formData.get('payment-method');
 
-        const consent = !!document.getElementById('checkout-consent')?.checked;
-        if (!consent) {
+        const consentConfirm = !!document.getElementById('checkout-consent-confirm')?.checked;
+        if (!consentConfirm) {
             window.cart.showNotification('Debes aceptar el consentimiento para continuar.', 'error');
             return;
         }
+
+        const consentMarketing = !!document.getElementById('checkout-consent-marketing')?.checked;
         
         const orderData = {
             cartItems: window.cart.items,
@@ -227,7 +234,7 @@ class CheckoutSystem {
             paymentMethod: paymentMethod,
             phone: document.getElementById('checkout-phone').value,
             notes: document.getElementById('checkout-notes').value,
-            consentNewsletter: consent
+            consentNewsletter: consentMarketing
         };
 
         if (deliveryType === 'delivery') {

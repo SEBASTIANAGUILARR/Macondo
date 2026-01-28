@@ -156,8 +156,14 @@ function setupReservationForm() {
       horaEntrada: document.getElementById('hora-entrada')?.value || '',
       personas: document.getElementById('personas')?.value || '1',
       comentarios: document.getElementById('comentarios')?.value || '',
-      consentNewsletter: !!document.getElementById('reservas-consent')?.checked
+      consentNewsletter: !!document.getElementById('reservas-consent-marketing')?.checked
     };
+
+    const consentConfirm = !!document.getElementById('reservas-consent-confirm')?.checked;
+    if (!consentConfirm) {
+      showNotification('Debes aceptar el consentimiento de confirmaciones para continuar.', 'error');
+      return;
+    }
 
     // Validar campos requeridos
     if (!reservationData.nombre || !reservationData.email || !reservationData.fecha) {
