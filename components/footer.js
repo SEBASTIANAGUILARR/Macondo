@@ -8,6 +8,8 @@ class CustomFooter extends HTMLElement {
           background-color: #92400e;
           color: white;
           padding: 2.5rem 1.5rem;
+          box-shadow: 0 100vmax 0 100vmax #92400e;
+          clip-path: inset(0 -100vmax);
         }
 
         .footer-container {
