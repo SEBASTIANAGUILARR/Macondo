@@ -96,7 +96,7 @@ class CustomFooter extends HTMLElement {
             class="map-frame"
             loading="lazy"
             referrerpolicy="no-referrer-when-downgrade"
-            src="https://www.google.com/maps?output=embed&q=https%3A%2F%2Fmaps.app.goo.gl%2FSubxFp7CB7s8yKdz7">
+            src="https://www.google.com/maps?q=52.2250841,21.01948&z=16&output=embed">
           </iframe>
           <div class="map-actions">
             <a class="map-button" href="https://maps.app.goo.gl/SubxFp7CB7s8yKdz7" target="_blank" rel="noopener noreferrer">
