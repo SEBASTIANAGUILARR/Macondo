@@ -115,8 +115,8 @@ async function sendZeptoMail({ to, subject, htmlbody }) {
   const fromAddress = process.env.ZEPTOMAIL_FROM_ADDRESS || 'events@macondo.pl';
   const fromName = process.env.ZEPTOMAIL_FROM_NAME || 'Macondo Bar Latino';
 
-  // ZeptoMail docs use api.zeptomail.com; EU users are still served there.
-  const url = 'https://api.zeptomail.com/v1.1/email';
+  const host = process.env.ZEPTOMAIL_API_HOST || 'api.zeptomail.eu';
+  const url = `https://${host}/v1.1/email`;
 
   const payload = {
     from: { address: fromAddress, name: fromName },
