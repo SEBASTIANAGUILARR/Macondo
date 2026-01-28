@@ -14,6 +14,12 @@ function ymd(date) {
   return `${y}-${m}-${day}`;
 }
 
+function addDays(date, days) {
+  const d = new Date(date);
+  d.setDate(d.getDate() + days);
+  return d;
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return json(200, { ok: true });
   if (event.httpMethod !== 'GET') return json(405, { error: 'Method not allowed' });
@@ -25,8 +31,21 @@ exports.handler = async (event) => {
     const payload = verifyStaffToken(token);
     if (!payload) return json(401, { error: 'Invalid token' });
 
-    const today = ymd(new Date());
-    const rows = await supabaseRest(`cover_tickets?select=id,person_name,person_email,person_phone,used_at,status,created_at&event_date=eq.${today}&order=created_at.desc&limit=200`);
+    const qs = event.queryStringParameters || {};
+    const days = Number(qs.days);
+
+    let createdFilter = '';
+    if (Number.isFinite(days) && days > 0) {
+      const since = addDays(new Date(), -Math.min(days, 365));
+      createdFilter = `&created_at=gte.${encodeURIComponent(since.toISOString())}`;
+    }
+
+    const rows = await supabaseRest(
+      `cover_tickets?select=id,person_name,person_email,person_phone,used_at,status,created_at` +
+        `&used_at=is.null` +
+        createdFilter +
+        `&order=created_at.desc&limit=200`
+    );
 
     return json(200, { ok: true, tickets: rows || [] });
   } catch (e) {
