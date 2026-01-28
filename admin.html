@@ -1095,14 +1095,7 @@
             document.getElementById('user-info').classList.remove('hidden');
             document.getElementById('user-email').textContent = email;
 
-            const clearBtn = document.getElementById('btn-clear-analytics');
-            if (clearBtn) {
-                if (String(email || '').toLowerCase() === 'sebastian.aguilargutierrez@gmail.com') {
-                    clearBtn.classList.remove('hidden');
-                } else {
-                    clearBtn.classList.add('hidden');
-                }
-            }
+            updateOwnerControls(email);
             
             loadReservations();
             loadOrders();
@@ -1133,10 +1126,22 @@
             document.getElementById('section-' + tab).classList.remove('hidden');
             
             if (tab === 'analytics') {
+                updateOwnerControls(document.getElementById('user-email')?.textContent || '');
                 loadAnalytics();
             }
             if (tab === 'clientes') {
                 loadClients();
+            }
+        }
+
+        function updateOwnerControls(email) {
+            const clearBtn = document.getElementById('btn-clear-analytics');
+            if (!clearBtn) return;
+
+            if (String(email || '').trim().toLowerCase() === 'sebastian.aguilargutierrez@gmail.com') {
+                clearBtn.classList.remove('hidden');
+            } else {
+                clearBtn.classList.add('hidden');
             }
         }
         
