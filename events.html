@@ -48,7 +48,7 @@
                         <div class="grid md:grid-cols-3 gap-3">
                             <input id="buyer-name" type="text" placeholder="Nombre comprador" class="p-3 border border-amber-300 rounded-lg" required>
                             <input id="buyer-email" type="email" placeholder="Email comprador" class="p-3 border border-amber-300 rounded-lg" required>
-                            <input id="buyer-phone" type="tel" placeholder="Teléfono comprador" class="p-3 border border-amber-300 rounded-lg">
+                            <input id="buyer-phone" type="tel" placeholder="Teléfono comprador" class="p-3 border border-amber-300 rounded-lg" required>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
@@ -56,6 +56,7 @@
                             <button type="button" id="add-person" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg">+ Añadir persona</button>
                         </div>
 
+                        <div class="text-sm text-gray-600">Persona #1 = comprador</div>
                         <div id="people-list" class="space-y-3"></div>
 
                         <label class="flex items-start gap-3 text-sm text-gray-700">
@@ -131,7 +132,7 @@
             return `
                 <div class="p-4 border border-amber-200 rounded-lg bg-amber-50">
                     <div class="flex items-center justify-between gap-3 mb-3">
-                        <div class="font-bold text-amber-800">Persona #${index + 1}</div>
+                        <div class="font-bold text-amber-800">Persona #${index + 2}</div>
                         <button type="button" class="remove-person text-red-600 hover:text-red-700 font-bold" data-index="${index}">Eliminar</button>
                     </div>
                     <div class="grid md:grid-cols-3 gap-3">
@@ -144,7 +145,7 @@
         }
 
         function updateCoverTotal() {
-            const count = document.querySelectorAll('#people-list > div').length;
+            const count = 1 + document.querySelectorAll('#people-list > div').length;
             const total = count * Number(coverConfig.price_pln || 0);
             const totalEl = document.getElementById('cover-total');
             if (totalEl) totalEl.textContent = String(total);
@@ -181,7 +182,7 @@
             if (!list) return;
             Array.from(list.children).forEach((child, i) => {
                 const title = child.querySelector('.font-bold.text-amber-800');
-                if (title) title.textContent = `Persona #${i + 1}`;
+                if (title) title.textContent = `Persona #${i + 2}`;
                 const btn = child.querySelector('.remove-person');
                 if (btn) btn.dataset.index = String(i);
             });
@@ -249,7 +250,7 @@
 
             // Inicializar cover
             loadCoverConfig();
-            addPerson();
+            updateCoverTotal();
 
             const addBtn = document.getElementById('add-person');
             if (addBtn) {
@@ -296,7 +297,7 @@
                     const buyer_email = document.getElementById('buyer-email').value.trim();
                     const buyer_phone = document.getElementById('buyer-phone').value.trim();
 
-                    const people = Array.from(document.querySelectorAll('#people-list > div')).map(row => {
+                    const extraPeople = Array.from(document.querySelectorAll('#people-list > div')).map(row => {
                         return {
                             name: row.querySelector('[data-field="name"]').value.trim(),
                             email: row.querySelector('[data-field="email"]').value.trim(),
@@ -304,22 +305,19 @@
                         };
                     });
 
-                    if (!buyer_name || !buyer_email) {
-                        if (statusEl) statusEl.textContent = 'Completa el nombre y email del comprador.';
+                    if (!buyer_name || !buyer_email || !buyer_phone) {
+                        if (statusEl) statusEl.textContent = 'Completa el nombre, email y teléfono del comprador.';
                         return;
                     }
 
-                    if (people.length === 0) {
-                        if (statusEl) statusEl.textContent = 'Añade al menos una persona.';
-                        return;
-                    }
-
-                    for (const p of people) {
+                    for (const p of extraPeople) {
                         if (!p.name || !p.email || !p.phone) {
                             if (statusEl) statusEl.textContent = 'Cada persona debe tener nombre, email y teléfono.';
                             return;
                         }
                     }
+
+                    const people = [{ name: buyer_name, email: buyer_email, phone: buyer_phone }, ...extraPeople];
 
                     try {
                         if (submitBtn) {
