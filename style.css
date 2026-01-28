@@ -6,6 +6,7 @@
 html {
     overflow-x: hidden;
     scroll-behavior: smooth;
+    background-color: #92400e;
 }
 
 body {
@@ -17,6 +18,7 @@ body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
 }
