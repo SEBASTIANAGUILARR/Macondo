@@ -109,6 +109,11 @@ class CheckoutSystem {
                             </div>
                         </div>
 
+                        <label class="flex items-start gap-3 text-sm text-gray-700">
+                            <input id="checkout-consent" type="checkbox" required class="mt-1">
+                            <span>Acepto que usemos mi correo para enviarme confirmaciones de pedidos e información de eventos y promociones.</span>
+                        </label>
+
                         <!-- Botones -->
                         <div class="flex gap-3">
                             <button type="button" onclick="window.checkout.closeCheckout()" 
@@ -131,9 +136,9 @@ class CheckoutSystem {
 
     attachEventListeners() {
         // Formulario de checkout
-        document.getElementById('checkout-form').addEventListener('submit', (e) => {
+        document.getElementById('checkout-form').addEventListener('submit', async (e) => {
             e.preventDefault();
-            this.processOrder();
+            await this.processOrder();
         });
 
         // Tipo de entrega
@@ -204,10 +209,16 @@ class CheckoutSystem {
         }
     }
 
-    processOrder() {
+    async processOrder() {
         const formData = new FormData(document.getElementById('checkout-form'));
         const deliveryType = formData.get('delivery-type');
         const paymentMethod = formData.get('payment-method');
+
+        const consent = !!document.getElementById('checkout-consent')?.checked;
+        if (!consent) {
+            window.cart.showNotification('Debes aceptar el consentimiento para continuar.', 'error');
+            return;
+        }
         
         const orderData = {
             cartItems: window.cart.items,
@@ -215,7 +226,8 @@ class CheckoutSystem {
             deliveryType: deliveryType,
             paymentMethod: paymentMethod,
             phone: document.getElementById('checkout-phone').value,
-            notes: document.getElementById('checkout-notes').value
+            notes: document.getElementById('checkout-notes').value,
+            consentNewsletter: consent
         };
 
         if (deliveryType === 'delivery') {
@@ -237,6 +249,55 @@ class CheckoutSystem {
         order.address = orderData.address || null;
         
         window.orderSystem.saveOrders();
+
+        // Upsert del cliente en Supabase (best-effort)
+        try {
+            if (window.supabaseClient && orderData.userInfo?.email) {
+                const email = orderData.userInfo.email;
+                const nombre = orderData.userInfo.name || '';
+                const telefono = orderData.phone || orderData.userInfo.phone || null;
+
+                const { data: existing, error: existingError } = await window.supabaseClient
+                    .from('clients')
+                    .select('id,total_pedidos,newsletter')
+                    .eq('email', email)
+                    .maybeSingle();
+
+                if (existingError && existingError.code !== 'PGRST116') {
+                    throw existingError;
+                }
+
+                if (!existing) {
+                    const { error } = await window.supabaseClient
+                        .from('clients')
+                        .insert([{
+                            nombre,
+                            email,
+                            telefono,
+                            newsletter: !!orderData.consentNewsletter,
+                            total_reservas: 0,
+                            total_pedidos: 1,
+                            created_at: new Date().toISOString()
+                        }]);
+                    if (error) throw error;
+                } else {
+                    const nextPedidos = (existing.total_pedidos || 0) + 1;
+                    const nextNewsletter = existing.newsletter || !!orderData.consentNewsletter;
+                    const { error } = await window.supabaseClient
+                        .from('clients')
+                        .update({
+                            nombre,
+                            telefono,
+                            newsletter: nextNewsletter,
+                            total_pedidos: nextPedidos
+                        })
+                        .eq('id', existing.id);
+                    if (error) throw error;
+                }
+            }
+        } catch (e) {
+            // no bloquear el checkout por fallo de tracking
+        }
 
         // Limpiar carrito
         window.cart.clearCart();

@@ -43,9 +43,7 @@ const ReservationSystem = {
         telefono: reservationData.telefono || null,
         fecha: reservationData.fecha,
         hora_entrada: reservationData.horaEntrada || null,
-        hora_salida: reservationData.horaSalida || null,
         personas: parseInt(reservationData.personas) || 1,
-        mesa: reservationData.mesa || null,
         comentarios: reservationData.comentarios || null,
         estado: 'pendiente',
         created_at: new Date().toISOString()
@@ -61,6 +59,31 @@ const ReservationSystem = {
       if (error) {
         console.error('Error al crear reserva:', error);
         return { success: false, error: error.message };
+      }
+
+      // Upsert del cliente para panel admin / marketing (best-effort)
+      try {
+        if (reservationData?.consentNewsletter) {
+          await upsertClientFromInteraction({
+            nombre: reservationData.nombre,
+            email: reservationData.email,
+            telefono: reservationData.telefono || null,
+            newsletter: true,
+            incReservas: 1,
+            incPedidos: 0
+          });
+        } else {
+          await upsertClientFromInteraction({
+            nombre: reservationData.nombre,
+            email: reservationData.email,
+            telefono: reservationData.telefono || null,
+            newsletter: false,
+            incReservas: 1,
+            incPedidos: 0
+          });
+        }
+      } catch (e) {
+        console.warn('No se pudo actualizar cliente en clients:', e);
       }
 
       console.log('Reserva creada:', data);
@@ -90,83 +113,6 @@ const ReservationSystem = {
       return { success: true, data };
     } catch (err) {
       return { success: false, error: err.message };
-    }
-  },
-
-  // Verificar disponibilidad de mesa (bloqueo de 2 horas)
-  async checkTableAvailability(fecha, horaEntrada, horaSalida, mesa) {
-    if (!supabaseClient) {
-      return { available: true };
-    }
-
-    // Si no hay hora de entrada, no podemos verificar
-    if (!horaEntrada) {
-      return { available: true };
-    }
-
-    try {
-      const { data, error } = await supabaseClient
-        .from('reservations')
-        .select('*')
-        .eq('fecha', fecha)
-        .eq('mesa', mesa)
-        .in('estado', ['pendiente', 'confirmada']); // Solo reservas activas
-
-      if (error) {
-        console.error('Error verificando disponibilidad:', error);
-        return { available: true, error: error.message };
-      }
-
-      if (!data || data.length === 0) {
-        return { available: true };
-      }
-
-      // Convertir hora a minutos para comparación
-      const timeToMinutes = (timeStr) => {
-        if (!timeStr) return null;
-        const [hours, minutes] = timeStr.split(':').map(Number);
-        return hours * 60 + minutes;
-      };
-
-      const newStart = timeToMinutes(horaEntrada);
-      // Si no hay hora de salida, asumir 2 horas de duración
-      const newEnd = horaSalida ? timeToMinutes(horaSalida) : newStart + 120;
-
-      // Verificar conflictos con margen de 2 horas
-      const BUFFER_MINUTES = 120; // 2 horas de margen
-
-      const hasConflict = data.some(reservation => {
-        const existingStart = timeToMinutes(reservation.hora_entrada);
-        if (existingStart === null) return false;
-        
-        // Si la reserva existente no tiene hora de salida, asumir 2 horas
-        const existingEnd = reservation.hora_salida 
-          ? timeToMinutes(reservation.hora_salida) 
-          : existingStart + 120;
-
-        // Verificar si hay solapamiento considerando el buffer
-        // La nueva reserva conflicta si:
-        // - Empieza antes de que termine la existente + buffer
-        // - Y termina después de que empiece la existente - buffer
-        const conflictStart = existingStart - BUFFER_MINUTES;
-        const conflictEnd = existingEnd + BUFFER_MINUTES;
-
-        const overlaps = newStart < conflictEnd && newEnd > conflictStart;
-        
-        if (overlaps) {
-          console.log(`Conflicto detectado: Mesa ${mesa} ya reservada de ${reservation.hora_entrada} a ${reservation.hora_salida || 'N/A'}`);
-        }
-        
-        return overlaps;
-      });
-
-      return { 
-        available: !hasConflict,
-        conflictingReservations: hasConflict ? data : []
-      };
-    } catch (err) {
-      console.error('Error inesperado:', err);
-      return { available: true, error: err.message };
     }
   },
 
@@ -208,10 +154,9 @@ function setupReservationForm() {
       telefono: document.getElementById('telefono')?.value || '',
       fecha: document.getElementById('fecha')?.value || '',
       horaEntrada: document.getElementById('hora-entrada')?.value || '',
-      horaSalida: document.getElementById('hora-salida')?.value || '',
       personas: document.getElementById('personas')?.value || '1',
-      mesa: window.selectedTable || null,
-      comentarios: document.getElementById('comentarios')?.value || ''
+      comentarios: document.getElementById('comentarios')?.value || '',
+      consentNewsletter: !!document.getElementById('reservas-consent')?.checked
     };
 
     // Validar campos requeridos
@@ -226,23 +171,6 @@ function setupReservationForm() {
     submitBtn.innerHTML = '<span>Procesando...</span>';
     submitBtn.disabled = true;
 
-    // Verificar disponibilidad si hay mesa seleccionada
-    if (reservationData.mesa) {
-      const availability = await ReservationSystem.checkTableAvailability(
-        reservationData.fecha,
-        reservationData.horaEntrada,
-        reservationData.horaSalida,
-        reservationData.mesa
-      );
-
-      if (!availability.available) {
-        showNotification('La Mesa ' + reservationData.mesa + ' no está disponible en ese horario. Hay una reserva dentro de las 2 horas anteriores o posteriores. Por favor, elige otra mesa u otro horario.', 'error');
-        submitBtn.innerHTML = originalText;
-        submitBtn.disabled = false;
-        return;
-      }
-    }
-
     // Crear reserva
     console.log('Enviando reserva a Supabase:', reservationData);
     const result = await ReservationSystem.createReservation(reservationData);
@@ -251,9 +179,6 @@ function setupReservationForm() {
     if (result.success) {
       showNotification('¡Reserva realizada con éxito! Te contactaremos pronto.', 'success');
       form.reset();
-      window.selectedTable = null;
-      // Limpiar selección de mesa visualmente
-      document.querySelectorAll('.table-selected').forEach(el => el.classList.remove('table-selected'));
     } else {
       console.error('Error detallado:', result.error);
       showNotification(`Error: ${result.error || 'Error desconocido'}`, 'error');
@@ -301,34 +226,57 @@ function showNotification(message, type = 'info') {
   }, 5000);
 }
 
-// Configurar selección de mesas
-function setupTableSelection() {
-  const tables = document.querySelectorAll('#reservas .bg-white.p-3');
-  
-  tables.forEach((table, index) => {
-    const tableNumber = index + 1;
-    const isOccupied = table.querySelector('.text-red-500');
-    
-    if (!isOccupied) {
-      table.addEventListener('click', () => {
-        // Remover selección anterior
-        tables.forEach(t => t.classList.remove('ring-2', 'ring-amber-500', 'table-selected'));
-        
-        // Seleccionar esta mesa
-        table.classList.add('ring-2', 'ring-amber-500', 'table-selected');
-        window.selectedTable = tableNumber;
-        
-        showNotification(`Mesa ${tableNumber} seleccionada`, 'info');
-      });
-    }
-  });
+async function upsertClientFromInteraction({ nombre, email, telefono, newsletter, incReservas, incPedidos }) {
+  if (!supabaseClient || !email) return;
+
+  const { data: existing, error: existingError } = await supabaseClient
+    .from('clients')
+    .select('id,total_reservas,total_pedidos,newsletter')
+    .eq('email', email)
+    .maybeSingle();
+
+  if (existingError && existingError.code !== 'PGRST116') {
+    throw existingError;
+  }
+
+  if (!existing) {
+    const { error } = await supabaseClient
+      .from('clients')
+      .insert([{
+        nombre,
+        email,
+        telefono: telefono || null,
+        newsletter: !!newsletter,
+        total_reservas: incReservas || 0,
+        total_pedidos: incPedidos || 0,
+        created_at: new Date().toISOString()
+      }]);
+    if (error) throw error;
+    return;
+  }
+
+  const nextReservas = (existing.total_reservas || 0) + (incReservas || 0);
+  const nextPedidos = (existing.total_pedidos || 0) + (incPedidos || 0);
+  const nextNewsletter = existing.newsletter || !!newsletter;
+
+  const { error } = await supabaseClient
+    .from('clients')
+    .update({
+      nombre,
+      telefono: telefono || null,
+      newsletter: nextNewsletter,
+      total_reservas: nextReservas,
+      total_pedidos: nextPedidos
+    })
+    .eq('id', existing.id);
+
+  if (error) throw error;
 }
 
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
   initSupabase();
   setupReservationForm();
-  setupTableSelection();
 });
 
 // Exportar para uso global
