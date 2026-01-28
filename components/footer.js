@@ -88,7 +88,7 @@ class CustomFooter extends HTMLElement {
       
       <div class="footer-container">
         <div class="footer-logo">
-          <img src="logo.pnh.png" alt="Macondo Bar Latino">
+          <img src="logoamarillo.png" alt="Macondo Bar Latino">
         </div>
 
         <div class="map-card">
