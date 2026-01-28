@@ -367,7 +367,12 @@
 
             <!-- Analytics Section -->
             <div id="section-analytics" class="hidden">
-                <h2 class="text-2xl font-bold text-amber-800 mb-6">📊 Panel de Analíticas</h2>
+                <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                    <h2 class="text-2xl font-bold text-amber-800">📊 Panel de Analíticas</h2>
+                    <button id="btn-clear-analytics" onclick="clearAnalytics()" class="hidden bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg transition-colors">
+                        🗑️ Limpiar analíticas
+                    </button>
+                </div>
                 
                 <!-- Selector de período -->
                 <div class="flex flex-wrap gap-2 mb-6">
@@ -1089,6 +1094,15 @@
             document.getElementById('admin-panel').classList.remove('hidden');
             document.getElementById('user-info').classList.remove('hidden');
             document.getElementById('user-email').textContent = email;
+
+            const clearBtn = document.getElementById('btn-clear-analytics');
+            if (clearBtn) {
+                if (String(email || '').toLowerCase() === 'sebastian.aguilargutierrez@gmail.com') {
+                    clearBtn.classList.remove('hidden');
+                } else {
+                    clearBtn.classList.add('hidden');
+                }
+            }
             
             loadReservations();
             loadOrders();
@@ -2616,6 +2630,38 @@
                 return data?.session?.access_token || null;
             } catch (e) {
                 return null;
+            }
+        }
+
+        async function clearAnalytics() {
+            if (!confirm('¿Seguro que quieres borrar TODOS los registros de analíticas?')) return;
+
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) {
+                alert('Tu sesión no es válida. Vuelve a iniciar sesión en el panel admin.');
+                return;
+            }
+
+            try {
+                const resp = await fetch('/.netlify/functions/clear-analytics', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + accessToken
+                    },
+                    body: JSON.stringify({})
+                });
+
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    alert('Error limpiando analíticas: ' + (data.error || resp.statusText));
+                    return;
+                }
+
+                alert('✅ Analíticas borradas.');
+                await loadAnalytics();
+            } catch (e) {
+                alert('Error limpiando analíticas: ' + (e.message || e));
             }
         }
         
