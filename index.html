@@ -241,7 +241,7 @@
         feather.replace();
         
         // Selección de mesas
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', async function() {
             try {
                 window.authModal = new AuthModal();
                 window.authModal.init();
@@ -272,8 +272,34 @@
             }
             
             // Cargar menú y eventos dinámicos desde Supabase
-            loadMenuFromSupabase();
-            loadEventsFromSupabase();
+            try {
+                await loadMenuFromSupabase();
+                await loadEventsFromSupabase();
+            } catch (e) {}
+
+            const hash = (window.location.hash || '').replace('#', '');
+            if (hash) {
+                const target = document.getElementById(hash);
+                if (target) {
+                    const scrollToTarget = () => {
+                        const offset = 90;
+                        const top = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                        window.scrollTo({ top, behavior: 'auto' });
+                    };
+
+                    scrollToTarget();
+
+                    let attempts = 0;
+                    const maxAttempts = 12;
+                    const timer = setInterval(() => {
+                        attempts += 1;
+                        scrollToTarget();
+                        if (attempts >= maxAttempts) {
+                            clearInterval(timer);
+                        }
+                    }, 200);
+                }
+            }
 
         });
         
