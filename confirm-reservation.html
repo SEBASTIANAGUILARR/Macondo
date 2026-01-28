@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirmar Reserva - Macondo</title>
+  <link rel="icon" type="image/png" href="favicon.png" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-amber-50 min-h-screen flex items-center justify-center p-4">
+  <div class="bg-white rounded-lg shadow-lg max-w-xl w-full p-8">
+    <h1 class="text-2xl font-bold text-amber-800 mb-2">Confirmar Reserva</h1>
+    <p class="text-gray-600 mb-6">Usa esta página para confirmar tu asistencia.</p>
+
+    <div id="status" class="p-4 rounded-lg bg-amber-50 text-amber-900">Procesando...</div>
+
+    <div class="mt-6">
+      <a href="index.html" class="inline-block bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Volver al inicio</a>
+    </div>
+  </div>
+
+  <script>
+    async function run() {
+      const statusEl = document.getElementById('status');
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const token = params.get('token');
+        if (!token) {
+          statusEl.className = 'p-4 rounded-lg bg-red-50 text-red-700';
+          statusEl.textContent = 'Falta el token de confirmación.';
+          return;
+        }
+
+        const resp = await fetch('/.netlify/functions/confirm-reservation', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token })
+        });
+
+        const data = await resp.json().catch(() => ({}));
+        if (!resp.ok) {
+          statusEl.className = 'p-4 rounded-lg bg-red-50 text-red-700';
+          statusEl.textContent = data.error || 'No se pudo confirmar la reserva.';
+          return;
+        }
+
+        statusEl.className = 'p-4 rounded-lg bg-green-50 text-green-700';
+        statusEl.textContent = '¡Reserva confirmada! Gracias por reconfirmar.';
+      } catch (e) {
+        statusEl.className = 'p-4 rounded-lg bg-red-50 text-red-700';
+        statusEl.textContent = 'Error inesperado. Intenta más tarde.';
+      }
+    }
+
+    run();
+  </script>
+</body>
+</html>

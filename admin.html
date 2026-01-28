@@ -630,6 +630,9 @@
                         <button onclick="showEmailMarketingModal()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
                             ✉️ Email Marketing
                         </button>
+                        <button onclick="openZohoInbox()" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                            📥 Abrir Zoho Mail
+                        </button>
                     </div>
                 </div>
                 
@@ -2515,6 +2518,10 @@
             // Contar destinatarios suscritos
             const subscribedCount = clients.filter(c => c.newsletter).length;
             document.getElementById('email-recipients-count').textContent = subscribedCount;
+        }
+
+        function openZohoInbox() {
+            window.open('https://mail.zoho.eu/', '_blank', 'noopener,noreferrer');
         }
         
         function closeEmailMarketingModal() {
