@@ -1,9 +1,9 @@
 class I18n {
     constructor() {
-        this.currentLang = 'es';
+        this.currentLang = 'en';
         this.translations = {};
         this.supportedLanguages = ['es', 'en', 'pl'];
-        this.fallbackLanguage = 'es';
+        this.fallbackLanguage = 'en';
         
         this.init();
     }
@@ -30,14 +30,20 @@ class I18n {
             return;
         }
 
-        // Detectar idioma del navegador
-        const browserLang = navigator.language || navigator.userLanguage;
-        const langCode = browserLang.split('-')[0];
-        
-        if (this.supportedLanguages.includes(langCode)) {
-            this.currentLang = langCode;
+        // Detectar idioma del sistema (preferencia del navegador)
+        const languages = Array.isArray(navigator.languages) && navigator.languages.length > 0
+            ? navigator.languages
+            : [navigator.language || navigator.userLanguage || 'en'];
+
+        const first = String(languages[0] || 'en').toLowerCase();
+        const langCode = first.split('-')[0];
+
+        if (langCode === 'es') {
+            this.currentLang = 'es';
+        } else if (langCode === 'pl') {
+            this.currentLang = 'pl';
         } else {
-            this.currentLang = this.fallbackLanguage;
+            this.currentLang = 'en';
         }
         
         // Guardar idioma detectado
