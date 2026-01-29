@@ -158,6 +158,23 @@ class AuthSystem {
             return null;
         }
     }
+
+    async resendConfirmationEmail(email) {
+        if (!window.supabaseClient?.auth) {
+            throw new Error('Supabase no está listo. Recarga la página.');
+        }
+
+        const { error } = await window.supabaseClient.auth.resend({
+            type: 'signup',
+            email: String(email || '').trim(),
+        });
+
+        if (error) {
+            throw new Error(error.message || 'No se pudo reenviar el email de confirmación');
+        }
+
+        return true;
+    }
 }
 
 // Instancia global

@@ -91,6 +91,15 @@ class AuthModal {
 
                         <!-- Error message -->
                         <div id="auth-error" class="mt-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded-lg hidden"></div>
+
+                        <!-- Resend confirmation -->
+                        <div id="auth-resend" class="mt-4 p-3 bg-amber-50 border border-amber-300 text-amber-800 rounded-lg hidden">
+                            <div class="font-semibold mb-2">Tu email aún no está confirmado</div>
+                            <div class="text-sm mb-3">Revisa tu bandeja de entrada (y spam). Si no te llegó, puedes reenviar el correo de confirmación.</div>
+                            <button id="resend-confirmation" type="button" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
+                                Reenviar email de confirmación
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -123,6 +132,21 @@ class AuthModal {
         document.getElementById('auth-modal').addEventListener('click', (e) => {
             if (e.target.id === 'auth-modal') {
                 this.close();
+            }
+        });
+
+        // Resend confirmation email
+        document.getElementById('resend-confirmation').addEventListener('click', async () => {
+            const email = (document.getElementById('login-email')?.value || '').trim();
+            if (!email) {
+                this.showError('Introduce tu email para reenviar la confirmación');
+                return;
+            }
+            try {
+                await window.auth.resendConfirmationEmail(email);
+                this.showSuccess('Te hemos reenviado el email de confirmación');
+            } catch (e) {
+                this.showError(e.message);
             }
         });
     }
@@ -161,7 +185,14 @@ class AuthModal {
             this.close();
             this.showSuccess('¡Bienvenido de vuelta!');
         } catch (error) {
-            this.showError(error.message);
+            const msg = String(error?.message || 'Error');
+            if (msg.toLowerCase().includes('email not confirmed')) {
+                this.showError('Email no confirmado. Revisa tu correo y confirma tu cuenta.');
+                const resend = document.getElementById('auth-resend');
+                if (resend) resend.classList.remove('hidden');
+                return;
+            }
+            this.showError(msg);
         }
     }
 
@@ -234,6 +265,7 @@ class AuthModal {
         document.getElementById('login-form').reset();
         document.getElementById('register-form').reset();
         document.getElementById('auth-error').classList.add('hidden');
+        document.getElementById('auth-resend').classList.add('hidden');
         
         // Reset to login view
         if (this.currentView === 'register') {
