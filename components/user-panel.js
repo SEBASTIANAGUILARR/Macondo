@@ -31,9 +31,22 @@ class UserPanel {
                         </div>
                     </div>
                     
-                    <div class="flex h-[calc(90vh-80px)]">
+                    <div class="flex flex-col sm:flex-row h-[calc(90vh-80px)]">
+                        <!-- Mobile tab selector -->
+                        <div class="sm:hidden p-4 border-b bg-amber-50">
+                            <label for="user-panel-tab-select" class="block text-sm font-bold text-amber-800 mb-2">Sección</label>
+                            <select id="user-panel-tab-select" class="w-full p-3 border border-amber-300 rounded-lg bg-white">
+                                <option value="profile">Mi Perfil</option>
+                                <option value="orders">Mis Pedidos</option>
+                                <option value="reservations">Mis Reservas</option>
+                                <option value="covers">Mis Covers</option>
+                                <option value="addresses">Direcciones</option>
+                                <option value="settings">Configuración</option>
+                            </select>
+                        </div>
+
                         <!-- Sidebar -->
-                        <div class="w-64 bg-amber-50 p-4 border-r">
+                        <div class="hidden sm:block w-64 bg-amber-50 p-4 border-r">
                             <div class="space-y-2">
                                 <button class="w-full text-left px-4 py-2 rounded-lg hover:bg-amber-200 transition-colors panel-tab active" data-tab="profile">
                                     <i data-feather="user" class="w-4 h-4 inline mr-2"></i>
@@ -63,7 +76,7 @@ class UserPanel {
                         </div>
                         
                         <!-- Content -->
-                        <div class="flex-1 overflow-y-auto p-6">
+                        <div class="flex-1 overflow-y-auto p-4 sm:p-6">
                             <!-- Profile Tab -->
                             <div id="profile-tab" class="tab-content">
                                 <h3 class="text-xl font-bold text-amber-800 mb-4">Información Personal</h3>
@@ -162,8 +175,11 @@ class UserPanel {
     }
 
     attachEventListeners() {
+        const closeBtn = document.getElementById('close-panel');
+        if (!closeBtn) return;
+
         // Close panel
-        document.getElementById('close-panel').addEventListener('click', () => this.close());
+        closeBtn.addEventListener('click', () => this.close());
         
         // Tab navigation
         document.querySelectorAll('.panel-tab').forEach(tab => {
@@ -172,6 +188,13 @@ class UserPanel {
                 this.switchTab(tabName);
             });
         });
+
+        const mobileSelect = document.getElementById('user-panel-tab-select');
+        if (mobileSelect) {
+            mobileSelect.addEventListener('change', (e) => {
+                this.switchTab(e.target.value);
+            });
+        }
         
         // Profile form
         document.getElementById('profile-form').addEventListener('submit', (e) => {
@@ -237,6 +260,11 @@ class UserPanel {
                 tab.classList.add('active', 'bg-amber-200');
             }
         });
+
+        const mobileSelect = document.getElementById('user-panel-tab-select');
+        if (mobileSelect) {
+            mobileSelect.value = tabName;
+        }
         
         // Update content
         document.querySelectorAll('.tab-content').forEach(content => {
