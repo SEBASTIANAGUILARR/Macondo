@@ -28,6 +28,12 @@ async function adminAuthRequest(path, { method = 'GET', body = null } = {}) {
   return await resp.text().catch(() => null);
 }
 
+async function getUserEmailById(userId) {
+  const data = await adminAuthRequest(`/auth/v1/admin/users/${encodeURIComponent(userId)}`, { method: 'GET' });
+  const email = String(data?.email || '').trim().toLowerCase();
+  return email || null;
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return json(200, { ok: true });
 
@@ -63,16 +69,30 @@ exports.handler = async (event) => {
         });
       }
 
-      const slim = users.map(u => ({
-        id: u.id,
-        email: u.email,
-        created_at: u.created_at,
-        last_sign_in_at: u.last_sign_in_at,
-        confirmed_at: u.confirmed_at,
-        email_confirmed_at: u.email_confirmed_at,
-        banned_until: u.banned_until,
-        user_metadata: u.user_metadata || {},
-      }));
+      const slim = [];
+      for (const u of users) {
+        const uEmail = String(u?.email || '').trim().toLowerCase();
+        let is_admin = false;
+        if (uEmail) {
+          try {
+            is_admin = await isAdminEmail(uEmail);
+          } catch (e) {
+            is_admin = false;
+          }
+        }
+
+        slim.push({
+          id: u.id,
+          email: u.email,
+          created_at: u.created_at,
+          last_sign_in_at: u.last_sign_in_at,
+          confirmed_at: u.confirmed_at,
+          email_confirmed_at: u.email_confirmed_at,
+          banned_until: u.banned_until,
+          user_metadata: u.user_metadata || {},
+          is_admin,
+        });
+      }
 
       return json(200, { ok: true, users: slim });
     }
@@ -82,6 +102,14 @@ exports.handler = async (event) => {
       const action = String(body.action || '').trim();
       const userId = String(body.userId || '').trim();
       if (!action || !userId) return json(400, { error: 'Missing action/userId' });
+
+      const targetEmail = await getUserEmailById(userId);
+      if (targetEmail) {
+        const targetIsAdmin = await isAdminEmail(targetEmail);
+        if (targetIsAdmin) {
+          return json(403, { error: 'Cannot modify admin accounts' });
+        }
+      }
 
       if (action === 'ban') {
         const banHours = Number(body.banHours || 24 * 365 * 10); // default 10 años

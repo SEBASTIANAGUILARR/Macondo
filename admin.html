@@ -1452,6 +1452,7 @@
                 const name = String(u.user_metadata?.name || '');
                 const confirmed = !!(u.email_confirmed_at || u.confirmed_at);
                 const banned = !!u.banned_until;
+                const isAdmin = !!u.is_admin;
 
                 const st = banned
                     ? { text: 'Baneada', cls: 'text-red-700 bg-red-100' }
@@ -1459,14 +1460,23 @@
                         ? { text: 'Confirmada', cls: 'text-green-700 bg-green-100' }
                         : { text: 'Sin confirmar', cls: 'text-yellow-700 bg-yellow-100' };
 
-                const actionBtn = banned
-                    ? `<button class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg" onclick="unbanAuthUserAdmin('${u.id}')">Unban</button>`
-                    : `<button class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg" onclick="banAuthUserAdmin('${u.id}')">Ban</button>`;
+                const adminBadge = isAdmin
+                    ? `<span class="px-2 py-1 rounded-full text-xs font-bold text-purple-700 bg-purple-100">Admin</span>`
+                    : '';
+
+                const actionBtn = isAdmin
+                    ? `<span class="text-xs text-gray-500">Protegida</span>`
+                    : (banned
+                        ? `<button class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg" onclick="unbanAuthUserAdmin('${u.id}')">Unban</button>`
+                        : `<button class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg" onclick="banAuthUserAdmin('${u.id}')">Ban</button>`);
 
                 return `
                     <tr class="border-t">
                         <td class="px-4 py-3">
-                            <div class="font-semibold text-amber-800">${name || '—'}</div>
+                            <div class="flex items-center gap-2">
+                                <div class="font-semibold text-amber-800">${name || '—'}</div>
+                                ${adminBadge}
+                            </div>
                             <div class="text-sm text-gray-600">${email}</div>
                         </td>
                         <td class="px-4 py-3">
@@ -1477,7 +1487,7 @@
                         <td class="px-4 py-3">
                             <div class="flex flex-wrap gap-2 justify-center">
                                 ${actionBtn}
-                                <button class="bg-gray-800 hover:bg-black text-white px-3 py-2 rounded-lg" onclick="deleteAuthUserAdmin('${u.id}', '${email.replace(/'/g, "\\'")}')">Eliminar</button>
+                                ${isAdmin ? '<span class="text-xs text-gray-500">—</span>' : `<button class="bg-gray-800 hover:bg-black text-white px-3 py-2 rounded-lg" onclick="deleteAuthUserAdmin('${u.id}', '${email.replace(/'/g, "\\'")}')">Eliminar</button>`}
                             </div>
                         </td>
                     </tr>
