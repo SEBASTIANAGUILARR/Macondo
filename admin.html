@@ -190,6 +190,81 @@
         </div>
     </div>
 
+    <div id="manual-reservation-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-amber-800">Agregar Reserva Manual</h3>
+                    <button type="button" onclick="closeManualReservationModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+
+                <form id="manual-reservation-form" class="space-y-4">
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Nombre *</label>
+                        <input type="text" id="manual-reservation-nombre" required class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Nombre completo">
+                    </div>
+
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Email *</label>
+                        <input type="email" id="manual-reservation-email" required class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="cliente@email.com">
+                    </div>
+
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Teléfono</label>
+                        <input type="tel" id="manual-reservation-telefono" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="+48 ...">
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Fecha *</label>
+                            <input type="date" id="manual-reservation-fecha" required class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Hora</label>
+                            <input type="time" id="manual-reservation-hora" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Personas *</label>
+                            <input type="number" id="manual-reservation-personas" required min="1" step="1" value="2" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Mesa</label>
+                            <input type="text" id="manual-reservation-mesa" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej: 4">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Comentarios</label>
+                        <textarea id="manual-reservation-comentarios" rows="3" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Notas..." ></textarea>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Estado *</label>
+                            <select id="manual-reservation-estado" required class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="pendiente">pendiente</option>
+                                <option value="confirmada" selected>confirmada</option>
+                                <option value="cancelada">cancelada</option>
+                            </select>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="checkbox" id="manual-reservation-send-email" class="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500" checked>
+                            <label for="manual-reservation-send-email" class="text-amber-700">Enviar email</label>
+                        </div>
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="closeManualReservationModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-lg transition-colors">Cancelar</button>
+                        <button type="submit" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-lg transition-colors">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     <!-- Admin Panel -->
     <div id="admin-panel" class="admin-container hidden">
         <div class="container mx-auto">
@@ -237,8 +312,14 @@
 
             <!-- Reservas Section -->
             <div id="section-reservas" class="flex flex-col">
+                <div class="order-1 sm:order-1 flex flex-wrap justify-between items-center gap-3 mb-4 sm:mb-6">
+                    <h2 class="text-2xl font-bold text-amber-800">Gestión de Reservas</h2>
+                    <button type="button" onclick="showManualReservationModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                        <span>+</span> Agregar Reserva
+                    </button>
+                </div>
                 <!-- Stats Reservas -->
-                <div class="order-2 sm:order-1 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-8">
+                <div class="order-2 sm:order-2 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-8">
                     <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
                         <p class="text-gray-500 text-xs sm:text-sm">Total Reservas</p>
                         <p id="stat-total" class="text-2xl sm:text-3xl font-bold text-amber-800">0</p>
@@ -258,7 +339,7 @@
                 </div>
                 
                 <!-- Filters Reservas -->
-                <div class="order-3 sm:order-2 grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mb-4 sm:mb-6">
+                <div class="order-3 sm:order-3 grid grid-cols-2 sm:flex sm:flex-wrap gap-2 mb-4 sm:mb-6">
                     <button class="filter-btn active text-sm py-2" data-filter="all">Todas</button>
                     <button class="filter-btn text-sm py-2" data-filter="pendiente">Pendientes</button>
                     <button class="filter-btn text-sm py-2" data-filter="confirmada">Confirmadas</button>
@@ -267,7 +348,7 @@
                 </div>
                 
                 <!-- Reservations List -->
-                <div id="reservations-list" class="order-1 sm:order-3">
+                <div id="reservations-list" class="order-4 sm:order-4">
                     <p class="text-gray-500 text-center py-4 sm:py-8">Cargando reservas...</p>
                 </div>
             </div>
@@ -1497,18 +1578,146 @@
         
         // Actualizar estado de reserva
         async function updateStatus(id, newStatus) {
-            const { error } = await supabaseClient
+            const { data, error } = await supabaseClient
                 .from('reservations')
                 .update({ estado: newStatus })
-                .eq('id', id);
+                .eq('id', id)
+                .select();
             
             if (error) {
                 alert('Error al actualizar: ' + error.message);
                 return;
             }
+
+            const updated = Array.isArray(data) ? data[0] : null;
+            if (updated && newStatus === 'confirmada') {
+                try {
+                    await sendReservationConfirmationEmail(updated);
+                } catch (e) {}
+            }
             
             // Recargar reservas
             await loadReservations();
+        }
+
+        function showManualReservationModal() {
+            const modal = document.getElementById('manual-reservation-modal');
+            const form = document.getElementById('manual-reservation-form');
+            if (form) form.reset();
+            const estado = document.getElementById('manual-reservation-estado');
+            if (estado) estado.value = 'confirmada';
+            const sendEmail = document.getElementById('manual-reservation-send-email');
+            if (sendEmail) sendEmail.checked = true;
+            if (modal) modal.classList.remove('hidden');
+        }
+
+        function closeManualReservationModal() {
+            const modal = document.getElementById('manual-reservation-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function formatDateShort(dateStr) {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        }
+
+        async function sendReservationConfirmationEmail(reservation) {
+            const email = String(reservation?.email || '').trim();
+            if (!email) return;
+
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) return;
+
+            const subject = '✅ Reserva confirmada - Macondo';
+            const content = [
+                `Hola ${reservation.nombre || ''},`,
+                '',
+                'Tu reserva ha sido confirmada.',
+                '',
+                `Fecha: ${reservation.fecha ? formatDateShort(reservation.fecha) : ''}`,
+                `Hora: ${reservation.hora_entrada || ''}`,
+                `Personas: ${reservation.personas || ''}`,
+                `Mesa: ${reservation.mesa || 'Sin asignar'}`,
+                reservation.comentarios ? `Comentarios: ${reservation.comentarios}` : '',
+                '',
+                'Gracias,',
+                'Macondo Bar Latino'
+            ].filter(Boolean).join('\n');
+
+            const resp = await fetch('/.netlify/functions/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                },
+                body: JSON.stringify({
+                    mode: 'single',
+                    toEmail: email,
+                    toName: reservation.nombre || email,
+                    subject,
+                    content
+                })
+            });
+
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                throw new Error(data.error || resp.statusText);
+            }
+        }
+
+        const manualReservationForm = document.getElementById('manual-reservation-form');
+        if (manualReservationForm) {
+            manualReservationForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const nombre = String(document.getElementById('manual-reservation-nombre')?.value || '').trim();
+                const email = String(document.getElementById('manual-reservation-email')?.value || '').trim();
+                const telefono = String(document.getElementById('manual-reservation-telefono')?.value || '').trim();
+                const fecha = String(document.getElementById('manual-reservation-fecha')?.value || '').trim();
+                const hora = String(document.getElementById('manual-reservation-hora')?.value || '').trim();
+                const personas = Number(document.getElementById('manual-reservation-personas')?.value || 1);
+                const mesa = String(document.getElementById('manual-reservation-mesa')?.value || '').trim();
+                const comentarios = String(document.getElementById('manual-reservation-comentarios')?.value || '').trim();
+                const estado = String(document.getElementById('manual-reservation-estado')?.value || 'pendiente').trim();
+                const shouldSendEmail = !!document.getElementById('manual-reservation-send-email')?.checked;
+
+                if (!nombre || !email || !fecha || !personas) return;
+
+                const insertData = {
+                    nombre,
+                    email,
+                    telefono: telefono || null,
+                    fecha,
+                    hora_entrada: hora || null,
+                    personas,
+                    mesa: mesa || null,
+                    comentarios: comentarios || null,
+                    estado,
+                    created_at: new Date().toISOString()
+                };
+
+                const { data, error } = await supabaseClient
+                    .from('reservations')
+                    .insert([insertData])
+                    .select();
+
+                if (error) {
+                    alert('Error creando reserva: ' + error.message);
+                    return;
+                }
+
+                const created = Array.isArray(data) ? data[0] : null;
+                if (created && created.estado === 'confirmada' && shouldSendEmail) {
+                    try {
+                        await sendReservationConfirmationEmail(created);
+                    } catch (e) {
+                        alert('Reserva creada, pero falló el email: ' + (e.message || e));
+                    }
+                }
+
+                closeManualReservationModal();
+                await loadReservations();
+            });
         }
 
         async function deleteReservation(id) {

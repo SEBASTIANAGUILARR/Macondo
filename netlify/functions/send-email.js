@@ -218,6 +218,21 @@ exports.handler = async (event) => {
       return json(200, { ok: true, sent: 1, mode: 'test' });
     }
 
+    if (mode === 'single') {
+      const toEmail = String(body.toEmail || '').trim();
+      if (!toEmail) return json(400, { error: 'Missing toEmail' });
+
+      const toName = String(body.toName || '').trim() || toEmail;
+
+      await sendZeptoMail({
+        to: [{ address: toEmail, name: toName }],
+        subject,
+        htmlbody,
+      });
+
+      return json(200, { ok: true, sent: 1, mode: 'single' });
+    }
+
     if (mode === 'campaign') {
       // Obtener destinatarios desde Supabase: solo newsletter=true
       const recipients = await supabaseRestSelect('clients?select=nombre,email,newsletter&newsletter=eq.true');
