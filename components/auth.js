@@ -2,6 +2,7 @@ class AuthSystem {
     constructor() {
         this.currentUser = null;
         this.session = null;
+        this._authListenerRegistered = false;
         this.init();
     }
 
@@ -31,7 +32,8 @@ class AuthSystem {
 
             this.updateUI();
 
-            if (window.supabaseClient?.auth?.onAuthStateChange) {
+            if (!this._authListenerRegistered && window.supabaseClient?.auth?.onAuthStateChange) {
+                this._authListenerRegistered = true;
                 window.supabaseClient.auth.onAuthStateChange((_event, session) => {
                     this.session = session || null;
                     const uu = session?.user || null;
@@ -57,11 +59,14 @@ class AuthSystem {
             throw new Error('Supabase no está listo. Recarga la página.');
         }
 
+        const emailRedirectTo = `${window.location.origin}/`;
+
         const { data, error } = await window.supabaseClient.auth.signUp({
             email: userData.email,
             password: userData.password,
             options: {
-                data: { name: userData.name, phone: userData.phone }
+                data: { name: userData.name, phone: userData.phone },
+                emailRedirectTo,
             }
         });
 
@@ -164,9 +169,12 @@ class AuthSystem {
             throw new Error('Supabase no está listo. Recarga la página.');
         }
 
+        const emailRedirectTo = `${window.location.origin}/`;
+
         const { error } = await window.supabaseClient.auth.resend({
             type: 'signup',
             email: String(email || '').trim(),
+            options: { emailRedirectTo },
         });
 
         if (error) {
