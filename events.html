@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Eventos - Macondo Bar Latino</title>
+    <base href="/">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -22,6 +23,15 @@
 </head>
 <body class="bg-amber-50">
     <custom-navbar></custom-navbar>
+
+    <script>
+        try {
+            const path = String(window.location.pathname || '').toLowerCase();
+            if (path === '/events.html') {
+                window.location.replace('/events');
+            }
+        } catch (e) {}
+    </script>
 
     <main class="container mx-auto px-4 py-8 mt-20">
         <div class="text-center mb-12">

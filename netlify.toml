@@ -21,3 +21,23 @@
   from = "/contacto"
   to = "/index.html"
   status = 200
+
+[[redirects]]
+  from = "/menu"
+  to = "/menu.html"
+  status = 200
+
+[[redirects]]
+  from = "/events"
+  to = "/events.html"
+  status = 200
+
+[[redirects]]
+  from = "/menu.html"
+  to = "/menu"
+  status = 301
+
+[[redirects]]
+  from = "/events.html"
+  to = "/events"
+  status = 301
