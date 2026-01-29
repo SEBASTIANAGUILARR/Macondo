@@ -198,12 +198,13 @@ exports.handler = async (event) => {
     const mode = body.mode;
     const subject = String(body.subject || '').trim();
     const content = String(body.content || '').trim();
+    const customHtml = typeof body.html === 'string' ? body.html.trim() : '';
 
-    if (!mode || !subject || !content) {
-      return json(400, { error: 'Missing mode/subject/content' });
+    if (!mode || !subject || (!content && !customHtml)) {
+      return json(400, { error: 'Missing mode/subject/content (or html)' });
     }
 
-    const htmlbody = textToHtml(content);
+    const htmlbody = customHtml || textToHtml(content);
 
     if (mode === 'test') {
       const testEmail = String(body.testEmail || '').trim();

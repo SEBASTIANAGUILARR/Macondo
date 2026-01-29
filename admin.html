@@ -1593,7 +1593,9 @@
             if (updated && newStatus === 'confirmada') {
                 try {
                     await sendReservationConfirmationEmail(updated);
-                } catch (e) {}
+                } catch (e) {
+                    alert('La reserva fue confirmada, pero falló el envío del email: ' + (e.message || e));
+                }
             }
             
             // Recargar reservas
@@ -1630,19 +1632,36 @@
 
             const subject = '✅ Reserva confirmada - Macondo';
             const content = [
-                `Hola ${reservation.nombre || ''},`,
-                '',
-                'Tu reserva ha sido confirmada.',
-                '',
+                `Reserva confirmada`,
+                `Nombre: ${reservation.nombre || ''}`,
+                `Email: ${reservation.email || ''}`,
+                `Teléfono: ${reservation.telefono || ''}`,
                 `Fecha: ${reservation.fecha ? formatDateShort(reservation.fecha) : ''}`,
                 `Hora: ${reservation.hora_entrada || ''}`,
                 `Personas: ${reservation.personas || ''}`,
                 `Mesa: ${reservation.mesa || 'Sin asignar'}`,
-                reservation.comentarios ? `Comentarios: ${reservation.comentarios}` : '',
-                '',
-                'Gracias,',
-                'Macondo Bar Latino'
+                reservation.comentarios ? `Comentarios: ${reservation.comentarios}` : ''
             ].filter(Boolean).join('\n');
+
+            const logoUrl = `${window.location.origin}/logoamarillo.png`;
+            const safe = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+            const html = `
+                <div style="font-family:Arial,sans-serif;line-height:1.5;color:#1f2937">
+                  <div style="text-align:center;margin-bottom:16px">
+                    <img src="${logoUrl}" alt="Macondo" style="max-width:220px;width:70%;height:auto" />
+                  </div>
+                  <h2 style="color:#92400e;margin:0 0 12px 0">✅ Tu reserva ha sido confirmada</h2>
+                  <p style="margin:0 0 16px 0">Hola <strong>${safe(reservation.nombre || '')}</strong>, te confirmamos tu reserva en <strong>Macondo</strong>.</p>
+                  <table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse">
+                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Fecha</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.fecha ? formatDateShort(reservation.fecha) : '')}</td></tr>
+                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Hora</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.hora_entrada || '')}</td></tr>
+                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Personas</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.personas || '')}</td></tr>
+                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Mesa</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.mesa || 'Sin asignar')}</td></tr>
+                    ${reservation.comentarios ? `<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Comentarios</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.comentarios)}</td></tr>` : ''}
+                  </table>
+                  <p style="margin:16px 0 0 0">Gracias,<br><strong>Macondo Bar Latino</strong></p>
+                </div>
+            `;
 
             const resp = await fetch('/.netlify/functions/send-email', {
                 method: 'POST',
@@ -1655,7 +1674,8 @@
                     toEmail: email,
                     toName: reservation.nombre || email,
                     subject,
-                    content
+                    content,
+                    html
                 })
             });
 
