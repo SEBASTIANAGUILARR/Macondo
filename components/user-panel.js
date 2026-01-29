@@ -268,31 +268,118 @@ class UserPanel {
     }
 
     loadReservations() {
-        const reservations = JSON.parse(localStorage.getItem('macondo_reservations') || '[]');
-        const user = window.auth.getCurrentUser();
-        const userReservations = reservations.filter(r => r.email === user.email);
         const reservationsList = document.getElementById('reservations-list');
-        
-        if (userReservations.length === 0) {
-            reservationsList.innerHTML = '<p class="text-gray-500">No tienes reservas aún</p>';
-            return;
-        }
-        
-        reservationsList.innerHTML = userReservations.map(reservation => `
-            <div class="border rounded-lg p-4">
-                <div class="flex justify-between items-start">
-                    <div>
-                        <h4 class="font-semibold text-amber-800">Reserva para ${reservation.people} personas</h4>
-                        <p class="text-sm text-gray-600">Fecha: ${reservation.date}</p>
-                        <p class="text-sm text-gray-600">Hora: ${reservation.time}</p>
-                        <p class="text-sm text-gray-600">Mesa: ${reservation.table || 'No asignada'}</p>
-                    </div>
-                    <button class="text-red-600 hover:text-red-700 font-medium">
-                        Cancelar
-                    </button>
-                </div>
+        const user = window.auth.getCurrentUser();
+        if (!reservationsList || !user?.email) return;
+
+        const renderStatus = (estado) => {
+            const s = String(estado || '').toLowerCase();
+            if (s === 'confirmada') return { text: 'Confirmada', cls: 'text-green-700 bg-green-100' };
+            if (s === 'pendiente') return { text: 'Pendiente', cls: 'text-yellow-700 bg-yellow-100' };
+            if (s === 'cancelada') return { text: 'Cancelada', cls: 'text-red-700 bg-red-100' };
+            return { text: s || '—', cls: 'text-gray-700 bg-gray-100' };
+        };
+
+        const formatDate = (dateStr) => {
+            if (!dateStr) return '—';
+            const d = new Date(dateStr);
+            if (Number.isNaN(d.getTime())) return String(dateStr);
+            return d.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
+        };
+
+        reservationsList.innerHTML = `
+            <div class="flex justify-between items-center mb-4">
+                <div class="text-sm text-gray-600">Mostrando reservas asociadas a: <b>${user.email}</b></div>
+                <button id="refresh-user-reservations" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-3 rounded-lg transition-colors">Recargar</button>
             </div>
-        `).join('');
+            <div id="user-reservations-items" class="space-y-4"></div>
+        `;
+
+        const itemsEl = document.getElementById('user-reservations-items');
+        const refreshBtn = document.getElementById('refresh-user-reservations');
+
+        const load = async () => {
+            if (!itemsEl) return;
+            itemsEl.innerHTML = '<p class="text-gray-500">Cargando reservas...</p>';
+
+            try {
+                if (window.supabaseClient) {
+                    const { data, error } = await window.supabaseClient
+                        .from('reservations')
+                        .select('id,fecha,hora_entrada,personas,estado,mesa,mesa_foto_url,comentarios,created_at')
+                        .eq('email', user.email)
+                        .order('created_at', { ascending: false });
+
+                    if (error) throw error;
+
+                    const rows = Array.isArray(data) ? data : [];
+                    if (rows.length === 0) {
+                        itemsEl.innerHTML = '<p class="text-gray-500">No tienes reservas aún</p>';
+                        return;
+                    }
+
+                    itemsEl.innerHTML = rows.map(r => {
+                        const st = renderStatus(r.estado);
+                        const photo = String(r.mesa_foto_url || '').trim();
+                        return `
+                            <div class="border rounded-lg p-4">
+                                <div class="flex flex-wrap justify-between items-start gap-4">
+                                    <div>
+                                        <div class="flex items-center gap-2 mb-2">
+                                            <div class="font-semibold text-amber-800">Reserva</div>
+                                            <span class="px-2 py-1 rounded-full text-xs font-bold ${st.cls}">${st.text}</span>
+                                        </div>
+                                        <div class="text-sm text-gray-700 space-y-1">
+                                            <div><b>Fecha:</b> ${formatDate(r.fecha)}</div>
+                                            <div><b>Hora:</b> ${r.hora_entrada || '—'}</div>
+                                            <div><b>Personas:</b> ${r.personas || '—'}</div>
+                                            <div><b>Mesa:</b> ${r.mesa || 'Aún no asignada'}</div>
+                                            ${r.comentarios ? `<div><b>Comentarios:</b> ${String(r.comentarios)}</div>` : ''}
+                                        </div>
+                                    </div>
+                                    <div class="w-full sm:w-64">
+                                        ${photo ? `
+                                            <a href="${photo}" target="_blank" rel="noopener noreferrer" class="text-amber-700 font-bold underline">📷 Ver foto</a>
+                                            <div class="mt-2">
+                                                <img src="${photo}" alt="Foto de mesa" class="w-full rounded-lg border" />
+                                            </div>
+                                        ` : '<div class="text-sm text-gray-500">Foto de mesa: no disponible</div>'}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }).join('');
+                    return;
+                }
+
+                const legacy = JSON.parse(localStorage.getItem('macondo_reservations') || '[]');
+                const userReservations = (legacy || []).filter(r => r.email === user.email);
+                if (userReservations.length === 0) {
+                    itemsEl.innerHTML = '<p class="text-gray-500">No tienes reservas aún</p>';
+                    return;
+                }
+
+                itemsEl.innerHTML = userReservations.map(reservation => `
+                    <div class="border rounded-lg p-4">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h4 class="font-semibold text-amber-800">Reserva para ${reservation.people} personas</h4>
+                                <p class="text-sm text-gray-600">Fecha: ${reservation.date}</p>
+                                <p class="text-sm text-gray-600">Hora: ${reservation.time}</p>
+                                <p class="text-sm text-gray-600">Mesa: ${reservation.table || 'No asignada'}</p>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } catch (e) {
+                itemsEl.innerHTML = '<p class="text-red-600">No se pudieron cargar tus reservas. Intenta de nuevo.</p>';
+            }
+        };
+
+        if (refreshBtn) {
+            refreshBtn.addEventListener('click', () => load());
+        }
+        load();
     }
 
     loadAddresses() {
