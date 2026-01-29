@@ -233,6 +233,7 @@ class AuthModal {
             await window.auth.register({ name, email, phone, password });
             this.close();
             this.showSuccess('Registro exitoso. Por favor verifica tu cuenta en tu correo antes de iniciar sesión.');
+            alert('Registro exitoso. Por favor verifica tu cuenta en tu correo antes de iniciar sesión.');
         } catch (error) {
             this.showError(error.message);
         }
