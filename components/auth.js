@@ -1,68 +1,123 @@
 class AuthSystem {
     constructor() {
         this.currentUser = null;
+        this.session = null;
         this.init();
     }
 
     init() {
-        // Cargar usuario desde localStorage
-        const savedUser = localStorage.getItem('macondo_user');
-        if (savedUser) {
-            this.currentUser = JSON.parse(savedUser);
+        this.refreshFromSupabase();
+    }
+
+    async refreshFromSupabase() {
+        try {
+            if (!window.supabaseClient || !window.supabaseClient.auth) {
+                this.currentUser = null;
+                this.session = null;
+                this.updateUI();
+                return;
+            }
+
+            const { data } = await window.supabaseClient.auth.getSession();
+            this.session = data?.session || null;
+            const u = this.session?.user || null;
+            this.currentUser = u ? {
+                id: u.id,
+                email: u.email,
+                name: u.user_metadata?.name || u.email,
+                phone: u.user_metadata?.phone || '',
+                createdAt: u.created_at,
+            } : null;
+
+            this.updateUI();
+
+            if (window.supabaseClient?.auth?.onAuthStateChange) {
+                window.supabaseClient.auth.onAuthStateChange((_event, session) => {
+                    this.session = session || null;
+                    const uu = session?.user || null;
+                    this.currentUser = uu ? {
+                        id: uu.id,
+                        email: uu.email,
+                        name: uu.user_metadata?.name || uu.email,
+                        phone: uu.user_metadata?.phone || '',
+                        createdAt: uu.created_at,
+                    } : null;
+                    this.updateUI();
+                });
+            }
+        } catch (e) {
+            this.currentUser = null;
+            this.session = null;
             this.updateUI();
         }
     }
 
-    register(userData) {
-        const users = JSON.parse(localStorage.getItem('macondo_users') || '[]');
-        
-        // Verificar si el email ya existe
-        if (users.find(user => user.email === userData.email)) {
-            throw new Error('El email ya está registrado');
+    async register(userData) {
+        if (!window.supabaseClient?.auth) {
+            throw new Error('Supabase no está listo. Recarga la página.');
         }
 
-        // Crear nuevo usuario
-        const newUser = {
-            id: Date.now().toString(),
-            name: userData.name,
+        const { data, error } = await window.supabaseClient.auth.signUp({
             email: userData.email,
-            phone: userData.phone,
-            password: btoa(userData.password), // Simple encoding (no usar en producción)
-            createdAt: new Date().toISOString(),
-            orders: []
-        };
+            password: userData.password,
+            options: {
+                data: { name: userData.name, phone: userData.phone }
+            }
+        });
 
-        users.push(newUser);
-        localStorage.setItem('macondo_users', JSON.stringify(users));
-        
-        // Auto login después del registro
-        this.currentUser = newUser;
-        localStorage.setItem('macondo_user', JSON.stringify(newUser));
-        this.updateUI();
-        
-        return newUser;
-    }
-
-    login(email, password) {
-        const users = JSON.parse(localStorage.getItem('macondo_users') || '[]');
-        const user = users.find(u => u.email === email);
-        
-        if (!user || user.password !== btoa(password)) {
-            throw new Error('Email o contraseña incorrectos');
+        if (error) {
+            throw new Error(error.message || 'Error registrando usuario');
         }
 
-        this.currentUser = user;
-        localStorage.setItem('macondo_user', JSON.stringify(user));
+        this.session = data?.session || null;
+        const u = data?.user || this.session?.user || null;
+        this.currentUser = u ? {
+            id: u.id,
+            email: u.email,
+            name: u.user_metadata?.name || u.email,
+            phone: u.user_metadata?.phone || '',
+            createdAt: u.created_at,
+        } : null;
         this.updateUI();
-        
-        return user;
+
+        return this.currentUser;
     }
 
-    logout() {
-        this.currentUser = null;
-        localStorage.removeItem('macondo_user');
+    async login(email, password) {
+        if (!window.supabaseClient?.auth) {
+            throw new Error('Supabase no está listo. Recarga la página.');
+        }
+
+        const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password });
+        if (error) {
+            throw new Error(error.message || 'Email o contraseña incorrectos');
+        }
+
+        this.session = data?.session || null;
+        const u = data?.user || null;
+        this.currentUser = u ? {
+            id: u.id,
+            email: u.email,
+            name: u.user_metadata?.name || u.email,
+            phone: u.user_metadata?.phone || '',
+            createdAt: u.created_at,
+        } : null;
         this.updateUI();
-        window.location.hash = '';
+
+        return this.currentUser;
+    }
+
+    async logout() {
+        try {
+            if (window.supabaseClient?.auth) {
+                await window.supabaseClient.auth.signOut();
+            }
+        } catch (e) {}
+
+        this.currentUser = null;
+        this.session = null;
+        this.updateUI();
+        try { window.location.hash = ''; } catch (e) {}
     }
 
     updateUI() {
@@ -91,6 +146,17 @@ class AuthSystem {
 
     getCurrentUser() {
         return this.currentUser;
+    }
+
+    async getAccessToken() {
+        try {
+            if (this.session?.access_token) return this.session.access_token;
+            if (!window.supabaseClient?.auth) return null;
+            const { data } = await window.supabaseClient.auth.getSession();
+            return data?.session?.access_token || null;
+        } catch (e) {
+            return null;
+        }
     }
 }
 

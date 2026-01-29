@@ -407,16 +407,24 @@ class UserPanel {
             itemsEl.innerHTML = '<p class="text-gray-500">Cargando reservas...</p>';
 
             try {
-                if (window.supabaseClient) {
-                    const { data, error } = await window.supabaseClient
-                        .from('reservations')
-                        .select('id,fecha,hora_entrada,personas,estado,mesa,mesa_foto_url,comentarios,created_at')
-                        .eq('email', user.email)
-                        .order('created_at', { ascending: false });
+                const accessToken = window.auth && typeof window.auth.getAccessToken === 'function'
+                    ? await window.auth.getAccessToken()
+                    : null;
 
-                    if (error) throw error;
+                if (accessToken) {
+                    const resp = await fetch('/.netlify/functions/user-reservations', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': 'Bearer ' + accessToken
+                        }
+                    });
 
-                    const rows = Array.isArray(data) ? data : [];
+                    const payload = await resp.json().catch(() => ({}));
+                    if (!resp.ok) {
+                        throw new Error(payload.error || resp.statusText);
+                    }
+
+                    const rows = Array.isArray(payload.reservations) ? payload.reservations : [];
                     if (rows.length === 0) {
                         itemsEl.innerHTML = '<p class="text-gray-500">No tienes reservas aún</p>';
                         return;

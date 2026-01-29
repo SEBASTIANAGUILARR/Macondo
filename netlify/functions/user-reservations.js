@@ -1,0 +1,95 @@
+function json(statusCode, body, extraHeaders = {}) {
+  return {
+    statusCode,
+    headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      ...extraHeaders,
+    },
+    body: JSON.stringify(body),
+  };
+}
+
+async function verifySupabaseSession(accessToken) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const anonKey = process.env.SUPABASE_ANON_KEY;
+
+  if (!supabaseUrl || !anonKey) {
+    throw new Error('Missing SUPABASE_URL or SUPABASE_ANON_KEY env vars');
+  }
+
+  const resp = await fetch(`${supabaseUrl}/auth/v1/user`, {
+    method: 'GET',
+    headers: {
+      apikey: anonKey,
+      Authorization: `Bearer ${accessToken}`,
+    },
+  });
+
+  if (!resp.ok) {
+    return null;
+  }
+
+  return await resp.json();
+}
+
+async function supabaseRestSelect(pathWithQuery) {
+  const supabaseUrl = process.env.SUPABASE_URL;
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+
+  if (!supabaseUrl || !serviceKey) {
+    throw new Error('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY env vars');
+  }
+
+  const resp = await fetch(`${supabaseUrl}/rest/v1/${pathWithQuery}`, {
+    method: 'GET',
+    headers: {
+      apikey: serviceKey,
+      Authorization: `Bearer ${serviceKey}`,
+      'Content-Type': 'application/json',
+    },
+  });
+
+  if (!resp.ok) {
+    const txt = await resp.text();
+    throw new Error(`Supabase REST error: ${resp.status} ${txt}`);
+  }
+
+  return await resp.json();
+}
+
+exports.handler = async (event) => {
+  if (event.httpMethod === 'OPTIONS') {
+    return json(200, { ok: true });
+  }
+
+  if (event.httpMethod !== 'GET') {
+    return json(405, { error: 'Method not allowed' });
+  }
+
+  try {
+    const auth = event.headers.authorization || event.headers.Authorization || '';
+    const token = auth.startsWith('Bearer ') ? auth.slice('Bearer '.length) : null;
+
+    if (!token) {
+      return json(401, { error: 'Missing Authorization Bearer token' });
+    }
+
+    const user = await verifySupabaseSession(token);
+    if (!user || !user.email) {
+      return json(401, { error: 'Invalid session' });
+    }
+
+    const email = String(user.email).trim();
+
+    const rows = await supabaseRestSelect(
+      `reservations?select=id,nombre,email,telefono,fecha,hora_entrada,personas,estado,mesa,mesa_foto_url,comentarios,created_at&email=eq.${encodeURIComponent(email)}&order=created_at.desc`
+    );
+
+    return json(200, { ok: true, email, reservations: rows || [] });
+  } catch (e) {
+    return json(500, { error: e.message || String(e) });
+  }
+};

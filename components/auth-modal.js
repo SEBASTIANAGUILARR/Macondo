@@ -152,12 +152,12 @@ class AuthModal {
         document.getElementById('toggle-form').addEventListener('click', () => this.toggleView());
     }
 
-    handleLogin() {
+    async handleLogin() {
         const email = document.getElementById('login-email').value;
         const password = document.getElementById('login-password').value;
         
         try {
-            window.auth.login(email, password);
+            await window.auth.login(email, password);
             this.close();
             this.showSuccess('¡Bienvenido de vuelta!');
         } catch (error) {
@@ -165,7 +165,7 @@ class AuthModal {
         }
     }
 
-    handleRegister() {
+    async handleRegister() {
         const name = document.getElementById('register-name').value;
         const email = document.getElementById('register-email').value;
         const phone = document.getElementById('register-phone').value;
@@ -178,7 +178,7 @@ class AuthModal {
         }
         
         try {
-            window.auth.register({ name, email, phone, password });
+            await window.auth.register({ name, email, phone, password });
             this.close();
             this.showSuccess('¡Registro exitoso! Bienvenido a Macondo.');
         } catch (error) {
