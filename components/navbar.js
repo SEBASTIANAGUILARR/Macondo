@@ -410,7 +410,7 @@ class CustomNavbar extends HTMLElement {
       </style>
       
       <nav>
-        <a href="index.html" class="logo">
+        <a href="/" class="logo">
           <img src="logo.pnh.png" alt="Macondo Bar Latino">
           <span class="logo-text">
             <span class="brand">Macondo</span>
@@ -423,7 +423,7 @@ class CustomNavbar extends HTMLElement {
         </button>
         
         <div class="nav-links">
-          <a href="index.html" data-i18n="navbar.home">Inicio</a>
+          <a href="/" data-i18n="navbar.home">Inicio</a>
           <a href="menu.html" data-i18n="navbar.menu">Menú</a>
           <a href="index.html#reservas" data-i18n="navbar.reservations">Reservas</a>
           <a href="events.html" data-i18n="navbar.events">Eventos</a>
