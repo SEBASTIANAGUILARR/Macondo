@@ -117,7 +117,11 @@ async function sendZeptoMail({ to, subject, htmlbody }) {
     .replace(/^zoho-enczapikey\s+/i, '')
     .trim();
 
-  const fromAddress = process.env.ZEPTOMAIL_FROM_ADDRESS || 'events@macondo.pl';
+  const fromAddressRaw = process.env.ZEPTOMAIL_FROM_ADDRESS;
+  const fromAddress = (String(fromAddressRaw || '')
+    .split(/[,;\s]+/)
+    .map(s => s.trim())
+    .filter(Boolean)[0]) || 'events@macondo.pl';
   const fromName = process.env.ZEPTOMAIL_FROM_NAME || 'Macondo Bar Latino';
 
   const host = process.env.ZEPTOMAIL_API_HOST || 'api.zeptomail.eu';
