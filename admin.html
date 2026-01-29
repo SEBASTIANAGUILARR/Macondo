@@ -279,6 +279,7 @@
                     <option value="analytics">📊 Analíticas</option>
                     <option value="basement">🪩 Sótano</option>
                     <option value="clientes">👥 Clientes</option>
+                    <option value="cuentas">👤 Cuentas</option>
                     <option value="cover">🎟️ Covers / Staff</option>
                 </select>
             </div>
@@ -304,6 +305,9 @@
                 </button>
                 <button id="tab-clientes" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('clientes')">
                     👥 Clientes
+                </button>
+                <button id="tab-cuentas" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('cuentas')">
+                    👤 Cuentas
                 </button>
                 <button id="tab-cover" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('cover')">
                     🎟️ Covers / Staff
@@ -350,6 +354,54 @@
                 <!-- Reservations List -->
                 <div id="reservations-list" class="order-4 sm:order-4">
                     <p class="text-gray-500 text-center py-4 sm:py-8">Cargando reservas...</p>
+                </div>
+            </div>
+
+            <!-- Cuentas Section -->
+            <div id="section-cuentas" class="hidden">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold text-amber-800">👤 Cuentas registradas</h2>
+                    <div class="flex flex-wrap gap-2">
+                        <button type="button" onclick="loadAuthUsersAdmin()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition-colors">
+                            Recargar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg shadow mb-6">
+                    <div class="flex flex-wrap gap-4 items-center">
+                        <input type="text" id="auth-users-search" placeholder="Buscar por email o nombre..." 
+                            class="flex-1 min-w-[220px] p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500"
+                            oninput="filterAuthUsersAdmin()">
+                        <select id="auth-users-filter" class="p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" onchange="filterAuthUsersAdmin()">
+                            <option value="all">Todas</option>
+                            <option value="confirmed">Confirmadas</option>
+                            <option value="unconfirmed">Sin confirmar</option>
+                            <option value="banned">Baneadas</option>
+                        </select>
+                    </div>
+                    <div id="auth-users-status" class="text-sm text-gray-500 mt-3"></div>
+                </div>
+
+                <div class="bg-white rounded-lg shadow overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-amber-100">
+                                <tr>
+                                    <th class="px-4 py-3 text-left text-amber-800 font-semibold">Usuario</th>
+                                    <th class="px-4 py-3 text-left text-amber-800 font-semibold">Estado</th>
+                                    <th class="px-4 py-3 text-left text-amber-800 font-semibold">Registro</th>
+                                    <th class="px-4 py-3 text-left text-amber-800 font-semibold">Último login</th>
+                                    <th class="px-4 py-3 text-center text-amber-800 font-semibold">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="auth-users-list">
+                                <tr>
+                                    <td colspan="5" class="px-4 py-8 text-center text-gray-500">Cargando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
 
@@ -1342,6 +1394,7 @@
             document.getElementById('section-analytics').classList.add('hidden');
             document.getElementById('section-basement').classList.add('hidden');
             document.getElementById('section-clientes').classList.add('hidden');
+            document.getElementById('section-cuentas').classList.add('hidden');
             document.getElementById('section-cover').classList.add('hidden');
             document.getElementById('section-' + tab).classList.remove('hidden');
             
@@ -1354,6 +1407,9 @@
             }
             if (tab === 'clientes') {
                 loadClients();
+            }
+            if (tab === 'cuentas') {
+                loadAuthUsersAdmin();
             }
             if (tab === 'cover') {
                 loadCoverConfigAdmin();
@@ -1371,6 +1427,165 @@
             mobileTabSelect.addEventListener('change', (e) => {
                 switchTab(e.target.value);
             });
+        }
+
+        let authUsersCache = [];
+
+        function safeDate(d) {
+            if (!d) return '—';
+            const dd = new Date(d);
+            if (Number.isNaN(dd.getTime())) return String(d);
+            return dd.toLocaleString('es-ES');
+        }
+
+        function renderAuthUsersAdmin(list) {
+            const tbody = document.getElementById('auth-users-list');
+            if (!tbody) return;
+
+            if (!Array.isArray(list) || list.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">No hay cuentas para mostrar</td></tr>';
+                return;
+            }
+
+            tbody.innerHTML = list.map(u => {
+                const email = String(u.email || '');
+                const name = String(u.user_metadata?.name || '');
+                const confirmed = !!(u.email_confirmed_at || u.confirmed_at);
+                const banned = !!u.banned_until;
+
+                const st = banned
+                    ? { text: 'Baneada', cls: 'text-red-700 bg-red-100' }
+                    : confirmed
+                        ? { text: 'Confirmada', cls: 'text-green-700 bg-green-100' }
+                        : { text: 'Sin confirmar', cls: 'text-yellow-700 bg-yellow-100' };
+
+                const actionBtn = banned
+                    ? `<button class="bg-green-600 hover:bg-green-700 text-white px-3 py-2 rounded-lg" onclick="unbanAuthUserAdmin('${u.id}')">Unban</button>`
+                    : `<button class="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded-lg" onclick="banAuthUserAdmin('${u.id}')">Ban</button>`;
+
+                return `
+                    <tr class="border-t">
+                        <td class="px-4 py-3">
+                            <div class="font-semibold text-amber-800">${name || '—'}</div>
+                            <div class="text-sm text-gray-600">${email}</div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <span class="px-2 py-1 rounded-full text-xs font-bold ${st.cls}">${st.text}</span>
+                        </td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${safeDate(u.created_at)}</td>
+                        <td class="px-4 py-3 text-sm text-gray-700">${safeDate(u.last_sign_in_at)}</td>
+                        <td class="px-4 py-3">
+                            <div class="flex flex-wrap gap-2 justify-center">
+                                ${actionBtn}
+                                <button class="bg-gray-800 hover:bg-black text-white px-3 py-2 rounded-lg" onclick="deleteAuthUserAdmin('${u.id}', '${email.replace(/'/g, "\\'")}')">Eliminar</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        async function getAdminAccessToken() {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            return session?.access_token || null;
+        }
+
+        async function loadAuthUsersAdmin() {
+            const status = document.getElementById('auth-users-status');
+            const tbody = document.getElementById('auth-users-list');
+            if (tbody) {
+                tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-gray-500">Cargando...</td></tr>';
+            }
+            if (status) status.textContent = 'Cargando cuentas...';
+
+            try {
+                const token = await getAdminAccessToken();
+                if (!token) throw new Error('Sesión no válida. Vuelve a iniciar sesión.');
+
+                const q = String(document.getElementById('auth-users-search')?.value || '').trim();
+                const resp = await fetch(`/.netlify/functions/admin-auth-users?perPage=200&q=${encodeURIComponent(q)}`, {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const payload = await resp.json().catch(() => ({}));
+                if (!resp.ok) throw new Error(payload.error || resp.statusText);
+
+                authUsersCache = Array.isArray(payload.users) ? payload.users : [];
+                if (status) status.textContent = `Total: ${authUsersCache.length}`;
+                filterAuthUsersAdmin();
+            } catch (e) {
+                if (status) status.textContent = 'Error: ' + (e.message || String(e));
+                if (tbody) tbody.innerHTML = '<tr><td colspan="5" class="px-4 py-8 text-center text-red-600">No se pudieron cargar las cuentas</td></tr>';
+            }
+        }
+
+        function filterAuthUsersAdmin() {
+            const q = String(document.getElementById('auth-users-search')?.value || '').trim().toLowerCase();
+            const filter = String(document.getElementById('auth-users-filter')?.value || 'all');
+
+            let list = Array.isArray(authUsersCache) ? [...authUsersCache] : [];
+
+            if (q) {
+                list = list.filter(u => {
+                    const email = String(u.email || '').toLowerCase();
+                    const name = String(u.user_metadata?.name || '').toLowerCase();
+                    return email.includes(q) || name.includes(q);
+                });
+            }
+
+            if (filter === 'confirmed') {
+                list = list.filter(u => !!(u.email_confirmed_at || u.confirmed_at) && !u.banned_until);
+            }
+            if (filter === 'unconfirmed') {
+                list = list.filter(u => !(u.email_confirmed_at || u.confirmed_at) && !u.banned_until);
+            }
+            if (filter === 'banned') {
+                list = list.filter(u => !!u.banned_until);
+            }
+
+            renderAuthUsersAdmin(list);
+        }
+
+        async function banAuthUserAdmin(userId) {
+            if (!confirm('¿Banear esta cuenta?')) return;
+            const token = await getAdminAccessToken();
+            if (!token) return alert('Sesión no válida.');
+            const resp = await fetch('/.netlify/functions/admin-auth-users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ action: 'ban', userId })
+            });
+            const payload = await resp.json().catch(() => ({}));
+            if (!resp.ok) return alert('Error: ' + (payload.error || resp.statusText));
+            await loadAuthUsersAdmin();
+        }
+
+        async function unbanAuthUserAdmin(userId) {
+            if (!confirm('¿Quitar ban a esta cuenta?')) return;
+            const token = await getAdminAccessToken();
+            if (!token) return alert('Sesión no válida.');
+            const resp = await fetch('/.netlify/functions/admin-auth-users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ action: 'unban', userId })
+            });
+            const payload = await resp.json().catch(() => ({}));
+            if (!resp.ok) return alert('Error: ' + (payload.error || resp.statusText));
+            await loadAuthUsersAdmin();
+        }
+
+        async function deleteAuthUserAdmin(userId, email) {
+            if (!confirm(`Eliminar definitivamente la cuenta ${email || ''}?`)) return;
+            const token = await getAdminAccessToken();
+            if (!token) return alert('Sesión no válida.');
+            const resp = await fetch('/.netlify/functions/admin-auth-users', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+                body: JSON.stringify({ action: 'delete', userId })
+            });
+            const payload = await resp.json().catch(() => ({}));
+            if (!resp.ok) return alert('Error: ' + (payload.error || resp.statusText));
+            await loadAuthUsersAdmin();
         }
 
         async function assignTableNumber(reservationId, currentMesa) {
