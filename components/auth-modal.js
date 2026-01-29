@@ -134,13 +134,13 @@ class AuthModal {
             loginForm.classList.add('hidden');
             registerForm.classList.remove('hidden');
             modalTitle.textContent = 'Registrarse';
-            toggleText.innerHTML = '¿Ya tienes cuenta? <button class="text-amber-600 hover:text-amber-700 font-medium">Inicia Sesión</button>';
+            toggleText.innerHTML = '¿Ya tienes cuenta? <button id="toggle-form" class="text-amber-600 hover:text-amber-700 font-medium">Inicia Sesión</button>';
             this.currentView = 'register';
         } else {
             loginForm.classList.remove('hidden');
             registerForm.classList.add('hidden');
             modalTitle.textContent = 'Iniciar Sesión';
-            toggleText.innerHTML = '¿No tienes cuenta? <button class="text-amber-600 hover:text-amber-700 font-medium">Regístrate</button>';
+            toggleText.innerHTML = '¿No tienes cuenta? <button id="toggle-form" class="text-amber-600 hover:text-amber-700 font-medium">Regístrate</button>';
             this.currentView = 'login';
         }
         
@@ -204,7 +204,14 @@ class AuthModal {
         }, 3000);
     }
 
-    open() {
+    open(view = null) {
+        if (view === 'login' && this.currentView === 'register') {
+            this.toggleView();
+        }
+        if (view === 'register' && this.currentView === 'login') {
+            this.toggleView();
+        }
+
         document.getElementById('auth-modal').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }

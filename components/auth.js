@@ -79,6 +79,10 @@ class AuthSystem {
             if (authButtons) authButtons.style.display = 'flex';
             if (userInfo) userInfo.style.display = 'none';
         }
+
+        try {
+            window.dispatchEvent(new CustomEvent('auth-changed', { detail: { user: this.currentUser } }));
+        } catch (e) {}
     }
 
     isAuthenticated() {

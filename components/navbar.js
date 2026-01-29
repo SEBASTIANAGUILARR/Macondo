@@ -482,7 +482,7 @@ class CustomNavbar extends HTMLElement {
     if (loginBtn) {
       loginBtn.addEventListener('click', () => {
         if (window.authModal) {
-          window.authModal.open();
+          window.authModal.open('login');
         } else {
           console.error('authModal no está disponible');
         }
@@ -492,7 +492,7 @@ class CustomNavbar extends HTMLElement {
     if (registerBtn) {
       registerBtn.addEventListener('click', () => {
         if (window.authModal) {
-          window.authModal.open();
+          window.authModal.open('register');
         } else {
           console.error('authModal no está disponible');
         }
@@ -503,6 +503,7 @@ class CustomNavbar extends HTMLElement {
       logoutBtn.addEventListener('click', () => {
         if (window.auth) {
           window.auth.logout();
+          this.syncAuthUI();
         } else {
           console.error('auth no está disponible');
         }
@@ -522,16 +523,19 @@ class CustomNavbar extends HTMLElement {
     if (cartIcon) {
       cartIcon.addEventListener('click', () => {
         if (window.cart) {
-          window.cart.toggleCart();
+          window.cart.toggle();
         } else {
           console.error('cart no está disponible');
         }
       });
     }
-    
-    // Aplicar traducciones dentro del Shadow DOM
-    this.applyTranslations();
-    
+
+    this.syncAuthUI();
+
+    window.addEventListener('auth-changed', () => {
+      this.syncAuthUI();
+    });
+
     // Escuchar cambios de idioma
     window.addEventListener('languageChanged', () => {
       this.applyTranslations();
