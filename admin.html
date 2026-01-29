@@ -1691,6 +1691,14 @@
                     alert('La reserva fue confirmada, pero falló el envío del email: ' + (e.message || e));
                 }
             }
+
+            if (updated && newStatus === 'cancelada') {
+                try {
+                    await sendReservationCancellationEmail(updated);
+                } catch (e) {
+                    alert('La reserva fue cancelada, pero falló el envío del email: ' + (e.message || e));
+                }
+            }
             
             // Recargar reservas
             await loadReservations();
@@ -1757,6 +1765,76 @@
                   ${photoUrl ? `
                     <div style="margin-top:16px">
                       <div style="font-weight:700;margin-bottom:8px">📷 Foto de mesa</div>
+                      <a href="${photoUrl}">${photoUrl}</a>
+                      <div style="margin-top:8px"><img src="${photoUrl}" alt="Foto de mesa" style="max-width:520px;width:100%;height:auto;border-radius:12px;border:1px solid #f3f4f6" /></div>
+                    </div>
+                  ` : ''}
+                  <p style="margin:16px 0 0 0">Gracias,<br><strong>Macondo Bar Latino</strong></p>
+                </div>
+            `;
+
+            const resp = await fetch('/.netlify/functions/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                },
+                body: JSON.stringify({
+                    mode: 'single',
+                    toEmail: email,
+                    toName: reservation.nombre || email,
+                    subject,
+                    content,
+                    html
+                })
+            });
+
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                throw new Error(data.error || resp.statusText);
+            }
+        }
+
+        async function sendReservationCancellationEmail(reservation) {
+            const email = String(reservation?.email || '').trim();
+            if (!email) return;
+
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) return;
+
+            const subject = '❌ Reserva cancelada - Macondo';
+            const content = [
+                `Reserva cancelada`,
+                `Nombre: ${reservation.nombre || ''}`,
+                `Email: ${reservation.email || ''}`,
+                `Teléfono: ${reservation.telefono || ''}`,
+                `Fecha: ${reservation.fecha ? formatDateShort(reservation.fecha) : ''}`,
+                `Hora: ${reservation.hora_entrada || ''}`,
+                `Personas: ${reservation.personas || ''}`,
+                `Mesa: ${reservation.mesa || 'Sin asignar'}`,
+                reservation.comentarios ? `Comentarios: ${reservation.comentarios}` : ''
+            ].filter(Boolean).join('\n');
+
+            const logoUrl = `${window.location.origin}/logoamarillo.png`;
+            const photoUrl = String(reservation?.mesa_foto_url || '').trim();
+            const safe = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
+            const html = `
+                <div style="font-family:Arial,sans-serif;line-height:1.5;color:#1f2937">
+                  <div style="text-align:center;margin-bottom:16px">
+                    <img src="${logoUrl}" alt="Macondo" style="max-width:220px;width:70%;height:auto" />
+                  </div>
+                  <h2 style="color:#b91c1c;margin:0 0 12px 0">❌ Tu reserva ha sido cancelada</h2>
+                  <p style="margin:0 0 16px 0">Hola <strong>${safe(reservation.nombre || '')}</strong>, te informamos que tu reserva en <strong>Macondo</strong> ha sido cancelada.</p>
+                  <table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse">
+                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Fecha</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.fecha ? formatDateShort(reservation.fecha) : '')}</td></tr>
+                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Hora</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.hora_entrada || '')}</td></tr>
+                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Personas</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.personas || '')}</td></tr>
+                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Mesa</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.mesa || 'Sin asignar')}</td></tr>
+                    ${reservation.comentarios ? `<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Comentarios</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.comentarios)}</td></tr>` : ''}
+                  </table>
+                  ${photoUrl ? `
+                    <div style="margin-top:16px">
+                      <div style="font-weight:700;margin-bottom:8px">📷 Foto de mesa (interno)</div>
                       <a href="${photoUrl}">${photoUrl}</a>
                       <div style="margin-top:8px"><img src="${photoUrl}" alt="Foto de mesa" style="max-width:520px;width:100%;height:auto;border-radius:12px;border:1px solid #f3f4f6" /></div>
                     </div>
