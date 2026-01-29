@@ -1496,8 +1496,21 @@
         }
 
         async function getAdminAccessToken() {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            return session?.access_token || null;
+            try {
+                const { data, error } = await supabaseClient.auth.getSession();
+                if (error) return null;
+
+                let session = data?.session || null;
+                const expMs = session?.expires_at ? Number(session.expires_at) * 1000 : 0;
+                if (session && expMs && expMs < Date.now() + 60 * 1000) {
+                    const refreshed = await supabaseClient.auth.refreshSession();
+                    session = refreshed?.data?.session || session;
+                }
+
+                return session?.access_token || null;
+            } catch (e) {
+                return null;
+            }
         }
 
         async function loadAuthUsersAdmin() {
@@ -3495,7 +3508,15 @@
             try {
                 const { data, error } = await supabaseClient.auth.getSession();
                 if (error) return null;
-                return data?.session?.access_token || null;
+
+                let session = data?.session || null;
+                const expMs = session?.expires_at ? Number(session.expires_at) * 1000 : 0;
+                if (session && expMs && expMs < Date.now() + 60 * 1000) {
+                    const refreshed = await supabaseClient.auth.refreshSession();
+                    session = refreshed?.data?.session || session;
+                }
+
+                return session?.access_token || null;
             } catch (e) {
                 return null;
             }
