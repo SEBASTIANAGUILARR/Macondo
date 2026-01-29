@@ -101,6 +101,11 @@ class CustomNavbar extends HTMLElement {
           font-size: 1.5rem;
           cursor: pointer;
         }
+
+        .top-user-menu {
+          display: none;
+          position: relative;
+        }
         
         .auth-section {
           display: flex;
@@ -474,6 +479,22 @@ class CustomNavbar extends HTMLElement {
             <span class="tagline">Bar Latino</span>
           </span>
         </a>
+
+        <div class="top-user-menu" id="top-user-menu">
+          <div class="user-menu" id="user-menu-top">
+            <button class="user-menu-trigger" id="user-menu-trigger-top" type="button">
+              <span id="user-name-top">Usuario</span>
+              <i data-feather="chevron-down"></i>
+            </button>
+            <div class="user-menu-dropdown" id="user-menu-dropdown-top">
+              <button class="user-menu-item" id="user-menu-reservations-top" type="button"><i data-feather="calendar"></i> Mis Reservas</button>
+              <button class="user-menu-item" id="user-menu-covers-top" type="button"><i data-feather="credit-card"></i> Mis Covers (QR)</button>
+              <button class="user-menu-item" id="user-menu-orders-top" type="button"><i data-feather="shopping-bag"></i> Mis Pedidos</button>
+              <div style="height:1px;background:rgba(0,0,0,0.08);margin:8px 0"></div>
+              <button class="user-menu-item" id="user-menu-logout-top" type="button"><i data-feather="log-out"></i> Cerrar Sesión</button>
+            </div>
+          </div>
+        </div>
         
         <button class="mobile-menu-btn">
           <i data-feather="menu"></i>
@@ -546,6 +567,13 @@ class CustomNavbar extends HTMLElement {
     const userMenuCovers = this.shadowRoot.getElementById('user-menu-covers');
     const userMenuOrders = this.shadowRoot.getElementById('user-menu-orders');
     const userMenuLogout = this.shadowRoot.getElementById('user-menu-logout');
+
+    const userMenuTriggerTop = this.shadowRoot.getElementById('user-menu-trigger-top');
+    const userMenuDropdownTop = this.shadowRoot.getElementById('user-menu-dropdown-top');
+    const userMenuReservationsTop = this.shadowRoot.getElementById('user-menu-reservations-top');
+    const userMenuCoversTop = this.shadowRoot.getElementById('user-menu-covers-top');
+    const userMenuOrdersTop = this.shadowRoot.getElementById('user-menu-orders-top');
+    const userMenuLogoutTop = this.shadowRoot.getElementById('user-menu-logout-top');
     const cartIcon = this.shadowRoot.querySelector('.cart-icon');
     
     if (loginBtn) {
@@ -568,20 +596,23 @@ class CustomNavbar extends HTMLElement {
       });
     }
     
-    if (userMenuTrigger && userMenuDropdown) {
-      userMenuTrigger.addEventListener('click', (e) => {
+    const setupUserMenu = (triggerEl, dropdownEl) => {
+      if (!triggerEl || !dropdownEl) return;
+      triggerEl.addEventListener('click', (e) => {
         e.stopPropagation();
-        userMenuDropdown.classList.toggle('active');
+        dropdownEl.classList.toggle('active');
       });
-
       document.addEventListener('click', (e) => {
         const path = typeof e.composedPath === 'function' ? e.composedPath() : [];
         const inside = path.includes(this) || (this.shadowRoot && path.includes(this.shadowRoot)) || (this.shadowRoot && path.some(n => this.shadowRoot.contains(n)));
-        if (!inside && userMenuDropdown) {
-          userMenuDropdown.classList.remove('active');
+        if (!inside) {
+          dropdownEl.classList.remove('active');
         }
       });
-    }
+    };
+
+    setupUserMenu(userMenuTrigger, userMenuDropdown);
+    setupUserMenu(userMenuTriggerTop, userMenuDropdownTop);
 
     if (userMenuReservations) {
       userMenuReservations.addEventListener('click', () => {
@@ -589,6 +620,15 @@ class CustomNavbar extends HTMLElement {
           window.userPanel.openTab('reservations');
         }
         if (userMenuDropdown) userMenuDropdown.classList.remove('active');
+      });
+    }
+
+    if (userMenuReservationsTop) {
+      userMenuReservationsTop.addEventListener('click', () => {
+        if (window.userPanel && typeof window.userPanel.openTab === 'function') {
+          window.userPanel.openTab('reservations');
+        }
+        if (userMenuDropdownTop) userMenuDropdownTop.classList.remove('active');
       });
     }
 
@@ -601,6 +641,15 @@ class CustomNavbar extends HTMLElement {
       });
     }
 
+    if (userMenuCoversTop) {
+      userMenuCoversTop.addEventListener('click', () => {
+        if (window.userPanel && typeof window.userPanel.openTab === 'function') {
+          window.userPanel.openTab('covers');
+        }
+        if (userMenuDropdownTop) userMenuDropdownTop.classList.remove('active');
+      });
+    }
+
     if (userMenuOrders) {
       userMenuOrders.addEventListener('click', () => {
         if (window.userPanel && typeof window.userPanel.openTab === 'function') {
@@ -610,12 +659,31 @@ class CustomNavbar extends HTMLElement {
       });
     }
 
+    if (userMenuOrdersTop) {
+      userMenuOrdersTop.addEventListener('click', () => {
+        if (window.userPanel && typeof window.userPanel.openTab === 'function') {
+          window.userPanel.openTab('orders');
+        }
+        if (userMenuDropdownTop) userMenuDropdownTop.classList.remove('active');
+      });
+    }
+
     if (userMenuLogout) {
       userMenuLogout.addEventListener('click', () => {
         if (window.auth) {
           window.auth.logout();
         }
         if (userMenuDropdown) userMenuDropdown.classList.remove('active');
+        this.syncAuthUI();
+      });
+    }
+
+    if (userMenuLogoutTop) {
+      userMenuLogoutTop.addEventListener('click', () => {
+        if (window.auth) {
+          window.auth.logout();
+        }
+        if (userMenuDropdownTop) userMenuDropdownTop.classList.remove('active');
         this.syncAuthUI();
       });
     }
@@ -662,6 +730,10 @@ class CustomNavbar extends HTMLElement {
       const userName = this.shadowRoot && this.shadowRoot.getElementById('user-name');
       const dropdown = this.shadowRoot && this.shadowRoot.getElementById('user-menu-dropdown');
 
+      const userMenuTop = this.shadowRoot && this.shadowRoot.getElementById('user-menu-top');
+      const userNameTop = this.shadowRoot && this.shadowRoot.getElementById('user-name-top');
+      const dropdownTop = this.shadowRoot && this.shadowRoot.getElementById('user-menu-dropdown-top');
+
       const user = window.auth && typeof window.auth.getCurrentUser === 'function'
         ? window.auth.getCurrentUser()
         : null;
@@ -670,10 +742,16 @@ class CustomNavbar extends HTMLElement {
         if (authButtons) authButtons.style.display = 'none';
         if (userMenu) userMenu.style.display = 'block';
         if (userName) userName.textContent = user.name || 'Usuario';
+
+        if (userMenuTop) userMenuTop.style.display = 'block';
+        if (userNameTop) userNameTop.textContent = user.name || 'Usuario';
       } else {
         if (authButtons) authButtons.style.display = 'flex';
         if (userMenu) userMenu.style.display = 'none';
         if (dropdown) dropdown.classList.remove('active');
+
+        if (userMenuTop) userMenuTop.style.display = 'none';
+        if (dropdownTop) dropdownTop.classList.remove('active');
       }
 
       if (typeof feather !== 'undefined') {
