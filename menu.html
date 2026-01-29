@@ -121,11 +121,7 @@
     <custom-footer></custom-footer>
 
     <script>
-        // Configuración de Supabase
-        const SUPABASE_URL = 'https://imqcifvmklkccwagpkee.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltcWNpZnZta2xrY2N3YWdwa2VlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxMjMzNDIsImV4cCI6MjA4NDY5OTM0Mn0.fP4S0VfaC823LKUvh6HcybS_ze9uWWrBKgC4SsQBiRU';
-        
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        let supabaseClient = window.supabaseClient;
         
         let allMenuItems = [];
         let currentFilter = 'all';
@@ -133,6 +129,10 @@
         // Cargar menú desde Supabase
         async function loadMenu() {
             try {
+                if (!supabaseClient) {
+                    console.error('Supabase no está listo para cargar el menú');
+                    return;
+                }
                 const { data: items, error } = await supabaseClient
                     .from('menu_items')
                     .select('*')
@@ -231,8 +231,21 @@
             });
         }
 
-        // Sistema de filtros
-        document.addEventListener('DOMContentLoaded', function() {
+        async function startMenu() {
+            if (!window.supabaseClient) {
+                await new Promise(resolve => {
+                    const done = () => {
+                        window.removeEventListener('supabase-ready', done);
+                        resolve();
+                    };
+                    window.addEventListener('supabase-ready', done);
+                    setTimeout(done, 2500);
+                });
+            }
+
+            supabaseClient = window.supabaseClient;
+
+            // Sistema de filtros
             const filterBtns = document.querySelectorAll('.filter-btn');
 
             filterBtns.forEach(btn => {
@@ -256,7 +269,9 @@
             
             // Reemplazar feather icons
             feather.replace();
-        });
+        }
+
+        document.addEventListener('DOMContentLoaded', startMenu);
     </script>
 </body>
 </html>

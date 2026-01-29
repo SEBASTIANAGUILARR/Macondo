@@ -569,13 +569,15 @@ class CustomNavbar extends HTMLElement {
     }
     
     if (userMenuTrigger && userMenuDropdown) {
-      userMenuTrigger.addEventListener('click', () => {
+      userMenuTrigger.addEventListener('click', (e) => {
+        e.stopPropagation();
         userMenuDropdown.classList.toggle('active');
       });
 
       document.addEventListener('click', (e) => {
-        const inside = this.contains(e.target) || (this.shadowRoot && this.shadowRoot.contains(e.target));
-        if (!inside) {
+        const path = typeof e.composedPath === 'function' ? e.composedPath() : [];
+        const inside = path.includes(this) || (this.shadowRoot && path.includes(this.shadowRoot)) || (this.shadowRoot && path.some(n => this.shadowRoot.contains(n)));
+        if (!inside && userMenuDropdown) {
           userMenuDropdown.classList.remove('active');
         }
       });
