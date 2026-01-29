@@ -211,7 +211,7 @@ class AuthModal {
         try {
             await window.auth.register({ name, email, phone, password });
             this.close();
-            this.showSuccess('¡Registro exitoso! Bienvenido a Macondo.');
+            this.showSuccess('Registro exitoso. Por favor verifica tu cuenta en tu correo antes de iniciar sesión.');
         } catch (error) {
             this.showError(error.message);
         }
