@@ -74,18 +74,20 @@ class AuthSystem {
             throw new Error(error.message || 'Error registrando usuario');
         }
 
+        // Forzamos que el usuario NO quede logueado tras el registro.
+        // Queremos que confirme el email y luego inicie sesión.
         this.session = data?.session || null;
-        const u = data?.user || this.session?.user || null;
-        this.currentUser = u ? {
-            id: u.id,
-            email: u.email,
-            name: u.user_metadata?.name || u.email,
-            phone: u.user_metadata?.phone || '',
-            createdAt: u.created_at,
-        } : null;
+        if (this.session) {
+            try {
+                await window.supabaseClient.auth.signOut();
+            } catch (e) {}
+        }
+
+        this.session = null;
+        this.currentUser = null;
         this.updateUI();
 
-        return this.currentUser;
+        return { needsEmailConfirmation: true };
     }
 
     async login(email, password) {
