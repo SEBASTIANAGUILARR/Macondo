@@ -392,6 +392,36 @@ class CustomNavbar extends HTMLElement {
             padding-top: 0.375rem;
             border-top: 1px solid rgba(146, 64, 14, 0.2);
           }
+
+          /* Menú usuario visible en barra superior (sin depender del hamburguesa) */
+          .top-user-menu {
+            display: block;
+          }
+
+          .top-user-menu .user-menu {
+            display: block;
+          }
+
+          .top-user-menu .user-menu-trigger {
+            padding: 0.5rem 0.75rem;
+            border-radius: 0.75rem;
+            font-size: 0.85rem;
+          }
+
+          /* Ocultar el menú de usuario dentro del menú hamburguesa */
+          .nav-links .user-menu {
+            display: none !important;
+          }
+
+          /* Dropdown flotante del menú superior */
+          .top-user-menu .user-menu-dropdown {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 10px);
+            min-width: 220px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            z-index: 10000;
+          }
           
           .auth-buttons {
             width: 100%;
