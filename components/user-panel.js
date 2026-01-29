@@ -20,7 +20,7 @@ class UserPanel {
     createPanel() {
         if (document.getElementById('user-panel')) return;
         const panelHTML = `
-            <div id="user-panel" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+            <div id="user-panel" class="fixed inset-0 bg-black bg-opacity-50 z-[9998] hidden flex items-center justify-center p-4">
                 <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
                     <div class="p-6 border-b bg-amber-50">
                         <div class="flex justify-between items-center">
