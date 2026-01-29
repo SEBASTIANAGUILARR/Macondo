@@ -197,11 +197,32 @@ class AuthModal {
     }
 
     async handleRegister() {
-        const name = document.getElementById('register-name').value;
-        const email = document.getElementById('register-email').value;
-        const phone = document.getElementById('register-phone').value;
-        const password = document.getElementById('register-password').value;
-        const confirmPassword = document.getElementById('register-confirm-password').value;
+        const name = String(document.getElementById('register-name').value || '').trim();
+        const email = String(document.getElementById('register-email').value || '').trim();
+        const phone = String(document.getElementById('register-phone').value || '').trim();
+        const password = String(document.getElementById('register-password').value || '');
+        const confirmPassword = String(document.getElementById('register-confirm-password').value || '');
+
+        if (!name || !email || !phone || !password || !confirmPassword) {
+            this.showError('Completa todos los campos para registrarte');
+            return;
+        }
+
+        const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        if (!emailOk) {
+            this.showError('Introduce un email válido');
+            return;
+        }
+
+        if (phone.replace(/\D/g, '').length < 7) {
+            this.showError('Introduce un teléfono válido');
+            return;
+        }
+
+        if (password.length < 6) {
+            this.showError('La contraseña debe tener al menos 6 caracteres');
+            return;
+        }
         
         if (password !== confirmPassword) {
             this.showError('Las contraseñas no coinciden');
