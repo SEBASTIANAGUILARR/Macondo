@@ -3,11 +3,19 @@ class AuthSystem {
         this.currentUser = null;
         this.session = null;
         this._authListenerRegistered = false;
+        this._supabaseReadyListenerRegistered = false;
         this.init();
     }
 
     init() {
         this.refreshFromSupabase();
+
+        if (!this._supabaseReadyListenerRegistered) {
+            this._supabaseReadyListenerRegistered = true;
+            window.addEventListener('supabase-ready', () => {
+                this.refreshFromSupabase();
+            });
+        }
     }
 
     async refreshFromSupabase() {
