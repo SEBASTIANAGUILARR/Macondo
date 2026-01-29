@@ -50,9 +50,10 @@ exports.handler = async (event) => {
     if (!allowed) return json(403, { error: 'Not allowed' });
 
     if (event.httpMethod === 'GET') {
-      const page = Number(new URLSearchParams(event.queryStringParameters || {}).get('page') || 1);
-      const perPage = Number(new URLSearchParams(event.queryStringParameters || {}).get('perPage') || 50);
-      const q = String(new URLSearchParams(event.queryStringParameters || {}).get('q') || '').trim().toLowerCase();
+      const qs = event.queryStringParameters || {};
+      const page = Number(qs.page || 1);
+      const perPage = Number(qs.perPage || 50);
+      const q = String(qs.q || '').trim().toLowerCase();
 
       const url = new URL('/auth/v1/admin/users', 'https://placeholder');
       url.searchParams.set('page', String(page));
