@@ -107,6 +107,63 @@ class CustomNavbar extends HTMLElement {
           align-items: center;
           gap: 1rem;
         }
+
+        .user-menu {
+          position: relative;
+          display: none;
+        }
+
+        .user-menu button {
+          cursor: pointer;
+        }
+
+        .user-menu-trigger {
+          display: inline-flex;
+          align-items: center;
+          gap: 0.5rem;
+          background: transparent;
+          border: 2px solid #92400e;
+          color: #92400e;
+          padding: 0.5rem 0.75rem;
+          border-radius: 0.75rem;
+          font-weight: 700;
+        }
+
+        .user-menu-dropdown {
+          position: absolute;
+          right: 0;
+          top: calc(100% + 10px);
+          background: white;
+          border: 1px solid rgba(146, 64, 14, 0.25);
+          border-radius: 12px;
+          min-width: 220px;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+          padding: 8px;
+          display: none;
+          z-index: 9999;
+        }
+
+        .user-menu-dropdown.active {
+          display: block;
+        }
+
+        .user-menu-item {
+          width: 100%;
+          text-align: left;
+          border: none;
+          background: transparent;
+          padding: 10px 12px;
+          border-radius: 10px;
+          color: #1f2937;
+          font-weight: 600;
+          display: flex;
+          align-items: center;
+          gap: 8px;
+        }
+
+        .user-menu-item:hover {
+          background: rgba(251, 191, 36, 0.25);
+        }
         
         .language-selector-container {
           display: flex;
@@ -450,11 +507,19 @@ class CustomNavbar extends HTMLElement {
               <button class="btn-login" data-i18n="navbar.login">Iniciar Sesión</button>
               <button class="btn-register">Registrarse</button>
             </div>
-            
-            <div class="user-info" id="user-info">
-              <span class="user-name" id="user-name">Usuario</span>
-              <button class="btn-logout">Cerrar Sesión</button>
-              <button class="btn-login" style="margin-left: 0.5rem;" data-i18n="navbar.profile">Mi Panel</button>
+
+            <div class="user-menu" id="user-menu">
+              <button class="user-menu-trigger" id="user-menu-trigger" type="button">
+                <span id="user-name">Usuario</span>
+                <i data-feather="chevron-down"></i>
+              </button>
+              <div class="user-menu-dropdown" id="user-menu-dropdown">
+                <button class="user-menu-item" id="user-menu-reservations" type="button"><i data-feather="calendar"></i> Mis Reservas</button>
+                <button class="user-menu-item" id="user-menu-covers" type="button"><i data-feather="credit-card"></i> Mis Covers (QR)</button>
+                <button class="user-menu-item" id="user-menu-orders" type="button"><i data-feather="shopping-bag"></i> Mis Pedidos</button>
+                <div style="height:1px;background:rgba(0,0,0,0.08);margin:8px 0"></div>
+                <button class="user-menu-item" id="user-menu-logout" type="button"><i data-feather="log-out"></i> Cerrar Sesión</button>
+              </div>
             </div>
           </div>
         </div>
@@ -475,8 +540,12 @@ class CustomNavbar extends HTMLElement {
     // Manejar eventos de autenticación
     const loginBtn = this.shadowRoot.querySelector('.btn-login');
     const registerBtn = this.shadowRoot.querySelector('.btn-register');
-    const logoutBtn = this.shadowRoot.querySelector('.btn-logout');
-    const userPanelBtn = this.shadowRoot.querySelector('.user-info .btn-login');
+    const userMenuTrigger = this.shadowRoot.getElementById('user-menu-trigger');
+    const userMenuDropdown = this.shadowRoot.getElementById('user-menu-dropdown');
+    const userMenuReservations = this.shadowRoot.getElementById('user-menu-reservations');
+    const userMenuCovers = this.shadowRoot.getElementById('user-menu-covers');
+    const userMenuOrders = this.shadowRoot.getElementById('user-menu-orders');
+    const userMenuLogout = this.shadowRoot.getElementById('user-menu-logout');
     const cartIcon = this.shadowRoot.querySelector('.cart-icon');
     
     if (loginBtn) {
@@ -499,24 +568,53 @@ class CustomNavbar extends HTMLElement {
       });
     }
     
-    if (logoutBtn) {
-      logoutBtn.addEventListener('click', () => {
-        if (window.auth) {
-          window.auth.logout();
-          this.syncAuthUI();
-        } else {
-          console.error('auth no está disponible');
+    if (userMenuTrigger && userMenuDropdown) {
+      userMenuTrigger.addEventListener('click', () => {
+        userMenuDropdown.classList.toggle('active');
+      });
+
+      document.addEventListener('click', (e) => {
+        const inside = this.contains(e.target) || (this.shadowRoot && this.shadowRoot.contains(e.target));
+        if (!inside) {
+          userMenuDropdown.classList.remove('active');
         }
       });
     }
-    
-    if (userPanelBtn) {
-      userPanelBtn.addEventListener('click', () => {
-        if (window.userPanel) {
-          window.userPanel.open();
-        } else {
-          console.error('userPanel no está disponible');
+
+    if (userMenuReservations) {
+      userMenuReservations.addEventListener('click', () => {
+        if (window.userPanel && typeof window.userPanel.openTab === 'function') {
+          window.userPanel.openTab('reservations');
         }
+        if (userMenuDropdown) userMenuDropdown.classList.remove('active');
+      });
+    }
+
+    if (userMenuCovers) {
+      userMenuCovers.addEventListener('click', () => {
+        if (window.userPanel && typeof window.userPanel.openTab === 'function') {
+          window.userPanel.openTab('covers');
+        }
+        if (userMenuDropdown) userMenuDropdown.classList.remove('active');
+      });
+    }
+
+    if (userMenuOrders) {
+      userMenuOrders.addEventListener('click', () => {
+        if (window.userPanel && typeof window.userPanel.openTab === 'function') {
+          window.userPanel.openTab('orders');
+        }
+        if (userMenuDropdown) userMenuDropdown.classList.remove('active');
+      });
+    }
+
+    if (userMenuLogout) {
+      userMenuLogout.addEventListener('click', () => {
+        if (window.auth) {
+          window.auth.logout();
+        }
+        if (userMenuDropdown) userMenuDropdown.classList.remove('active');
+        this.syncAuthUI();
       });
     }
     
@@ -553,6 +651,33 @@ class CustomNavbar extends HTMLElement {
         element.textContent = translation;
       }
     });
+  }
+
+  syncAuthUI() {
+    try {
+      const authButtons = this.shadowRoot && this.shadowRoot.getElementById('auth-buttons');
+      const userMenu = this.shadowRoot && this.shadowRoot.getElementById('user-menu');
+      const userName = this.shadowRoot && this.shadowRoot.getElementById('user-name');
+      const dropdown = this.shadowRoot && this.shadowRoot.getElementById('user-menu-dropdown');
+
+      const user = window.auth && typeof window.auth.getCurrentUser === 'function'
+        ? window.auth.getCurrentUser()
+        : null;
+
+      if (user) {
+        if (authButtons) authButtons.style.display = 'none';
+        if (userMenu) userMenu.style.display = 'block';
+        if (userName) userName.textContent = user.name || 'Usuario';
+      } else {
+        if (authButtons) authButtons.style.display = 'flex';
+        if (userMenu) userMenu.style.display = 'none';
+        if (dropdown) dropdown.classList.remove('active');
+      }
+
+      if (typeof feather !== 'undefined') {
+        feather.replace();
+      }
+    } catch (e) {}
   }
 }
 

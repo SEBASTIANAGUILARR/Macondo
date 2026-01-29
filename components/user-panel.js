@@ -1,10 +1,12 @@
 class UserPanel {
     constructor() {
         this.currentView = 'profile';
+        this.initialized = false;
         // No inicializar aquí, esperar a que el DOM esté listo
     }
 
     init() {
+        if (this.initialized) return;
         // Solo crear el panel si el DOM está listo
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.createPanel());
@@ -12,9 +14,11 @@ class UserPanel {
             this.createPanel();
         }
         this.attachEventListeners();
+        this.initialized = true;
     }
 
     createPanel() {
+        if (document.getElementById('user-panel')) return;
         const panelHTML = `
             <div id="user-panel" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
                 <div class="bg-white rounded-lg max-w-4xl w-full max-h-[90vh] overflow-hidden">
@@ -42,6 +46,10 @@ class UserPanel {
                                 <button class="w-full text-left px-4 py-2 rounded-lg hover:bg-amber-200 transition-colors panel-tab" data-tab="reservations">
                                     <i data-feather="calendar" class="w-4 h-4 inline mr-2"></i>
                                     Mis Reservas
+                                </button>
+                                <button class="w-full text-left px-4 py-2 rounded-lg hover:bg-amber-200 transition-colors panel-tab" data-tab="covers">
+                                    <i data-feather="credit-card" class="w-4 h-4 inline mr-2"></i>
+                                    Mis Covers
                                 </button>
                                 <button class="w-full text-left px-4 py-2 rounded-lg hover:bg-amber-200 transition-colors panel-tab" data-tab="addresses">
                                     <i data-feather="map-pin" class="w-4 h-4 inline mr-2"></i>
@@ -97,6 +105,14 @@ class UserPanel {
                                 <h3 class="text-xl font-bold text-amber-800 mb-4">Mis Reservas</h3>
                                 <div id="reservations-list" class="space-y-4">
                                     <!-- Las reservas se cargarán aquí -->
+                                </div>
+                            </div>
+
+                            <!-- Covers Tab -->
+                            <div id="covers-tab" class="tab-content hidden">
+                                <h3 class="text-xl font-bold text-amber-800 mb-4">Mis Covers</h3>
+                                <div id="covers-list" class="space-y-4">
+                                    <!-- Los covers se cargarán aquí -->
                                 </div>
                             </div>
                             
@@ -182,10 +198,30 @@ class UserPanel {
             window.authModal.open();
             return;
         }
+
+        if (!document.getElementById('user-panel')) {
+            this.init();
+        }
         
         document.getElementById('user-panel').classList.remove('hidden');
         document.body.style.overflow = 'hidden';
         this.loadUserData();
+    }
+
+    openTab(tabName) {
+        if (!window.auth.isAuthenticated()) {
+            window.authModal.open('login');
+            return;
+        }
+
+        if (!document.getElementById('user-panel')) {
+            this.init();
+        }
+
+        this.open();
+        if (tabName) {
+            this.switchTab(tabName);
+        }
     }
 
     close() {
@@ -232,9 +268,77 @@ class UserPanel {
             case 'reservations':
                 this.loadReservations();
                 break;
+            case 'covers':
+                this.loadCovers();
+                break;
             case 'addresses':
                 this.loadAddresses();
                 break;
+        }
+    }
+
+    async loadCovers() {
+        const coversList = document.getElementById('covers-list');
+        const user = window.auth.getCurrentUser();
+        if (!coversList || !user?.email) return;
+
+        coversList.innerHTML = '<p class="text-gray-500">Cargando covers...</p>';
+
+        const baseUrl = window.location.origin;
+
+        try {
+            if (!window.supabaseClient) {
+                coversList.innerHTML = '<p class="text-gray-500">No se pudo cargar (Supabase no disponible).</p>';
+                return;
+            }
+
+            const { data, error } = await window.supabaseClient
+                .from('cover_tickets')
+                .select('id,person_name,person_email,dj_name,price_pln,event_date,qr_token,status,created_at')
+                .eq('person_email', user.email)
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+            const rows = Array.isArray(data) ? data : [];
+
+            if (rows.length === 0) {
+                coversList.innerHTML = '<p class="text-gray-500">No tienes covers comprados aún</p>';
+                return;
+            }
+
+            coversList.innerHTML = rows.map(t => {
+                const link = `${baseUrl}/ticket.html?token=${encodeURIComponent(t.qr_token)}`;
+                const date = t.event_date ? String(t.event_date) : '—';
+                const dj = t.dj_name || '—';
+                const price = (t.price_pln != null) ? `${t.price_pln} PLN` : '—';
+                const st = String(t.status || '').toLowerCase();
+                const badge = st === 'paid' || st === 'manual' ? 'text-green-700 bg-green-100' : 'text-gray-700 bg-gray-100';
+                return `
+                    <div class="border rounded-lg p-4">
+                        <div class="flex flex-wrap justify-between items-start gap-4">
+                            <div>
+                                <div class="flex items-center gap-2 mb-2">
+                                    <div class="font-semibold text-amber-800">${t.person_name || 'Cover'}</div>
+                                    <span class="px-2 py-1 rounded-full text-xs font-bold ${badge}">${st || '—'}</span>
+                                </div>
+                                <div class="text-sm text-gray-700 space-y-1">
+                                    <div><b>Fecha:</b> ${date}</div>
+                                    <div><b>DJ:</b> ${dj}</div>
+                                    <div><b>Precio:</b> ${price}</div>
+                                </div>
+                                <div class="mt-3">
+                                    <a href="${link}" class="text-amber-700 font-bold underline" target="_blank" rel="noopener noreferrer">Abrir mi QR</a>
+                                </div>
+                            </div>
+                            <div class="text-sm text-gray-600">
+                                <div><b>Email:</b> ${t.person_email || ''}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        } catch (e) {
+            coversList.innerHTML = '<p class="text-red-600">No se pudieron cargar tus covers. Intenta de nuevo.</p>';
         }
     }
 

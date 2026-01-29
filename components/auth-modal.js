@@ -1,10 +1,12 @@
 class AuthModal {
     constructor() {
         this.currentView = 'login';
+        this.initialized = false;
         // No inicializar aquí, esperar a que el DOM esté listo
     }
 
     init() {
+        if (this.initialized) return;
         // Solo crear el modal si el DOM está listo
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => this.createModal());
@@ -12,9 +14,11 @@ class AuthModal {
             this.createModal();
         }
         this.attachEventListeners();
+        this.initialized = true;
     }
 
     createModal() {
+        if (document.getElementById('auth-modal')) return;
         const modalHTML = `
             <div id="auth-modal" class="fixed inset-0 bg-black bg-opacity-50 z-[9999] hidden flex items-center justify-center p-4">
                 <div class="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
@@ -205,6 +209,10 @@ class AuthModal {
     }
 
     open(view = null) {
+        if (!document.getElementById('auth-modal')) {
+            this.init();
+        }
+
         if (view === 'login' && this.currentView === 'register') {
             this.toggleView();
         }
@@ -212,7 +220,9 @@ class AuthModal {
             this.toggleView();
         }
 
-        document.getElementById('auth-modal').classList.remove('hidden');
+        const modal = document.getElementById('auth-modal');
+        if (!modal) return;
+        modal.classList.remove('hidden');
         document.body.style.overflow = 'hidden';
     }
 
