@@ -15,7 +15,7 @@ async function sendZeptoMail({ to, subject, htmlbody }) {
     .replace(/^zoho-enczapikey\s+/i, '')
     .trim();
 
-  const fromAddress = process.env.ZEPTOMAIL_FROM_ADDRESS || 'cover@macondo.pl';
+  const fromAddress = process.env.ZEPTOMAIL_FROM_ADDRESS_COVER || 'cover@macondo.pl';
   const fromName = process.env.ZEPTOMAIL_FROM_NAME || 'Macondo Bar Latino';
 
   const host = process.env.ZEPTOMAIL_API_HOST || 'api.zeptomail.eu';
