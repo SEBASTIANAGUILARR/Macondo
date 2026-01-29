@@ -109,7 +109,7 @@ async function isAdminEmail(email) {
   if (!e) return false;
 
   // check admins table
-  const rows = await supabaseRest(`admins?select=email&email=eq.${encodeURIComponent(e)}&limit=1`);
+  const rows = await supabaseRest(`admins?select=email&email=ilike.${encodeURIComponent(e)}&limit=1`);
   return Array.isArray(rows) && rows.length > 0;
 }
 
