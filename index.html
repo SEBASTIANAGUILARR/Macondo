@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Macondo Bar Latino</title>
+    <base href="/">
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -278,8 +279,12 @@
             } catch (e) {}
 
             const hash = (window.location.hash || '').replace('#', '');
-            if (hash) {
-                const target = document.getElementById(hash);
+            const path = String(window.location.pathname || '').toLowerCase();
+            const routeTarget = !hash && (path === '/reservas' ? 'reservas' : (path === '/contacto' ? 'contacto' : ''));
+            const targetId = hash || routeTarget;
+
+            if (targetId) {
+                const target = document.getElementById(targetId);
                 if (target) {
                     const scrollToTarget = () => {
                         const offset = 90;
