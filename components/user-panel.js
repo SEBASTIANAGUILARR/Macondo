@@ -315,22 +315,26 @@ class UserPanel {
         const baseUrl = window.location.origin;
 
         try {
-            if (!window.supabaseClient) {
-                coversList.innerHTML = '<p class="text-gray-500">No se pudo cargar (Supabase no disponible).</p>';
+            const accessToken = window.auth && typeof window.auth.getAccessToken === 'function'
+                ? await window.auth.getAccessToken()
+                : null;
+
+            if (!accessToken) {
+                coversList.innerHTML = '<p class="text-gray-500">Inicia sesión para ver tus covers.</p>';
                 return;
             }
 
-            const { data, error } = await window.supabaseClient
-                .from('cover_tickets')
-                .select('id,person_name,person_email,buyer_email,dj_name,price_pln,event_date,qr_token,status,created_at')
-                .or(`person_email.eq.${user.email},buyer_email.eq.${user.email}`)
-                .order('created_at', { ascending: false });
-
-            if (error) throw error;
-            const rows = (Array.isArray(data) ? data : []).filter(t => {
-                const st = String(t?.status || '').toLowerCase();
-                return st === 'paid' || st === 'manual' || st === 'manual_pending';
+            const resp = await fetch('/.netlify/functions/user-cover-tickets', {
+                method: 'GET',
+                headers: { Authorization: `Bearer ${accessToken}` }
             });
+
+            const payload = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                throw new Error(payload.error || resp.statusText);
+            }
+
+            const rows = Array.isArray(payload.tickets) ? payload.tickets : [];
 
             if (rows.length === 0) {
                 coversList.innerHTML = '<p class="text-gray-500">No tienes covers activos aún</p>';
