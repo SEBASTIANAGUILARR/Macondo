@@ -449,6 +449,12 @@ class UserPanel {
 
                     const payload = await resp.json().catch(() => ({}));
                     if (!resp.ok) {
+                        const msg = String(payload.error || resp.statusText || 'Error').toLowerCase();
+                        if (resp.status === 401 || msg.includes('invalid session')) {
+                            const err = new Error(payload.error || 'Sesión no válida. Vuelve a iniciar sesión.');
+                            err.code = 'INVALID_SESSION';
+                            throw err;
+                        }
                         throw new Error(payload.error || resp.statusText);
                     }
 
@@ -512,7 +518,34 @@ class UserPanel {
                     </div>
                 `).join('');
             } catch (e) {
-                itemsEl.innerHTML = '<p class="text-red-600">No se pudieron cargar tus reservas. Intenta de nuevo.</p>';
+                try {
+                    if (e && e.code === 'INVALID_SESSION') {
+                        itemsEl.innerHTML = '<p class="text-red-600">Sesión no válida. Vuelve a iniciar sesión y prueba de nuevo.</p>';
+                        return;
+                    }
+
+                    const legacy = JSON.parse(localStorage.getItem('macondo_reservations') || '[]');
+                    const userReservations = (legacy || []).filter(r => String(r.email || '').trim().toLowerCase() === String(user.email || '').trim().toLowerCase());
+                    if (!userReservations || userReservations.length === 0) {
+                        itemsEl.innerHTML = '<p class="text-gray-500">No tienes reservas aún</p>';
+                        return;
+                    }
+
+                    itemsEl.innerHTML = userReservations.map(reservation => `
+                        <div class="border rounded-lg p-4">
+                            <div class="flex justify-between items-start">
+                                <div>
+                                    <h4 class="font-semibold text-amber-800">Reserva para ${reservation.people} personas</h4>
+                                    <p class="text-sm text-gray-600">Fecha: ${reservation.date}</p>
+                                    <p class="text-sm text-gray-600">Hora: ${reservation.time}</p>
+                                    <p class="text-sm text-gray-600">Mesa: ${reservation.table || 'No asignada'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('');
+                } catch (ignored) {
+                    itemsEl.innerHTML = '<p class="text-red-600">No se pudieron cargar tus reservas. Intenta de nuevo.</p>';
+                }
             }
         };
 
