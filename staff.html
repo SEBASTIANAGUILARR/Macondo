@@ -149,6 +149,33 @@
     let qrScanner = null;
     let scanInProgress = false;
 
+    function pickBestRearCameraId(devices) {
+      const cams = Array.isArray(devices) ? devices : [];
+      if (cams.length === 0) return null;
+
+      const scored = cams.map((d, idx) => {
+        const label = String(d?.label || '').toLowerCase();
+        let score = 0;
+
+        // Prefer rear/back cameras
+        if (label.includes('back') || label.includes('rear') || label.includes('environment')) score += 100;
+
+        // Prefer "wide" / main cameras
+        if (label.includes('wide') || label.includes('main') || label.includes('standard')) score += 30;
+
+        // Avoid telephoto / long-range / zoom lenses
+        if (label.includes('tele') || label.includes('zoom') || label.includes('largo') || label.includes('long')) score -= 80;
+
+        // Small preference for earlier devices when scores tie
+        score -= idx;
+
+        return { id: d.id, score };
+      });
+
+      scored.sort((a, b) => b.score - a.score);
+      return scored[0]?.id || null;
+    }
+
     function openResultModal({ title, message, type }) {
       const modal = document.getElementById('result-modal');
       const titleEl = document.getElementById('result-modal-title');
@@ -232,14 +259,19 @@
         await loadTickets();
       };
 
-      const devices = await Html5Qrcode.getCameras().catch(() => []);
-      const cameraId = devices && devices[0] ? devices[0].id : null;
-      if (!cameraId) {
-        setScanStatus('No se encontró cámara disponible.', 'error');
-        return;
+      // Prefer rear camera on mobile devices
+      try {
+        await qrScanner.start({ facingMode: 'environment' }, config, onScanSuccess);
+      } catch (e) {
+        const devices = await Html5Qrcode.getCameras().catch(() => []);
+        const cameraId = pickBestRearCameraId(devices);
+        if (!cameraId) {
+          setScanStatus('No se encontró cámara disponible.', 'error');
+          scanInProgress = false;
+          return;
+        }
+        await qrScanner.start(cameraId, config, onScanSuccess);
       }
-
-      await qrScanner.start(cameraId, config, onScanSuccess);
       setScanStatus('Listo para escanear.', 'info');
       scanInProgress = false;
     }
