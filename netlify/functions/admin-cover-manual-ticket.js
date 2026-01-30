@@ -26,7 +26,7 @@ exports.handler = async (event) => {
 
     const body = JSON.parse(event.body || '{}');
     const person_name = String(body.person_name || '').trim();
-    const person_email = String(body.person_email || '').trim();
+    const person_email = String(body.person_email || '').trim().toLowerCase();
     const person_phone = String(body.person_phone || '').trim();
     const event_date = String(body.event_date || '').trim() || ymd(new Date());
     const quantity = Math.max(1, Math.min(50, Number(body.quantity || 1) || 1));

@@ -329,7 +329,7 @@ class UserPanel {
             if (error) throw error;
             const rows = (Array.isArray(data) ? data : []).filter(t => {
                 const st = String(t?.status || '').toLowerCase();
-                return st === 'paid' || st === 'manual';
+                return st === 'paid' || st === 'manual' || st === 'manual_pending';
             });
 
             if (rows.length === 0) {
@@ -343,7 +343,9 @@ class UserPanel {
                 const dj = t.dj_name || '—';
                 const price = (t.price_pln != null) ? `${t.price_pln} PLN` : '—';
                 const st = String(t.status || '').toLowerCase();
-                const badge = st === 'paid' || st === 'manual' ? 'text-green-700 bg-green-100' : 'text-gray-700 bg-gray-100';
+                const badge = st === 'paid' || st === 'manual'
+                    ? 'text-green-700 bg-green-100'
+                    : 'text-gray-700 bg-gray-100';
                 return `
                     <div class="border rounded-lg p-4">
                         <div class="flex flex-wrap justify-between items-start gap-4">
