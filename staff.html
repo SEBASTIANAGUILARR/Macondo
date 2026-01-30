@@ -210,6 +210,26 @@
       if (reader) reader.classList.add('hidden');
     }
 
+    async function tryEnableAutoFocus() {
+      try {
+        if (!qrScanner) return;
+
+        let track = null;
+        if (typeof qrScanner.getRunningTrack === 'function') {
+          track = qrScanner.getRunningTrack();
+        } else if (qrScanner._localMediaStream && typeof qrScanner._localMediaStream.getVideoTracks === 'function') {
+          const tracks = qrScanner._localMediaStream.getVideoTracks();
+          track = tracks && tracks[0] ? tracks[0] : null;
+        }
+
+        if (!track || typeof track.applyConstraints !== 'function') return;
+
+        await track.applyConstraints({ advanced: [{ focusMode: 'continuous' }, { zoom: 1 }] });
+      } catch (e) {
+        // best effort
+      }
+    }
+
     async function startScanner() {
       if (qrScanner || scanInProgress) return;
       scanInProgress = true;
@@ -272,6 +292,8 @@
         }
         await qrScanner.start(cameraId, config, onScanSuccess);
       }
+
+      await tryEnableAutoFocus();
       setScanStatus('Listo para escanear.', 'info');
       scanInProgress = false;
     }
