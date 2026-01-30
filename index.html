@@ -432,35 +432,55 @@
                 </div>
             `;
         }
-        
+
         // Función para cargar eventos desde Supabase
         async function loadEventsFromSupabase() {
             try {
-                const { data: events, error } = await window.supabaseClient
+                if (!window.supabaseClient) {
+                    await new Promise(resolve => {
+                        const done = () => {
+                            window.removeEventListener('supabase-ready', done);
+                            resolve();
+                        };
+                        window.addEventListener('supabase-ready', done);
+                        setTimeout(done, 2500);
+                    });
+                }
+
+                const client = window.supabaseClient;
+                const container = document.getElementById('eventos-container');
+                if (!client) {
+                    if (container) {
+                        container.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No se pudieron cargar los eventos.</p>';
+                    }
+                    return;
+                }
+
+                const { data: events, error } = await client
                     .from('events')
                     .select('*')
                     .eq('activo', true)
                     .order('fecha', { ascending: true })
                     .limit(3); // Máximo 3 eventos
-                
+
                 if (error) {
                     console.error('Error cargando eventos:', error);
                     return;
                 }
-                
-                const container = document.getElementById('eventos-container');
-                
+
+                if (!container) return;
+
                 if (!events || events.length === 0) {
                     container.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay eventos programados.</p>';
                     return;
                 }
-                
+
                 container.innerHTML = events.map(event => renderEvent(event)).join('');
-                
+
                 if (typeof feather !== 'undefined') {
                     feather.replace();
                 }
-                
+
             } catch (err) {
                 console.error('Error en loadEventsFromSupabase:', err);
             }
