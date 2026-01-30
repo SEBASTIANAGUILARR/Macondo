@@ -106,6 +106,26 @@ class CustomNavbar extends HTMLElement {
           display: none;
           position: relative;
         }
+
+        .user-initials {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 28px;
+          height: 28px;
+          border-radius: 9999px;
+          background: rgba(146, 64, 14, 0.12);
+          color: #92400e;
+          font-weight: 800;
+          font-size: 0.8rem;
+          letter-spacing: 0.5px;
+        }
+
+        .user-icon {
+          width: 18px;
+          height: 18px;
+          color: #92400e;
+        }
         
         .auth-section {
           display: flex;
@@ -513,7 +533,8 @@ class CustomNavbar extends HTMLElement {
         <div class="top-user-menu" id="top-user-menu">
           <div class="user-menu" id="user-menu-top">
             <button class="user-menu-trigger" id="user-menu-trigger-top" type="button">
-              <span id="user-name-top">Usuario</span>
+              <i data-feather="user" class="user-icon"></i>
+              <span id="user-initials-top" class="user-initials">US</span>
               <i data-feather="chevron-down"></i>
             </button>
             <div class="user-menu-dropdown" id="user-menu-dropdown-top">
@@ -761,12 +782,25 @@ class CustomNavbar extends HTMLElement {
       const dropdown = this.shadowRoot && this.shadowRoot.getElementById('user-menu-dropdown');
 
       const userMenuTop = this.shadowRoot && this.shadowRoot.getElementById('user-menu-top');
-      const userNameTop = this.shadowRoot && this.shadowRoot.getElementById('user-name-top');
+      const userInitialsTop = this.shadowRoot && this.shadowRoot.getElementById('user-initials-top');
       const dropdownTop = this.shadowRoot && this.shadowRoot.getElementById('user-menu-dropdown-top');
 
       const user = window.auth && typeof window.auth.getCurrentUser === 'function'
         ? window.auth.getCurrentUser()
         : null;
+
+      const getInitials = (u) => {
+        const name = String(u?.name || '').trim();
+        const email = String(u?.email || '').trim();
+        const base = name || email;
+        if (!base) return 'US';
+
+        const clean = base.includes('@') ? base.split('@')[0] : base;
+        const parts = clean.replace(/[^a-zA-Z\s]/g, ' ').trim().split(/\s+/).filter(Boolean);
+        if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+        if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+        return 'US';
+      };
 
       if (user) {
         if (authButtons) authButtons.style.display = 'none';
@@ -774,7 +808,7 @@ class CustomNavbar extends HTMLElement {
         if (userName) userName.textContent = user.name || 'Usuario';
 
         if (userMenuTop) userMenuTop.style.display = 'block';
-        if (userNameTop) userNameTop.textContent = user.name || 'Usuario';
+        if (userInitialsTop) userInitialsTop.textContent = getInitials(user);
       } else {
         if (authButtons) authButtons.style.display = 'flex';
         if (userMenu) userMenu.style.display = 'none';
