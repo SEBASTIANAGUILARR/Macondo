@@ -34,8 +34,9 @@
         <div class="grid lg:grid-cols-2 gap-6">
           <div class="bg-white rounded-lg shadow p-6">
             <h2 class="text-xl font-bold text-amber-800 mb-4">Escáner QR</h2>
-            <div id="reader" class="w-full"></div>
-            <div id="scan-status" class="mt-4 p-3 rounded-lg bg-amber-50 text-amber-900">Listo para escanear.</div>
+            <button id="start-scan" class="mb-3 bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg">Validar QR</button>
+            <div id="reader" class="w-full hidden"></div>
+            <div id="scan-status" class="mt-4 p-3 rounded-lg bg-amber-50 text-amber-900">Cámara desactivada.</div>
           </div>
 
           <div class="bg-white rounded-lg shadow p-6">
@@ -49,6 +50,18 @@
       </div>
     </div>
   </main>
+
+  <div id="result-modal" class="hidden fixed inset-0 bg-black/50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-lg shadow-lg w-full max-w-md">
+      <div class="flex items-center justify-between p-4 border-b">
+        <div id="result-modal-title" class="font-bold text-amber-800">Resultado</div>
+        <button id="result-modal-close" class="text-gray-500 hover:text-black font-bold px-2">X</button>
+      </div>
+      <div class="p-4">
+        <div id="result-modal-body" class="p-3 rounded-lg">—</div>
+      </div>
+    </div>
+  </div>
 
   <script>
     function setLoginError(msg) {
@@ -134,9 +147,49 @@
     }
 
     let qrScanner = null;
+    let scanInProgress = false;
+
+    function openResultModal({ title, message, type }) {
+      const modal = document.getElementById('result-modal');
+      const titleEl = document.getElementById('result-modal-title');
+      const bodyEl = document.getElementById('result-modal-body');
+      if (titleEl) titleEl.textContent = title || 'Resultado';
+      if (bodyEl) {
+        const cls = type === 'success'
+          ? 'bg-green-50 text-green-700'
+          : (type === 'error' ? 'bg-red-50 text-red-700' : 'bg-amber-50 text-amber-900');
+        bodyEl.className = `p-3 rounded-lg ${cls}`;
+        bodyEl.textContent = message || '—';
+      }
+      if (modal) modal.classList.remove('hidden');
+    }
+
+    async function closeResultModal() {
+      const modal = document.getElementById('result-modal');
+      if (modal) modal.classList.add('hidden');
+      const hasSession = !!getStaffToken();
+      if (hasSession) {
+        await startScanner();
+      }
+    }
+
+    async function stopScanner() {
+      const reader = document.getElementById('reader');
+      if (qrScanner) {
+        try { await qrScanner.stop(); } catch (e) {}
+        try { await qrScanner.clear(); } catch (e) {}
+        qrScanner = null;
+      }
+      if (reader) reader.classList.add('hidden');
+    }
 
     async function startScanner() {
-      if (qrScanner) return;
+      if (qrScanner || scanInProgress) return;
+      scanInProgress = true;
+
+      const reader = document.getElementById('reader');
+      if (reader) reader.classList.remove('hidden');
+
       qrScanner = new Html5Qrcode('reader');
 
       const config = { fps: 10, qrbox: 220 };
@@ -153,16 +206,29 @@
         });
 
         const data = await resp.json().catch(() => ({}));
+        await stopScanner();
+        scanInProgress = false;
+
         if (!resp.ok) {
           if (String(data.error || '').toLowerCase().includes('invalid token')) {
             await forceRelogin('Sesión staff expirada. Inicia sesión otra vez.');
             return;
           }
-          setScanStatus(data.error || 'No válido', 'error');
+          openResultModal({
+            title: 'No válido',
+            message: data.error || 'No válido',
+            type: 'error'
+          });
+          setScanStatus('Cámara desactivada.', 'info');
           return;
         }
 
-        setScanStatus('✅ Válido. Marcado como usado.', 'success');
+        openResultModal({
+          title: 'Válido',
+          message: data.grace ? '✅ Válido (ya verificado recientemente).' : '✅ Válido. Marcado como usado.',
+          type: 'success'
+        });
+        setScanStatus('Cámara desactivada.', 'info');
         await loadTickets();
       };
 
@@ -175,6 +241,7 @@
 
       await qrScanner.start(cameraId, config, onScanSuccess);
       setScanStatus('Listo para escanear.', 'info');
+      scanInProgress = false;
     }
 
     function showApp() {
@@ -210,17 +277,22 @@
       setStaffToken(data.token, username);
       showApp();
       await loadTickets();
-      await startScanner();
+      await stopScanner();
+      setScanStatus('Cámara desactivada.', 'info');
     });
 
     document.getElementById('logout').addEventListener('click', async () => {
       clearStaffToken();
-      if (qrScanner) {
-        try { await qrScanner.stop(); } catch (e) {}
-        try { await qrScanner.clear(); } catch (e) {}
-        qrScanner = null;
-      }
+      await stopScanner();
       showLogin();
+    });
+
+    document.getElementById('start-scan').addEventListener('click', async () => {
+      await startScanner();
+    });
+
+    document.getElementById('result-modal-close').addEventListener('click', async () => {
+      await closeResultModal();
     });
 
     document.getElementById('refresh').addEventListener('click', async () => {
@@ -231,7 +303,8 @@
       if (getStaffToken()) {
         showApp();
         await loadTickets();
-        await startScanner();
+        await stopScanner();
+        setScanStatus('Cámara desactivada.', 'info');
       }
     })();
   </script>

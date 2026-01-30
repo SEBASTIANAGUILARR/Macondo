@@ -21,7 +21,7 @@ exports.handler = async (event) => {
     const qr = String(body.token || '').trim();
     if (!qr) return json(400, { error: 'Missing token' });
 
-    const rows = await supabaseRest(`cover_tickets?select=id,used_at,status,event_date&qr_token=eq.${encodeURIComponent(qr)}&limit=1`);
+    const rows = await supabaseRest(`cover_tickets?select=id,used_at,used_by,status,event_date&qr_token=eq.${encodeURIComponent(qr)}&limit=1`);
     const ticket = rows && rows[0];
     if (!ticket) return json(404, { error: 'Ticket no existe' });
 
@@ -29,7 +29,13 @@ exports.handler = async (event) => {
       return json(400, { error: 'Ticket no está activo' });
     }
 
+    const graceMs = 5 * 60 * 1000;
     if (ticket.used_at) {
+      const usedAtMs = Date.parse(ticket.used_at);
+      const nowMs = Date.now();
+      if (Number.isFinite(usedAtMs) && nowMs - usedAtMs <= graceMs) {
+        return json(200, { ok: true, grace: true, used_at: ticket.used_at, used_by: ticket.used_by || null });
+      }
       return json(409, { error: 'Ticket ya fue usado' });
     }
 
@@ -45,7 +51,7 @@ exports.handler = async (event) => {
       return json(409, { error: 'Ticket ya fue usado' });
     }
 
-    return json(200, { ok: true });
+    return json(200, { ok: true, grace: false, used_at: now, used_by: staff.username });
   } catch (e) {
     return json(500, { error: e.message || String(e) });
   }
