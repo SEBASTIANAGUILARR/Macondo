@@ -505,6 +505,7 @@ class UserPanel {
                         modal.className = 'fixed inset-0 z-[9999] hidden items-center justify-center bg-black/80 p-4';
                         modal.innerHTML = `
                             <div class="relative max-w-3xl w-full">
+                                <div id="user-photo-modal-loading" class="text-white text-sm mb-3">Cargando...</div>
                                 <img id="user-photo-modal-img" src="" alt="Foto de mesa" class="w-full h-auto rounded-lg border border-white/10 bg-white" />
                             </div>
                         `;
@@ -514,6 +515,8 @@ class UserPanel {
                         document.body.appendChild(modal);
                         return modal;
                     };
+
+                    const photoUrlCache = new Map();
 
                     itemsEl.innerHTML = rows.map(r => {
                         const st = renderStatus(r.estado);
@@ -540,11 +543,7 @@ class UserPanel {
                                     </div>
                                     <div class="w-full sm:w-64">
                                         ${photoBtn ? `
-                                            <div class="flex items-center justify-between">
-                                                ${photoBtn}
-                                                <span class="text-xs text-gray-500" data-photo-status="${photoKey}"></span>
-                                            </div>
-                                            <div class="mt-2" data-photo-wrap="${photoKey}"></div>
+                                            <div class="flex items-center justify-between">${photoBtn}</div>
                                         ` : '<div class="text-sm text-gray-500">Foto de mesa: no disponible</div>'}
                                     </div>
                                 </div>
@@ -556,34 +555,24 @@ class UserPanel {
                         btn.addEventListener('click', async () => {
                             const key = btn.getAttribute('data-photo') || '';
                             const raw = key ? decodeURIComponent(key) : '';
-                            const statusEl = itemsEl.querySelector(`[data-photo-status="${key}"]`);
-                            const wrapEl = itemsEl.querySelector(`[data-photo-wrap="${key}"]`);
-                            if (!raw || !wrapEl) return;
+                            if (!raw) return;
+
+                            const modal = ensurePhotoModal();
+                            const modalImg = modal.querySelector('#user-photo-modal-img');
+                            const loadingEl = modal.querySelector('#user-photo-modal-loading');
+                            if (modalImg) modalImg.src = '';
+                            if (loadingEl) loadingEl.textContent = 'Cargando...';
+                            modal.classList.remove('hidden');
 
                             try {
-                                if (statusEl) statusEl.textContent = 'Cargando...';
-                                const url = await getPhotoUrl(raw);
+                                const cached = photoUrlCache.get(raw);
+                                const url = cached || await getPhotoUrl(raw);
                                 if (!url) throw new Error('No se pudo cargar la foto.');
-                                wrapEl.innerHTML = `
-                                    <div class="mt-2">
-                                        <img src="${url}" alt="Foto de mesa" class="w-full rounded-lg border cursor-zoom-in" data-action="zoom-photo" data-url="${encodeURIComponent(url)}" />
-                                    </div>
-                                `;
-                                if (statusEl) statusEl.textContent = '';
-
-                                wrapEl.querySelectorAll('[data-action="zoom-photo"]').forEach(img => {
-                                    img.addEventListener('click', () => {
-                                        const modal = ensurePhotoModal();
-                                        const modalImg = modal.querySelector('#user-photo-modal-img');
-                                        const u = img.getAttribute('data-url') || '';
-                                        const decoded = u ? decodeURIComponent(u) : '';
-                                        if (modalImg) modalImg.src = decoded;
-                                        modal.classList.remove('hidden');
-                                    });
-                                });
+                                if (!cached) photoUrlCache.set(raw, url);
+                                if (modalImg) modalImg.src = url;
+                                if (loadingEl) loadingEl.textContent = '';
                             } catch (e) {
-                                if (statusEl) statusEl.textContent = '';
-                                wrapEl.innerHTML = `<div class="text-sm text-red-600">No se pudo abrir la foto</div>`;
+                                if (loadingEl) loadingEl.textContent = 'No se pudo abrir la foto';
                             }
                         });
                     });
