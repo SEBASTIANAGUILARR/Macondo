@@ -9,11 +9,23 @@ function loadSupabaseSdkOnce() {
   try {
     if (typeof window === 'undefined') return;
     if (window.supabase && window.supabase.createClient) return;
+    const existing = document.querySelector('script[data-macondo-supabase-sdk="1"]');
+    if (existing) {
+      // Script already present (maybe still loading). Ensure we initialize once it finishes.
+      if (typeof existing.dataset.macondoSupabaseInitHooked === 'undefined') {
+        existing.dataset.macondoSupabaseInitHooked = '1';
+        existing.addEventListener('load', () => {
+          try { initSupabase(); } catch (e) {}
+        });
+        existing.addEventListener('error', () => {
+          try { console.error('❌ Error cargando Supabase SDK'); } catch (e) {}
+        });
+      }
+      return;
+    }
+
     if (window.__macondo_supabase_sdk_loading) return;
     window.__macondo_supabase_sdk_loading = true;
-
-    const existing = document.querySelector('script[data-macondo-supabase-sdk="1"]');
-    if (existing) return;
 
     const script = document.createElement('script');
     script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
@@ -23,6 +35,11 @@ function loadSupabaseSdkOnce() {
     script.onload = () => {
       try {
         initSupabase();
+      } catch (e) {}
+    };
+    script.onerror = () => {
+      try {
+        console.error('❌ Error cargando Supabase SDK');
       } catch (e) {}
     };
     document.head.appendChild(script);
