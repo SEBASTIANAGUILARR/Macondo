@@ -1711,15 +1711,9 @@
                         throw new Error(up.error.message);
                     }
 
-                    const pub = supabaseClient.storage.from(bucket).getPublicUrl(path);
-                    const publicUrl = String(pub?.data?.publicUrl || '').trim();
-                    if (!publicUrl) {
-                        throw new Error('No se pudo obtener la URL pública de la foto.');
-                    }
-
                     const { error } = await supabaseClient
                         .from('reservations')
-                        .update({ mesa_foto_url: publicUrl })
+                        .update({ mesa_foto_url: path })
                         .eq('id', reservationId);
 
                     if (error) {
@@ -1729,10 +1723,25 @@
                     await loadReservations();
                     alert('✅ Foto guardada en la reserva');
                 } catch (e) {
-                    alert('Error subiendo foto. Asegúrate de crear el bucket "reservation-photos" (public) y la columna reservations.mesa_foto_url en Supabase. Detalle: ' + (e.message || e));
+                    alert('Error subiendo foto. Asegúrate de crear el bucket "reservation-photos" (privado, con policies) y la columna reservations.mesa_foto_url en Supabase. Detalle: ' + (e.message || e));
                 }
             };
             input.click();
+        }
+
+        async function viewReservationPhoto(path) {
+            const p = String(path || '').trim();
+            if (!p) return;
+            try {
+                const bucket = 'reservation-photos';
+                const { data, error } = await supabaseClient.storage.from(bucket).createSignedUrl(p, 60 * 10);
+                if (error) throw new Error(error.message);
+                const url = String(data?.signedUrl || '').trim();
+                if (!url) throw new Error('No se pudo generar la URL firmada.');
+                window.open(url, '_blank', 'noopener,noreferrer');
+            } catch (e) {
+                alert('No se pudo abrir la foto. Detalle: ' + (e.message || e));
+            }
         }
 
         async function loadBasementAnalytics() {
@@ -1893,7 +1902,7 @@
                                 ${r.comentarios ? `<p class="mt-1"><strong>💬</strong> ${r.comentarios}</p>` : ''}
                                 ${r.mesa_foto_url ? `
                                     <div class="mt-2">
-                                        <a href="${r.mesa_foto_url}" target="_blank" rel="noopener noreferrer" class="text-amber-700 font-bold underline">📷 Ver foto de mesa</a>
+                                        <button onclick="viewReservationPhoto('${String(r.mesa_foto_url || '').replace(/'/g, "\\'")}')" class="text-amber-700 font-bold underline">📷 Ver foto de mesa</button>
                                     </div>
                                 ` : ''}
                             </div>

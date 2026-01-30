@@ -104,7 +104,7 @@ exports.handler = async (event) => {
 
     const emailNorm = normalizeEmail(email);
     const rows = await supabaseRestSelect(
-      `reservations?select=id,nombre,email,telefono,fecha,hora_entrada,personas,estado,mesa,comentarios,created_at&order=created_at.desc&limit=1000`
+      `reservations?select=id,nombre,email,telefono,fecha,hora_entrada,personas,estado,mesa,mesa_foto_url,comentarios,created_at&order=created_at.desc&limit=1000`
     );
 
     const filtered = Array.isArray(rows)

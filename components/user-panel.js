@@ -469,9 +469,25 @@ class UserPanel {
                         return;
                     }
 
+                    const getPhotoUrl = async (maybePath) => {
+                        const v = String(maybePath || '').trim();
+                        if (!v) return null;
+                        if (/^https?:\/\//i.test(v)) return v;
+                        if (!window.supabaseClient?.storage?.from) return null;
+                        const { data, error } = await window.supabaseClient.storage
+                            .from('reservation-photos')
+                            .createSignedUrl(v, 60 * 10);
+                        if (error) throw new Error(error.message || 'No se pudo generar la URL firmada.');
+                        return String(data?.signedUrl || '').trim() || null;
+                    };
+
                     itemsEl.innerHTML = rows.map(r => {
                         const st = renderStatus(r.estado);
                         const photo = String(r.mesa_foto_url || r.mesa_foto || r.foto_mesa || r.photo_url || '').trim();
+                        const photoKey = photo ? encodeURIComponent(photo) : '';
+                        const photoBtn = photo
+                            ? `<button type="button" class="text-amber-700 font-bold underline" data-action="open-photo" data-photo="${photoKey}">📷 Ver foto</button>`
+                            : '';
                         return `
                             <div class="border rounded-lg p-4">
                                 <div class="flex flex-wrap justify-between items-start gap-4">
@@ -489,17 +505,42 @@ class UserPanel {
                                         </div>
                                     </div>
                                     <div class="w-full sm:w-64">
-                                        ${photo ? `
-                                            <a href="${photo}" target="_blank" rel="noopener noreferrer" class="text-amber-700 font-bold underline">📷 Ver foto</a>
-                                            <div class="mt-2">
-                                                <img src="${photo}" alt="Foto de mesa" class="w-full rounded-lg border" />
+                                        ${photoBtn ? `
+                                            <div class="flex items-center justify-between">
+                                                ${photoBtn}
+                                                <span class="text-xs text-gray-500" data-photo-status="${photoKey}"></span>
                                             </div>
+                                            <div class="mt-2" data-photo-wrap="${photoKey}"></div>
                                         ` : '<div class="text-sm text-gray-500">Foto de mesa: no disponible</div>'}
                                     </div>
                                 </div>
                             </div>
                         `;
                     }).join('');
+
+                    itemsEl.querySelectorAll('[data-action="open-photo"]').forEach(btn => {
+                        btn.addEventListener('click', async () => {
+                            const key = btn.getAttribute('data-photo') || '';
+                            const raw = key ? decodeURIComponent(key) : '';
+                            const statusEl = itemsEl.querySelector(`[data-photo-status="${key}"]`);
+                            const wrapEl = itemsEl.querySelector(`[data-photo-wrap="${key}"]`);
+                            if (!raw || !wrapEl) return;
+
+                            try {
+                                if (statusEl) statusEl.textContent = 'Cargando...';
+                                const url = await getPhotoUrl(raw);
+                                if (!url) throw new Error('No se pudo cargar la foto.');
+                                wrapEl.innerHTML = `
+                                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="text-amber-700 font-bold underline">Abrir en nueva pestaña</a>
+                                    <div class="mt-2"><img src="${url}" alt="Foto de mesa" class="w-full rounded-lg border" /></div>
+                                `;
+                                if (statusEl) statusEl.textContent = '';
+                            } catch (e) {
+                                if (statusEl) statusEl.textContent = '';
+                                wrapEl.innerHTML = `<div class="text-sm text-red-600">No se pudo abrir la foto</div>`;
+                            }
+                        });
+                    });
                     return;
                 }
 
