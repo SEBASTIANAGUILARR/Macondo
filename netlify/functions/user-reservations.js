@@ -70,6 +70,19 @@ exports.handler = async (event) => {
   }
 
   try {
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const anonKey = process.env.SUPABASE_ANON_KEY;
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!supabaseUrl) {
+      return json(500, { error: 'Missing SUPABASE_URL in Netlify environment variables' });
+    }
+    if (!anonKey) {
+      return json(500, { error: 'Missing SUPABASE_ANON_KEY in Netlify environment variables' });
+    }
+    if (!serviceKey) {
+      return json(500, { error: 'Missing SUPABASE_SERVICE_ROLE_KEY in Netlify environment variables' });
+    }
+
     const auth = event.headers.authorization || event.headers.Authorization || '';
     const token = auth.startsWith('Bearer ') ? auth.slice('Bearer '.length) : null;
 
@@ -109,6 +122,6 @@ exports.handler = async (event) => {
       }
     });
   } catch (e) {
-    return json(500, { error: e.message || String(e) });
+    return json(500, { error: `user-reservations failed: ${e.message || String(e)}` });
   }
 };
