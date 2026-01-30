@@ -1431,7 +1431,12 @@
             const hora = String(reservation?.hora_entrada || '').trim() || '—';
             const personas = String(reservation?.personas ?? '').trim() || '—';
             const mesa = String(reservation?.mesa || '').trim();
-            const foto = String(reservation?.mesa_foto_url || '').trim();
+            const escapeHtml = (s) => String(s ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
 
             const html = `
                 <div style="font-family:Arial,sans-serif;line-height:1.5;background:#fff;padding:20px">
@@ -1445,13 +1450,13 @@
                     <div style="padding:20px">
                       <h2 style="margin:0 0 10px 0;color:#92400e">Tu reserva ha sido reactivada</h2>
                       <p style="margin:0 0 14px 0">Hola ${escapeHtml(nombre)},</p>
-                      <p style="margin:0 0 14px 0">Tu reserva vuelve a estar activa y en estado <b>pendiente</b>. Te avisaremos cuando esté confirmada.</p>
+                      <p style="margin:0 0 14px 0">Tu reserva ha sido <b>reactivada</b> y vuelve a estar activa. Por favor, <b>ignora la cancelación anterior</b>.</p>
+                      <p style="margin:0 0 14px 0">Ahora tu reserva está en estado <b>pendiente</b>. Te avisaremos cuando esté confirmada.</p>
                       <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:14px">
                         <div><b>Fecha:</b> ${escapeHtml(fecha)}</div>
                         <div><b>Hora:</b> ${escapeHtml(hora)}</div>
                         <div><b>Personas:</b> ${escapeHtml(personas)}</div>
                         <div><b>Mesa:</b> ${escapeHtml(mesa || 'Aún no asignada')}</div>
-                        ${foto ? `<div style=\"margin-top:10px\"><a href=\"${foto}\" target=\"_blank\" rel=\"noopener noreferrer\">Ver foto de mesa</a></div>` : ''}
                       </div>
                       <p style="margin:14px 0 0 0;color:#6b7280;font-size:12px">Si no solicitaste este cambio, contáctanos.</p>
                     </div>
@@ -1459,7 +1464,7 @@
                 </div>
             `;
 
-            const subject = 'Reserva reactivada - Macondo';
+            const subject = '↺ Reserva reactivada - Macondo';
 
             const resp = await fetch('/.netlify/functions/send-email', {
                 method: 'POST',
@@ -1472,7 +1477,7 @@
                     toEmail: email,
                     toName: nombre,
                     subject,
-                    content: 'Tu reserva ha sido reactivada.',
+                    content: 'Tu reserva ha sido reactivada. Ignora la cancelación anterior.',
                     html
                 })
             });
