@@ -38,6 +38,9 @@
               <button id="start-scan" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg">Validar QR</button>
               <button id="torch-toggle" class="hidden bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold px-4 py-2 rounded-lg">Linterna</button>
             </div>
+            <div class="mb-3">
+              <select id="camera-select" class="hidden w-full p-3 border border-amber-300 rounded-lg"></select>
+            </div>
             <div id="reader" class="w-full hidden"></div>
             <div id="scan-status" class="mt-4 p-3 rounded-lg bg-amber-50 text-amber-900">Cámara desactivada.</div>
           </div>
@@ -152,6 +155,48 @@
     let qrScanner = null;
     let scanInProgress = false;
     let torchEnabled = false;
+
+    function getSavedCameraId() {
+      return localStorage.getItem('macondo_staff_camera_id') || '';
+    }
+
+    function setSavedCameraId(id) {
+      if (!id) localStorage.removeItem('macondo_staff_camera_id');
+      else localStorage.setItem('macondo_staff_camera_id', id);
+    }
+
+    async function loadCameraOptions() {
+      const sel = document.getElementById('camera-select');
+      if (!sel) return;
+
+      const devices = await Html5Qrcode.getCameras().catch(() => []);
+      if (!Array.isArray(devices) || devices.length === 0) {
+        sel.classList.add('hidden');
+        sel.innerHTML = '';
+        return;
+      }
+
+      const saved = getSavedCameraId();
+      sel.innerHTML = devices.map((d, idx) => {
+        const label = String(d?.label || '').trim() || `Cámara ${idx + 1}`;
+        const id = String(d?.id || '');
+        const safeLabel = label.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        const safeId = id.replace(/"/g, '&quot;');
+        const selected = saved && saved === id ? ' selected' : '';
+        return `<option value="${safeId}"${selected}>${safeLabel}</option>`;
+      }).join('');
+
+      sel.classList.remove('hidden');
+
+      if (!saved) {
+        // Default: best rear camera (prefer wide/main, avoid tele)
+        const best = pickBestRearCameraId(devices);
+        if (best) {
+          sel.value = best;
+          setSavedCameraId(best);
+        }
+      }
+    }
 
     function pickBestRearCameraId(devices) {
       const cams = Array.isArray(devices) ? devices : [];
@@ -288,6 +333,8 @@
 
       qrScanner = new Html5Qrcode('reader');
 
+      await loadCameraOptions();
+
       const videoConstraints = {
         facingMode: { ideal: 'environment' },
         width: { ideal: 1280 },
@@ -336,7 +383,12 @@
 
       // Prefer rear camera on mobile devices
       try {
-        await qrScanner.start({ facingMode: 'environment' }, config, onScanSuccess);
+        const selectedId = getSavedCameraId();
+        if (selectedId) {
+          await qrScanner.start(selectedId, config, onScanSuccess);
+        } else {
+          await qrScanner.start({ facingMode: 'environment' }, config, onScanSuccess);
+        }
       } catch (e) {
         try {
           const devices = await Html5Qrcode.getCameras().catch(() => []);
@@ -407,6 +459,18 @@
     document.getElementById('start-scan').addEventListener('click', async () => {
       await startScanner();
     });
+
+    const cameraSelect = document.getElementById('camera-select');
+    if (cameraSelect) {
+      cameraSelect.addEventListener('change', async () => {
+        const id = String(cameraSelect.value || '');
+        setSavedCameraId(id);
+        if (qrScanner) {
+          await stopScanner();
+          await startScanner();
+        }
+      });
+    }
 
     document.getElementById('torch-toggle').addEventListener('click', async () => {
       await toggleTorch();
