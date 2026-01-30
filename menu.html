@@ -10,7 +10,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="components/supabase-client.js"></script>
     <script src="components/navbar.js"></script>
     <script src="components/footer.js"></script>
@@ -121,7 +120,7 @@
     <custom-footer></custom-footer>
 
     <script>
-        let supabaseClient = window.supabaseClient;
+        let menuSupabaseClient = window.supabaseClient;
         
         let allMenuItems = [];
         let currentFilter = 'all';
@@ -129,7 +128,7 @@
         // Cargar menú desde Supabase
         async function loadMenu() {
             try {
-                if (!supabaseClient) {
+                if (!menuSupabaseClient) {
                     console.error('Supabase no está listo para cargar el menú');
                     const platosContainer = document.getElementById('platos-section');
                     const bebidasContainer = document.getElementById('bebidas-section');
@@ -139,7 +138,7 @@
                     if (ofertasContainer) ofertasContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No se pudieron cargar las ofertas.</p>';
                     return;
                 }
-                const { data: items, error } = await supabaseClient
+                const { data: items, error } = await menuSupabaseClient
                     .from('menu_items')
                     .select('*')
                     .eq('activo', true)
@@ -261,7 +260,7 @@
                 });
             }
 
-            supabaseClient = window.supabaseClient;
+            menuSupabaseClient = window.supabaseClient;
 
             // Sistema de filtros
             const filterBtns = document.querySelectorAll('.filter-btn');
