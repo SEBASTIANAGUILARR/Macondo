@@ -4130,6 +4130,32 @@
             await loadCoverTicketsAdmin();
         }
 
+        async function coverTicketResetUsed(id) {
+            if (!confirm('¿Rehabilitar este ticket? Volverá a ser válido de nuevo.')) return;
+
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) {
+                alert('Sesión inválida. Vuelve a iniciar sesión.');
+                return;
+            }
+
+            const resp = await fetch('/.netlify/functions/admin-cover-tickets', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                },
+                body: JSON.stringify({ action: 'reset_used', id })
+            });
+
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                alert(data.error || 'Error');
+                return;
+            }
+            await loadCoverTicketsAdmin();
+        }
+
         async function loadCoverTicketsAdmin() {
             const statusEl = document.getElementById('cover-tickets-status-msg');
             const listEl = document.getElementById('cover-tickets-list');
@@ -4171,6 +4197,7 @@
                     const status = String(t.status || '—');
                     const used = t.used_at ? 'Sí' : 'No';
                     const isActive = status === 'paid' || status === 'manual';
+                    const isUsed = !!t.used_at;
 
                     const qrPayload = {
                         person_name: t.person_name,
@@ -4191,6 +4218,7 @@
                                     <button type="button" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-2 rounded-lg" onclick='openCoverQrModal(${JSON.stringify(qrPayload).replace(/</g, "\\u003c")})'>Ver QR</button>
                                     <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-3 py-2 rounded-lg" onclick='coverTicketSetActive(${JSON.stringify(t.id)}, true)' ${isActive ? 'disabled' : ''}>Activar</button>
                                     <button type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-lg" onclick='coverTicketSetActive(${JSON.stringify(t.id)}, false)' ${!isActive ? 'disabled' : ''}>Desactivar</button>
+                                    <button type="button" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-2 rounded-lg" onclick='coverTicketResetUsed(${JSON.stringify(t.id)})' ${isUsed ? '' : 'disabled'}>Rehabilitar</button>
                                 </div>
                             </td>
                         </tr>

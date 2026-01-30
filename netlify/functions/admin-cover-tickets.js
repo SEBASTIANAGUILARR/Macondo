@@ -96,6 +96,24 @@ exports.handler = async (event) => {
         return json(200, { ok: true, ticket: Array.isArray(updated) ? updated[0] : null });
       }
 
+      if (action === 'reset_used') {
+        const id = body.id;
+        if (!id) return json(400, { error: 'Missing id' });
+
+        const existing = await supabaseRest(`cover_tickets?select=id,status,price_pln,used_at,used_by&limit=1&id=eq.${encodeURIComponent(String(id))}`);
+        const row = Array.isArray(existing) ? existing[0] : null;
+        if (!row) return json(404, { error: 'Ticket not found' });
+
+        const nextStatus = inferActiveStatusFromRow(row);
+        const updated = await supabaseRest(`cover_tickets?id=eq.${encodeURIComponent(String(id))}`, {
+          method: 'PATCH',
+          prefer: 'return=representation',
+          body: { used_at: null, used_by: null, status: nextStatus },
+        });
+
+        return json(200, { ok: true, ticket: Array.isArray(updated) ? updated[0] : null });
+      }
+
       return json(400, { error: 'Unknown action' });
     }
 
