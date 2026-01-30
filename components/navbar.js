@@ -655,7 +655,11 @@ class CustomNavbar extends HTMLElement {
       });
       document.addEventListener('click', (e) => {
         const path = typeof e.composedPath === 'function' ? e.composedPath() : [];
-        const inside = path.includes(this) || (this.shadowRoot && path.includes(this.shadowRoot)) || (this.shadowRoot && path.some(n => this.shadowRoot.contains(n)));
+        const isNode = (n) => !!n && (n instanceof Node || n instanceof Window || n instanceof Document);
+        const inside =
+          path.includes(this) ||
+          (this.shadowRoot && path.includes(this.shadowRoot)) ||
+          (this.shadowRoot && path.some(n => isNode(n) && this.shadowRoot.contains(n)));
         if (!inside) {
           dropdownEl.classList.remove('active');
         }
