@@ -553,22 +553,39 @@ class UserPanel {
         `).join('');
     }
 
-    updateProfile() {
+    async updateProfile() {
         const user = window.auth.getCurrentUser();
-        const users = JSON.parse(localStorage.getItem('macondo_users') || '[]');
-        const userIndex = users.findIndex(u => u.id === user.id);
-        
-        if (userIndex !== -1) {
-            users[userIndex].name = document.getElementById('profile-name').value;
-            users[userIndex].phone = document.getElementById('profile-phone').value;
-            
-            localStorage.setItem('macondo_users', JSON.stringify(users));
-            localStorage.setItem('macondo_user', JSON.stringify(users[userIndex]));
-            
-            window.auth.currentUser = users[userIndex];
-            window.auth.updateUI();
-            
+        if (!user) return;
+
+        const name = String(document.getElementById('profile-name')?.value || '').trim();
+        const phone = String(document.getElementById('profile-phone')?.value || '').trim();
+
+        if (!name) {
+            this.showNotification('El nombre es obligatorio', 'error');
+            return;
+        }
+
+        try {
+            if (!window.supabaseClient?.auth?.updateUser) {
+                throw new Error('Supabase no está listo. Recarga la página.');
+            }
+
+            const { error } = await window.supabaseClient.auth.updateUser({
+                data: { name, phone }
+            });
+
+            if (error) {
+                throw new Error(error.message || 'No se pudo guardar el perfil');
+            }
+
+            if (window.auth && typeof window.auth.refreshFromSupabase === 'function') {
+                await window.auth.refreshFromSupabase();
+            }
+
+            this.loadUserData();
             this.showNotification('Perfil actualizado correctamente');
+        } catch (e) {
+            this.showNotification(e.message || String(e), 'error');
         }
     }
 
