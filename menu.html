@@ -131,6 +131,12 @@
             try {
                 if (!supabaseClient) {
                     console.error('Supabase no está listo para cargar el menú');
+                    const platosContainer = document.getElementById('platos-section');
+                    const bebidasContainer = document.getElementById('bebidas-section');
+                    const ofertasContainer = document.getElementById('ofertas-section');
+                    if (platosContainer) platosContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No se pudieron cargar los platos.</p>';
+                    if (bebidasContainer) bebidasContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No se pudieron cargar las bebidas.</p>';
+                    if (ofertasContainer) ofertasContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No se pudieron cargar las ofertas.</p>';
                     return;
                 }
                 const { data: items, error } = await supabaseClient
@@ -141,6 +147,12 @@
                 
                 if (error) {
                     console.error('Error cargando menú:', error);
+                    const platosContainer = document.getElementById('platos-section');
+                    const bebidasContainer = document.getElementById('bebidas-section');
+                    const ofertasContainer = document.getElementById('ofertas-section');
+                    if (platosContainer) platosContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No se pudieron cargar los platos.</p>';
+                    if (bebidasContainer) bebidasContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No se pudieron cargar las bebidas.</p>';
+                    if (ofertasContainer) ofertasContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No se pudieron cargar las ofertas.</p>';
                     return;
                 }
                 
@@ -149,6 +161,12 @@
                 
             } catch (err) {
                 console.error('Error en loadMenu:', err);
+                const platosContainer = document.getElementById('platos-section');
+                const bebidasContainer = document.getElementById('bebidas-section');
+                const ofertasContainer = document.getElementById('ofertas-section');
+                if (platosContainer) platosContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No se pudieron cargar los platos.</p>';
+                if (bebidasContainer) bebidasContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No se pudieron cargar las bebidas.</p>';
+                if (ofertasContainer) ofertasContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No se pudieron cargar las ofertas.</p>';
             }
         }
         
