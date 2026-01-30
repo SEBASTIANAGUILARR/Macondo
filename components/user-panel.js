@@ -471,7 +471,7 @@ class UserPanel {
 
                     itemsEl.innerHTML = rows.map(r => {
                         const st = renderStatus(r.estado);
-                        const photo = String(r.mesa_foto_url || '').trim();
+                        const photo = String(r.mesa_foto_url || r.mesa_foto || r.foto_mesa || r.photo_url || '').trim();
                         return `
                             <div class="border rounded-lg p-4">
                                 <div class="flex flex-wrap justify-between items-start gap-4">
