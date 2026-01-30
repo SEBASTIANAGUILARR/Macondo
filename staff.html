@@ -79,6 +79,17 @@
       localStorage.removeItem('macondo_staff_username');
     }
 
+    async function forceRelogin(message) {
+      clearStaffToken();
+      if (qrScanner) {
+        try { await qrScanner.stop(); } catch (e) {}
+        try { await qrScanner.clear(); } catch (e) {}
+        qrScanner = null;
+      }
+      showLogin();
+      if (message) setLoginError(message);
+    }
+
     async function staffFetch(path, options) {
       const token = getStaffToken();
       const headers = Object.assign({ 'Content-Type': 'application/json' }, (options && options.headers) || {});
@@ -92,6 +103,10 @@
       const resp = await staffFetch('/.netlify/functions/staff-tickets', { method: 'GET' });
       const data = await resp.json().catch(() => ({}));
       if (!resp.ok) {
+        if (String(data.error || '').toLowerCase().includes('invalid token')) {
+          await forceRelogin('Sesión staff expirada. Inicia sesión otra vez.');
+          return;
+        }
         ticketsEl.innerHTML = `<p class="text-red-600">${data.error || 'No se pudo cargar'}</p>`;
         return;
       }
@@ -139,6 +154,10 @@
 
         const data = await resp.json().catch(() => ({}));
         if (!resp.ok) {
+          if (String(data.error || '').toLowerCase().includes('invalid token')) {
+            await forceRelogin('Sesión staff expirada. Inicia sesión otra vez.');
+            return;
+          }
           setScanStatus(data.error || 'No válido', 'error');
           return;
         }
