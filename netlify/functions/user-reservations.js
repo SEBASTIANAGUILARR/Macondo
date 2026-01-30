@@ -83,19 +83,44 @@ exports.handler = async (event) => {
     }
 
     const email = String(user.email).trim();
-    const emailNorm = email.toLowerCase();
+    const normalizeEmail = (v) =>
+      String(v || '')
+        .trim()
+        .toLowerCase()
+        .replace(/[\s\u200B-\u200D\uFEFF]/g, '');
 
-    const likePattern = `%${emailNorm}%`;
+    const emailNorm = normalizeEmail(email);
+    const localPartNorm = normalizeEmail(email.split('@')[0] || '');
+
+    const fullLike = `%${emailNorm}%`;
+    const localLike = localPartNorm ? `%${localPartNorm}%` : '';
+
+    const orParts = [
+      `email.ilike.${encodeURIComponent(fullLike)}`,
+      localLike ? `email.ilike.${encodeURIComponent(localLike)}` : null,
+    ].filter(Boolean);
+
+    const orExpr = orParts.length ? `&or=(${orParts.join(',')})` : '';
 
     const rows = await supabaseRestSelect(
-      `reservations?select=id,nombre,email,telefono,fecha,hora_entrada,personas,estado,mesa,mesa_foto_url,comentarios,created_at&email=ilike.${encodeURIComponent(likePattern)}&order=created_at.desc`
+      `reservations?select=id,nombre,email,telefono,fecha,hora_entrada,personas,estado,mesa,mesa_foto_url,comentarios,created_at${orExpr}&order=created_at.desc`
     );
 
     const filtered = Array.isArray(rows)
-      ? rows.filter(r => String(r?.email || '').trim().toLowerCase() === emailNorm)
+      ? rows.filter(r => normalizeEmail(r?.email) === emailNorm)
       : [];
 
-    return json(200, { ok: true, email, emailNorm, reservations: filtered });
+    return json(200, {
+      ok: true,
+      email,
+      reservations: filtered,
+      debug: {
+        emailNorm,
+        localPartNorm,
+        rowsFetched: Array.isArray(rows) ? rows.length : 0,
+        rowsMatched: filtered.length,
+      }
+    });
   } catch (e) {
     return json(500, { error: e.message || String(e) });
   }
