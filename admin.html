@@ -4130,6 +4130,32 @@
             await loadCoverTicketsAdmin();
         }
 
+        async function coverTicketDelete(id) {
+            if (!confirm('¿Eliminar este ticket? Esta acción no se puede deshacer.')) return;
+
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) {
+                alert('Sesión inválida. Vuelve a iniciar sesión.');
+                return;
+            }
+
+            const resp = await fetch('/.netlify/functions/admin-cover-tickets', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                },
+                body: JSON.stringify({ action: 'delete_ticket', id })
+            });
+
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                alert(data.error || 'Error');
+                return;
+            }
+            await loadCoverTicketsAdmin();
+        }
+
         async function coverTicketResetUsed(id) {
             if (!confirm('¿Rehabilitar este ticket? Volverá a ser válido de nuevo.')) return;
 
@@ -4219,6 +4245,7 @@
                                     <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-3 py-2 rounded-lg" onclick='coverTicketSetActive(${JSON.stringify(t.id)}, true)' ${isActive ? 'disabled' : ''}>Activar</button>
                                     <button type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-lg" onclick='coverTicketSetActive(${JSON.stringify(t.id)}, false)' ${!isActive ? 'disabled' : ''}>Desactivar</button>
                                     <button type="button" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-2 rounded-lg" onclick='coverTicketResetUsed(${JSON.stringify(t.id)})' ${isUsed ? '' : 'disabled'}>Rehabilitar</button>
+                                    <button type="button" class="bg-black hover:bg-gray-900 text-white font-bold px-3 py-2 rounded-lg" onclick='coverTicketDelete(${JSON.stringify(t.id)})'>Eliminar</button>
                                 </div>
                             </td>
                         </tr>

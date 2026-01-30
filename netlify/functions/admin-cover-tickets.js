@@ -114,6 +114,17 @@ exports.handler = async (event) => {
         return json(200, { ok: true, ticket: Array.isArray(updated) ? updated[0] : null });
       }
 
+      if (action === 'delete_ticket') {
+        const id = body.id;
+        if (!id) return json(400, { error: 'Missing id' });
+
+        await supabaseRest(`cover_tickets?id=eq.${encodeURIComponent(String(id))}`, {
+          method: 'DELETE',
+        });
+
+        return json(200, { ok: true });
+      }
+
       return json(400, { error: 'Unknown action' });
     }
 
