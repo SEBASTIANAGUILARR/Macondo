@@ -272,9 +272,12 @@
             
             // Cargar menú y eventos dinámicos desde Supabase
             try {
-                await loadMenuFromSupabase();
-                await loadEventsFromSupabase();
+                await Promise.allSettled([
+                    loadMenuFromSupabase(),
+                    loadEventsFromSupabase()
+                ]);
             } catch (e) {}
+
 
             const hash = (window.location.hash || '').replace('#', '');
             const path = String(window.location.pathname || '').toLowerCase();
@@ -309,25 +312,73 @@
         // Función para cargar menú desde Supabase
         async function loadMenuFromSupabase() {
             try {
-                const { data: items, error } = await window.supabaseClient
-                    .from('menu_items')
-                    .select('*')
-                    .eq('activo', true)
-                    .order('nombre', { ascending: true });
-                
-                if (error) {
-                    console.error('Error cargando menú:', error);
+                if (!window.supabaseClient) {
+                    await new Promise(resolve => {
+                        const done = () => {
+                            window.removeEventListener('supabase-ready', done);
+                            resolve();
+                        };
+                        window.addEventListener('supabase-ready', done);
+                        setTimeout(done, 2500);
+                    });
+                }
+
+                const cacheKey = 'macondo_home_menu_cache_v1';
+                const ttlMs = 5 * 60 * 1000;
+                try {
+                    const raw = localStorage.getItem(cacheKey);
+                    if (raw) {
+                        const cached = JSON.parse(raw);
+                        if (cached && cached.ts && (Date.now() - cached.ts) < ttlMs) {
+                            const platos = Array.isArray(cached.platos) ? cached.platos : [];
+                            const bebidas = Array.isArray(cached.bebidas) ? cached.bebidas : [];
+                            renderHomeMenu(platos, bebidas);
+                            return;
+                        }
+                    }
+                } catch (e) {}
+
+                const client = window.supabaseClient;
+                if (!client) {
+                    console.error('Supabase no está listo para cargar el menú');
                     return;
                 }
-                
-                if (!items || items.length === 0) {
+
+                const selectCols = 'nombre,descripcion,precio,imagen_url,categoria';
+                const [platosRes, bebidasRes] = await Promise.all([
+                    client.from('menu_items').select(selectCols).eq('activo', true).eq('categoria', 'plato').order('nombre', { ascending: true }).limit(6),
+                    client.from('menu_items').select(selectCols).eq('activo', true).eq('categoria', 'bebida').order('nombre', { ascending: true }).limit(4),
+                ]);
+
+                if (platosRes.error) {
+                    console.error('Error cargando platos:', platosRes.error);
+                }
+                if (bebidasRes.error) {
+                    console.error('Error cargando bebidas:', bebidasRes.error);
+                }
+
+                const platos = Array.isArray(platosRes.data) ? platosRes.data : [];
+                const bebidas = Array.isArray(bebidasRes.data) ? bebidasRes.data : [];
+
+                if (platos.length === 0 && bebidas.length === 0) {
                     document.getElementById('platos-container').innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay platos disponibles.</p>';
                     document.getElementById('bebidas-container').innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay bebidas disponibles.</p>';
                     return;
                 }
-                
-                const platos = items.filter(i => i.categoria === 'plato').slice(0, 6); // Máximo 6 platos
-                const bebidas = items.filter(i => i.categoria === 'bebida').slice(0, 4); // Máximo 4 bebidas
+
+                renderHomeMenu(platos, bebidas);
+
+                try {
+                    localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), platos, bebidas }));
+                } catch (e) {}
+
+            } catch (err) {
+                console.error('Error en loadMenuFromSupabase:', err);
+            }
+        }
+
+        function renderHomeMenu(platos, bebidas) {
+            try {
                 
                 // Renderizar platos
                 const platosContainer = document.getElementById('platos-container');
@@ -336,6 +387,7 @@
                 } else {
                     platosContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay platos disponibles.</p>';
                 }
+
                 
                 // Renderizar bebidas
                 const bebidasContainer = document.getElementById('bebidas-container');
@@ -349,9 +401,8 @@
                 if (typeof feather !== 'undefined') {
                     feather.replace();
                 }
-                
             } catch (err) {
-                console.error('Error en loadMenuFromSupabase:', err);
+                console.error('Error en renderHomeMenu:', err);
             }
         }
         
@@ -359,7 +410,6 @@
         function renderMenuItem(item) {
             const priceFormatted = item.precio.toFixed(2).replace('.', ',');
             const itemId = item.nombre.toLowerCase().replace(/\s+/g, '-');
-            
             return `
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                     ${item.imagen_url ? `<img src="${item.imagen_url}" alt="${item.nombre}" class="w-full h-48 object-cover">` : '<div class="w-full h-48 bg-gray-200 flex items-center justify-center text-4xl">🍽️</div>'}
