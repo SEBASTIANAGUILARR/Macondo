@@ -52,7 +52,7 @@
                                 <div><strong>Precio:</strong> <span id="cover-price">30</span> PLN por persona</div>
                             </div>
                         </div>
-                        <a href="ticket.html" class="text-amber-700 hover:text-amber-800 font-bold">Ver un ticket</a>
+                        <button type="button" id="cover-open-ticket" class="text-amber-700 hover:text-amber-800 font-bold underline">Ver ticket (con token)</button>
                     </div>
 
                     <form id="cover-form" class="mt-6 space-y-4">
@@ -131,11 +131,7 @@
     <custom-footer></custom-footer>
 
     <script>
-        // Configuración de Supabase
-        const SUPABASE_URL = 'https://imqcifvmklkccwagpkee.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltcWNpZnZta2xrY2N3YWdwa2VlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxMjMzNDIsImV4cCI6MjA4NDY5OTM0Mn0.fP4S0VfaC823LKUvh6HcybS_ze9uWWrBKgC4SsQBiRU';
-        
-        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        const supabaseClient = window.supabaseClient;
 
         let coverConfig = { dj_name: 'Dj Micke', price_pln: 30, active: true };
 
@@ -262,6 +258,15 @@
             // Inicializar cover
             loadCoverConfig();
             updateCoverTotal();
+
+            const openTicketBtn = document.getElementById('cover-open-ticket');
+            if (openTicketBtn) {
+                openTicketBtn.addEventListener('click', () => {
+                    const token = prompt('Pega el token del ticket (qr_token):');
+                    if (!token) return;
+                    window.location.href = `ticket.html?token=${encodeURIComponent(token.trim())}`;
+                });
+            }
 
             const addBtn = document.getElementById('add-person');
             if (addBtn) {

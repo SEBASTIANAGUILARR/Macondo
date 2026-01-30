@@ -322,15 +322,18 @@ class UserPanel {
 
             const { data, error } = await window.supabaseClient
                 .from('cover_tickets')
-                .select('id,person_name,person_email,dj_name,price_pln,event_date,qr_token,status,created_at')
-                .eq('person_email', user.email)
+                .select('id,person_name,person_email,buyer_email,dj_name,price_pln,event_date,qr_token,status,created_at')
+                .or(`person_email.eq.${user.email},buyer_email.eq.${user.email}`)
                 .order('created_at', { ascending: false });
 
             if (error) throw error;
-            const rows = Array.isArray(data) ? data : [];
+            const rows = (Array.isArray(data) ? data : []).filter(t => {
+                const st = String(t?.status || '').toLowerCase();
+                return st === 'paid' || st === 'manual';
+            });
 
             if (rows.length === 0) {
-                coversList.innerHTML = '<p class="text-gray-500">No tienes covers comprados aún</p>';
+                coversList.innerHTML = '<p class="text-gray-500">No tienes covers activos aún</p>';
                 return;
             }
 

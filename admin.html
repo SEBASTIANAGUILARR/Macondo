@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
     <style>
         .admin-container {
             min-height: calc(100vh - 100px);
@@ -967,6 +968,123 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="bg-white p-6 rounded-lg shadow mt-6">
+                    <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+                        <h3 class="text-lg font-bold text-amber-800">📋 Tickets Cover</h3>
+                        <button type="button" onclick="loadCoverTicketsAdmin()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition-colors">Recargar</button>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+                        <input id="cover-tickets-q" placeholder="Buscar por email/nombre/token" class="p-3 border border-amber-300 rounded-lg" />
+                        <select id="cover-tickets-status" class="p-3 border border-amber-300 rounded-lg">
+                            <option value="">Todos</option>
+                            <option value="paid">paid</option>
+                            <option value="manual">manual</option>
+                            <option value="manual_pending">manual_pending</option>
+                            <option value="disabled">disabled</option>
+                            <option value="used">used</option>
+                        </select>
+                        <button type="button" onclick="loadCoverTicketsAdmin()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">Aplicar</button>
+                    </div>
+
+                    <div id="cover-tickets-status-msg" class="text-sm text-gray-500 mb-3"></div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead class="bg-amber-100">
+                                <tr>
+                                    <th class="px-3 py-2 text-left text-amber-800 font-semibold">Fecha</th>
+                                    <th class="px-3 py-2 text-left text-amber-800 font-semibold">Persona</th>
+                                    <th class="px-3 py-2 text-left text-amber-800 font-semibold">Email</th>
+                                    <th class="px-3 py-2 text-left text-amber-800 font-semibold">Estado</th>
+                                    <th class="px-3 py-2 text-left text-amber-800 font-semibold">Usado</th>
+                                    <th class="px-3 py-2 text-center text-amber-800 font-semibold">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cover-tickets-list">
+                                <tr>
+                                    <td colspan="6" class="px-3 py-6 text-center text-gray-500">Cargando...</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-lg shadow mt-6">
+                    <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
+                        <h3 class="text-lg font-bold text-amber-800">🎁 Cover gratis / QR manual (sin Stripe)</h3>
+                        <button type="button" onclick="loadCoverManualData()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition-colors">Recargar listas</button>
+                    </div>
+
+                    <form id="cover-manual-form" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Seleccionar de clientes (tabla clients)</label>
+                            <input id="cover-manual-client" list="cover-manual-clients" placeholder="Busca por nombre/email" class="w-full p-3 border border-amber-300 rounded-lg" />
+                            <datalist id="cover-manual-clients"></datalist>
+                        </div>
+
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Seleccionar de usuarios registrados (Auth)</label>
+                            <input id="cover-manual-user" list="cover-manual-users" placeholder="Busca por email" class="w-full p-3 border border-amber-300 rounded-lg" />
+                            <datalist id="cover-manual-users"></datalist>
+                        </div>
+
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Nombre *</label>
+                            <input id="cover-manual-name" required class="w-full p-3 border border-amber-300 rounded-lg" placeholder="Nombre del cliente" />
+                        </div>
+
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Email *</label>
+                            <input id="cover-manual-email" type="email" required class="w-full p-3 border border-amber-300 rounded-lg" placeholder="email@cliente.com" />
+                        </div>
+
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Teléfono</label>
+                            <input id="cover-manual-phone" class="w-full p-3 border border-amber-300 rounded-lg" placeholder="+48 ..." />
+                        </div>
+
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Cantidad de tickets</label>
+                            <input id="cover-manual-qty" type="number" min="1" max="50" value="1" class="w-full p-3 border border-amber-300 rounded-lg" />
+                        </div>
+
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Fecha del evento</label>
+                            <input id="cover-manual-date" type="date" class="w-full p-3 border border-amber-300 rounded-lg" />
+                        </div>
+
+                        <div class="md:col-span-2">
+                            <label class="flex items-center gap-3 text-sm text-gray-700">
+                                <input id="cover-manual-active" type="checkbox" checked class="h-4 w-4" />
+                                <span><b>Activar ahora</b> (si está desactivado, el QR no será válido hasta activarlo)</span>
+                            </label>
+                        </div>
+
+                        <div class="flex items-end gap-3">
+                            <button type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">Generar QR</button>
+                            <div id="cover-manual-status" class="text-sm text-gray-500"></div>
+                        </div>
+                    </form>
+
+                    <div id="cover-manual-results" class="mt-4 space-y-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="cover-qr-modal" class="fixed inset-0 bg-black bg-opacity-60 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-md w-full overflow-hidden">
+            <div class="p-4 flex justify-between items-center border-b">
+                <div class="font-bold text-amber-800">QR Cover</div>
+                <button type="button" onclick="closeCoverQrModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+            </div>
+            <div class="p-4">
+                <div id="cover-qr-modal-meta" class="text-sm text-gray-600 mb-3"></div>
+                <div class="flex justify-center">
+                    <div id="cover-qr-modal-code" class="p-3 bg-white border rounded-lg"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -1414,8 +1532,9 @@
             if (tab === 'cover') {
                 loadCoverConfigAdmin();
                 loadStaffUsers();
+                loadCoverManualData();
+                loadCoverTicketsAdmin();
             }
-
             const mobileSelect = document.getElementById('mobile-tab-select');
             if (mobileSelect) {
                 mobileSelect.value = tab;
@@ -3072,6 +3191,83 @@
                 }
             });
         }
+
+        const coverManualForm = document.getElementById('cover-manual-form');
+        if (coverManualForm) {
+            const clientInput = document.getElementById('cover-manual-client');
+            const userInput = document.getElementById('cover-manual-user');
+            const resultsEl = document.getElementById('cover-manual-results');
+            const statusEl = document.getElementById('cover-manual-status');
+
+            if (clientInput) {
+                clientInput.addEventListener('change', () => {
+                    fillCoverManualFromClient(clientInput.value);
+                });
+            }
+
+            if (userInput) {
+                userInput.addEventListener('change', () => {
+                    fillCoverManualFromAuthUser(userInput.value);
+                });
+            }
+
+            coverManualForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                if (statusEl) statusEl.textContent = 'Generando...';
+                if (resultsEl) resultsEl.innerHTML = '';
+
+                try {
+                    const accessToken = await getAdminAccessToken();
+                    if (!accessToken) throw new Error('Sesión inválida. Vuelve a iniciar sesión.');
+
+                    const person_name = String(document.getElementById('cover-manual-name')?.value || '').trim();
+                    const person_email = String(document.getElementById('cover-manual-email')?.value || '').trim();
+                    const person_phone = String(document.getElementById('cover-manual-phone')?.value || '').trim();
+                    const event_date = String(document.getElementById('cover-manual-date')?.value || '').trim();
+                    const quantity = Number(document.getElementById('cover-manual-qty')?.value || 1);
+                    const activeNow = !!document.getElementById('cover-manual-active')?.checked;
+
+                    if (!person_name) throw new Error('Falta el nombre');
+                    if (!person_email) throw new Error('Falta el email');
+
+                    const resp = await fetch('/.netlify/functions/admin-cover-manual-ticket', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + accessToken
+                        },
+                        body: JSON.stringify({ person_name, person_email, person_phone, event_date, quantity, active: activeNow })
+                    });
+
+                    const data = await resp.json().catch(() => ({}));
+                    if (!resp.ok) throw new Error(data.error || resp.statusText);
+
+                    const tickets = Array.isArray(data.tickets) ? data.tickets : [];
+                    if (tickets.length === 0) {
+                        if (statusEl) statusEl.textContent = 'No se generaron tickets.';
+                        return;
+                    }
+
+                    if (statusEl) statusEl.textContent = `✅ Generados: ${tickets.length}`;
+                    if (resultsEl) {
+                        resultsEl.innerHTML = tickets.map((t, idx) => {
+                            const link = String(t.ticket_url || '').trim();
+                            return `
+                                <div class="p-3 border rounded-lg flex flex-wrap items-center justify-between gap-3">
+                                    <div class="text-sm text-gray-700">
+                                        <div class="font-bold text-amber-800">Ticket #${idx + 1}</div>
+                                        <div class="text-gray-600 break-all">${link}</div>
+                                    </div>
+                                    <button type="button" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg" onclick='openCoverQrModal(${JSON.stringify(t).replace(/</g, "\\u003c")})'>Ver QR</button>
+                                </div>
+                            `;
+                        }).join('');
+                    }
+                } catch (err) {
+                    if (statusEl) statusEl.textContent = err.message || String(err);
+                }
+            });
+        }
         
         // Actualizar páginas más visitadas
         function updateTopPages(data) {
@@ -3775,6 +3971,234 @@
             const ok = await staffAction('set_active', { username, active });
             if (ok) {
                 await loadStaffUsers();
+            }
+        }
+
+        let coverManualClientsCache = [];
+        let coverManualAuthUsersCache = [];
+
+        function closeCoverQrModal() {
+            const modal = document.getElementById('cover-qr-modal');
+            if (modal) modal.classList.add('hidden');
+        }
+
+        function openCoverQrModal(ticket) {
+            const modal = document.getElementById('cover-qr-modal');
+            const meta = document.getElementById('cover-qr-modal-meta');
+            const code = document.getElementById('cover-qr-modal-code');
+            if (!modal || !meta || !code) return;
+
+            const name = String(ticket?.person_name || '');
+            const email = String(ticket?.person_email || '');
+            const date = String(ticket?.event_date || '');
+            meta.textContent = `${name}${email ? ' — ' + email : ''}${date ? ' — ' + date : ''}`;
+
+            const token = String(ticket?.qr_token || '').trim();
+            code.innerHTML = '';
+            if (token && typeof QRCode === 'function') {
+                const payload = `MACONDO_COVER:${token}`;
+                new QRCode(code, {
+                    text: payload,
+                    width: 240,
+                    height: 240,
+                    correctLevel: QRCode.CorrectLevel.M,
+                });
+            }
+
+            modal.classList.remove('hidden');
+        }
+
+        async function loadCoverManualData() {
+            const statusEl = document.getElementById('cover-manual-status');
+            const clientsList = document.getElementById('cover-manual-clients');
+            const usersList = document.getElementById('cover-manual-users');
+            if (statusEl) statusEl.textContent = 'Cargando...';
+
+            try {
+                const { data: clientsData, error: clientsError } = await supabaseClient
+                    .from('clients')
+                    .select('nombre,email,telefono')
+                    .order('created_at', { ascending: false })
+                    .limit(1000);
+
+                if (clientsError) throw new Error(clientsError.message);
+                coverManualClientsCache = Array.isArray(clientsData) ? clientsData : [];
+
+                if (clientsList) {
+                    clientsList.innerHTML = coverManualClientsCache.map(c => {
+                        const label = `${String(c.nombre || '').trim()} — ${String(c.email || '').trim()}`.trim();
+                        const value = String(c.email || '').trim();
+                        return `<option value="${value.replace(/"/g, '&quot;')}">${label.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</option>`;
+                    }).join('');
+                }
+
+                const accessToken = await getAdminAccessToken();
+                if (!accessToken) throw new Error('Sesión inválida. Vuelve a iniciar sesión.');
+
+                const resp = await fetch(`/.netlify/functions/admin-auth-users?perPage=200`, {
+                    method: 'GET',
+                    headers: { Authorization: `Bearer ${accessToken}` }
+                });
+                const payload = await resp.json().catch(() => ({}));
+                if (!resp.ok) throw new Error(payload.error || resp.statusText);
+
+                coverManualAuthUsersCache = Array.isArray(payload.users) ? payload.users : [];
+
+                if (usersList) {
+                    usersList.innerHTML = coverManualAuthUsersCache
+                        .filter(u => String(u?.email || '').trim())
+                        .map(u => {
+                            const em = String(u.email || '').trim();
+                            const nm = String(u.user_metadata?.name || '').trim();
+                            const label = `${nm || 'Usuario'} — ${em}`;
+                            return `<option value="${em.replace(/"/g, '&quot;')}">${label.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</option>`;
+                        }).join('');
+                }
+
+                if (statusEl) statusEl.textContent = 'OK';
+            } catch (e) {
+                if (statusEl) statusEl.textContent = e.message || String(e);
+            }
+        }
+
+        function findClientByEmail(email) {
+            const e = String(email || '').trim().toLowerCase();
+            if (!e) return null;
+            return (coverManualClientsCache || []).find(c => String(c?.email || '').trim().toLowerCase() === e) || null;
+        }
+
+        function findAuthUserByEmail(email) {
+            const e = String(email || '').trim().toLowerCase();
+            if (!e) return null;
+            return (coverManualAuthUsersCache || []).find(u => String(u?.email || '').trim().toLowerCase() === e) || null;
+        }
+
+        function fillCoverManualFromClient(email) {
+            const c = findClientByEmail(email);
+            if (!c) return;
+            const nameEl = document.getElementById('cover-manual-name');
+            const emailEl = document.getElementById('cover-manual-email');
+            const phoneEl = document.getElementById('cover-manual-phone');
+            if (nameEl) nameEl.value = String(c.nombre || '').trim();
+            if (emailEl) emailEl.value = String(c.email || '').trim();
+            if (phoneEl) phoneEl.value = String(c.telefono || '').trim();
+        }
+
+        function fillCoverManualFromAuthUser(email) {
+            const u = findAuthUserByEmail(email);
+            if (!u) return;
+            const nameEl = document.getElementById('cover-manual-name');
+            const emailEl = document.getElementById('cover-manual-email');
+            if (emailEl) emailEl.value = String(u.email || '').trim();
+            if (nameEl && !String(nameEl.value || '').trim()) {
+                nameEl.value = String(u.user_metadata?.name || '').trim();
+            }
+        }
+
+        function fmtShortDate(d) {
+            try {
+                if (!d) return '—';
+                const dt = new Date(d);
+                if (Number.isNaN(dt.getTime())) return String(d);
+                return dt.toISOString().slice(0, 10);
+            } catch (e) {
+                return String(d || '—');
+            }
+        }
+
+        async function coverTicketSetActive(id, active) {
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) {
+                alert('Sesión inválida. Vuelve a iniciar sesión.');
+                return;
+            }
+
+            const resp = await fetch('/.netlify/functions/admin-cover-tickets', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                },
+                body: JSON.stringify({ action: 'set_active', id, active })
+            });
+
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                alert(data.error || 'Error');
+                return;
+            }
+            await loadCoverTicketsAdmin();
+        }
+
+        async function loadCoverTicketsAdmin() {
+            const statusEl = document.getElementById('cover-tickets-status-msg');
+            const listEl = document.getElementById('cover-tickets-list');
+            const q = String(document.getElementById('cover-tickets-q')?.value || '').trim();
+            const st = String(document.getElementById('cover-tickets-status')?.value || '').trim();
+
+            if (statusEl) statusEl.textContent = 'Cargando...';
+            if (listEl) listEl.innerHTML = '<tr><td colspan="6" class="px-3 py-6 text-center text-gray-500">Cargando...</td></tr>';
+
+            try {
+                const accessToken = await getAdminAccessToken();
+                if (!accessToken) throw new Error('Sesión inválida. Vuelve a iniciar sesión.');
+
+                const params = new URLSearchParams();
+                params.set('limit', '200');
+                if (q) params.set('q', q);
+                if (st) params.set('status', st);
+
+                const resp = await fetch('/.netlify/functions/admin-cover-tickets?' + params.toString(), {
+                    method: 'GET',
+                    headers: { Authorization: 'Bearer ' + accessToken }
+                });
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) throw new Error(data.error || resp.statusText);
+
+                const tickets = Array.isArray(data.tickets) ? data.tickets : [];
+                if (statusEl) statusEl.textContent = `OK (${tickets.length})`;
+                if (!listEl) return;
+
+                if (tickets.length === 0) {
+                    listEl.innerHTML = '<tr><td colspan="6" class="px-3 py-6 text-center text-gray-500">No hay tickets.</td></tr>';
+                    return;
+                }
+
+                listEl.innerHTML = tickets.map(t => {
+                    const created = fmtShortDate(t.created_at);
+                    const person = String(t.person_name || '—');
+                    const email = String(t.person_email || t.buyer_email || '—');
+                    const status = String(t.status || '—');
+                    const used = t.used_at ? 'Sí' : 'No';
+                    const isActive = status === 'paid' || status === 'manual';
+
+                    const qrPayload = {
+                        person_name: t.person_name,
+                        person_email: t.person_email || t.buyer_email,
+                        event_date: t.event_date,
+                        qr_token: t.qr_token,
+                    };
+
+                    return `
+                        <tr class="border-b">
+                            <td class="px-3 py-2 text-sm text-gray-700 whitespace-nowrap">${created}</td>
+                            <td class="px-3 py-2 text-sm text-gray-700">${person}</td>
+                            <td class="px-3 py-2 text-sm text-gray-700 break-all">${email}</td>
+                            <td class="px-3 py-2 text-sm text-gray-700 whitespace-nowrap">${status}</td>
+                            <td class="px-3 py-2 text-sm text-gray-700 whitespace-nowrap">${used}</td>
+                            <td class="px-3 py-2">
+                                <div class="flex flex-wrap gap-2 justify-center">
+                                    <button type="button" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-2 rounded-lg" onclick='openCoverQrModal(${JSON.stringify(qrPayload).replace(/</g, "\\u003c")})'>Ver QR</button>
+                                    <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-3 py-2 rounded-lg" onclick='coverTicketSetActive(${JSON.stringify(t.id)}, true)' ${isActive ? 'disabled' : ''}>Activar</button>
+                                    <button type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-lg" onclick='coverTicketSetActive(${JSON.stringify(t.id)}, false)' ${!isActive ? 'disabled' : ''}>Desactivar</button>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (e) {
+                if (statusEl) statusEl.textContent = e.message || String(e);
+                if (listEl) listEl.innerHTML = '<tr><td colspan="6" class="px-3 py-6 text-center text-red-600">No se pudo cargar.</td></tr>';
             }
         }
 
