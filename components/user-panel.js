@@ -455,6 +455,11 @@ class UserPanel {
                             err.code = 'INVALID_SESSION';
                             throw err;
                         }
+                        if (resp.status >= 500) {
+                            const err = new Error(payload.error || 'Error interno del servidor');
+                            err.code = 'SERVER_ERROR';
+                            throw err;
+                        }
                         throw new Error(payload.error || resp.statusText);
                     }
 
@@ -521,6 +526,11 @@ class UserPanel {
                 try {
                     if (e && e.code === 'INVALID_SESSION') {
                         itemsEl.innerHTML = '<p class="text-red-600">Sesión no válida. Vuelve a iniciar sesión y prueba de nuevo.</p>';
+                        return;
+                    }
+
+                    if (e && e.code === 'SERVER_ERROR') {
+                        itemsEl.innerHTML = `<p class="text-red-600">No se pudieron cargar tus reservas. ${String(e.message || '').trim()}</p>`;
                         return;
                     }
 
