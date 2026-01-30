@@ -472,13 +472,47 @@ class UserPanel {
                     const getPhotoUrl = async (maybePath) => {
                         const v = String(maybePath || '').trim();
                         if (!v) return null;
-                        if (/^https?:\/\//i.test(v)) return v;
+
+                        const extractPathFromSupabaseUrl = (url) => {
+                            const s = String(url || '').trim();
+                            if (!s) return '';
+                            const m = s.match(/\/storage\/v1\/object\/(?:public|sign)\/reservation-photos\/(.+?)(?:\?.*)?$/i);
+                            return m && m[1] ? decodeURIComponent(m[1]) : '';
+                        };
+
+                        if (/^https?:\/\//i.test(v)) {
+                            const extracted = extractPathFromSupabaseUrl(v);
+                            if (!extracted) return v;
+                            const { data, error } = await window.supabaseClient.storage
+                                .from('reservation-photos')
+                                .createSignedUrl(extracted, 60 * 10);
+                            if (error) throw new Error(error.message || 'No se pudo generar la URL firmada.');
+                            return String(data?.signedUrl || '').trim() || null;
+                        }
                         if (!window.supabaseClient?.storage?.from) return null;
                         const { data, error } = await window.supabaseClient.storage
                             .from('reservation-photos')
                             .createSignedUrl(v, 60 * 10);
                         if (error) throw new Error(error.message || 'No se pudo generar la URL firmada.');
                         return String(data?.signedUrl || '').trim() || null;
+                    };
+
+                    const ensurePhotoModal = () => {
+                        let modal = document.getElementById('user-photo-modal');
+                        if (modal) return modal;
+                        modal = document.createElement('div');
+                        modal.id = 'user-photo-modal';
+                        modal.className = 'fixed inset-0 z-[9999] hidden items-center justify-center bg-black/80 p-4';
+                        modal.innerHTML = `
+                            <div class="relative max-w-3xl w-full">
+                                <img id="user-photo-modal-img" src="" alt="Foto de mesa" class="w-full h-auto rounded-lg border border-white/10 bg-white" />
+                            </div>
+                        `;
+                        modal.addEventListener('click', (e) => {
+                            if (e.target === modal) modal.classList.add('hidden');
+                        });
+                        document.body.appendChild(modal);
+                        return modal;
                     };
 
                     itemsEl.innerHTML = rows.map(r => {
@@ -531,10 +565,22 @@ class UserPanel {
                                 const url = await getPhotoUrl(raw);
                                 if (!url) throw new Error('No se pudo cargar la foto.');
                                 wrapEl.innerHTML = `
-                                    <a href="${url}" target="_blank" rel="noopener noreferrer" class="text-amber-700 font-bold underline">Abrir en nueva pestaña</a>
-                                    <div class="mt-2"><img src="${url}" alt="Foto de mesa" class="w-full rounded-lg border" /></div>
+                                    <div class="mt-2">
+                                        <img src="${url}" alt="Foto de mesa" class="w-full rounded-lg border cursor-zoom-in" data-action="zoom-photo" data-url="${encodeURIComponent(url)}" />
+                                    </div>
                                 `;
                                 if (statusEl) statusEl.textContent = '';
+
+                                wrapEl.querySelectorAll('[data-action="zoom-photo"]').forEach(img => {
+                                    img.addEventListener('click', () => {
+                                        const modal = ensurePhotoModal();
+                                        const modalImg = modal.querySelector('#user-photo-modal-img');
+                                        const u = img.getAttribute('data-url') || '';
+                                        const decoded = u ? decodeURIComponent(u) : '';
+                                        if (modalImg) modalImg.src = decoded;
+                                        modal.classList.remove('hidden');
+                                    });
+                                });
                             } catch (e) {
                                 if (statusEl) statusEl.textContent = '';
                                 wrapEl.innerHTML = `<div class="text-sm text-red-600">No se pudo abrir la foto</div>`;
