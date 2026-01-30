@@ -90,20 +90,8 @@ exports.handler = async (event) => {
         .replace(/[\s\u200B-\u200D\uFEFF]/g, '');
 
     const emailNorm = normalizeEmail(email);
-    const localPartNorm = normalizeEmail(email.split('@')[0] || '');
-
-    const fullLike = `%${emailNorm}%`;
-    const localLike = localPartNorm ? `%${localPartNorm}%` : '';
-
-    const orParts = [
-      `email.ilike.${encodeURIComponent(fullLike)}`,
-      localLike ? `email.ilike.${encodeURIComponent(localLike)}` : null,
-    ].filter(Boolean);
-
-    const orExpr = orParts.length ? `&or=(${orParts.join(',')})` : '';
-
     const rows = await supabaseRestSelect(
-      `reservations?select=id,nombre,email,telefono,fecha,hora_entrada,personas,estado,mesa,mesa_foto_url,comentarios,created_at${orExpr}&order=created_at.desc`
+      `reservations?select=id,nombre,email,telefono,fecha,hora_entrada,personas,estado,mesa,mesa_foto_url,comentarios,created_at&order=created_at.desc&limit=1000`
     );
 
     const filtered = Array.isArray(rows)
@@ -116,7 +104,6 @@ exports.handler = async (event) => {
       reservations: filtered,
       debug: {
         emailNorm,
-        localPartNorm,
         rowsFetched: Array.isArray(rows) ? rows.length : 0,
         rowsMatched: filtered.length,
       }

@@ -655,7 +655,7 @@ class CustomNavbar extends HTMLElement {
       });
       document.addEventListener('click', (e) => {
         const path = typeof e.composedPath === 'function' ? e.composedPath() : [];
-        const isNode = (n) => !!n && (n instanceof Node || n instanceof Window || n instanceof Document);
+        const isNode = (n) => !!n && (n instanceof Node);
         const inside =
           path.includes(this) ||
           (this.shadowRoot && path.includes(this.shadowRoot)) ||
