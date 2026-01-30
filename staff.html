@@ -288,7 +288,13 @@
 
       qrScanner = new Html5Qrcode('reader');
 
-      const config = { fps: 10, qrbox: 260 };
+      const videoConstraints = {
+        facingMode: { ideal: 'environment' },
+        width: { ideal: 1280 },
+        height: { ideal: 720 }
+      };
+
+      const config = { fps: 10, qrbox: 260, videoConstraints };
       const onScanSuccess = async (decodedText) => {
         if (!decodedText || !decodedText.startsWith('MACONDO_COVER:')) return;
         const token = decodedText.slice('MACONDO_COVER:'.length).trim();
@@ -330,22 +336,24 @@
 
       // Prefer rear camera on mobile devices
       try {
-        await qrScanner.start({
-          facingMode: 'environment',
-          width: { ideal: 1920 },
-          height: { ideal: 1080 },
-          aspectRatio: { ideal: 16 / 9 },
-          advanced: [{ focusMode: 'continuous' }, { zoom: 1 }]
-        }, config, onScanSuccess);
+        await qrScanner.start({ facingMode: 'environment' }, config, onScanSuccess);
       } catch (e) {
-        const devices = await Html5Qrcode.getCameras().catch(() => []);
-        const cameraId = pickBestRearCameraId(devices);
-        if (!cameraId) {
-          setScanStatus('No se encontró cámara disponible.', 'error');
+        try {
+          const devices = await Html5Qrcode.getCameras().catch(() => []);
+          const cameraId = pickBestRearCameraId(devices);
+          if (!cameraId) {
+            setScanStatus('No se encontró cámara disponible.', 'error');
+            await stopScanner();
+            scanInProgress = false;
+            return;
+          }
+          await qrScanner.start(cameraId, config, onScanSuccess);
+        } catch (err2) {
+          setScanStatus((err2 && err2.message) ? err2.message : 'No se pudo abrir la cámara.', 'error');
+          await stopScanner();
           scanInProgress = false;
           return;
         }
-        await qrScanner.start(cameraId, config, onScanSuccess);
       }
 
       await tryEnableAutoFocus();
