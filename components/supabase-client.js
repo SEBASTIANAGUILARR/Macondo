@@ -5,6 +5,32 @@ const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBh
 // Inicializar cliente de Supabase inmediatamente si el SDK está disponible
 let supabaseClient = null;
 
+function loadSupabaseSdkOnce() {
+  try {
+    if (typeof window === 'undefined') return;
+    if (window.supabase && window.supabase.createClient) return;
+    if (window.__macondo_supabase_sdk_loading) return;
+    window.__macondo_supabase_sdk_loading = true;
+
+    const existing = document.querySelector('script[data-macondo-supabase-sdk="1"]');
+    if (existing) return;
+
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2';
+    script.async = true;
+    script.defer = true;
+    script.dataset.macondoSupabaseSdk = '1';
+    script.onload = () => {
+      try {
+        initSupabase();
+      } catch (e) {}
+    };
+    document.head.appendChild(script);
+  } catch (e) {
+    // no-op
+  }
+}
+
 function initSupabase() {
   if (supabaseClient) return true; // Ya inicializado
   
@@ -28,6 +54,13 @@ function initSupabase() {
 
 // Intentar inicializar inmediatamente
 initSupabase();
+
+// Si el SDK aún no existe, cargarlo (una sola vez)
+if (typeof window !== 'undefined' && !(window.supabase && window.supabase.createClient)) {
+  if (typeof document !== 'undefined') {
+    loadSupabaseSdkOnce();
+  }
+}
 
 // Sistema de Reservas con Supabase
 const ReservationSystem = {
