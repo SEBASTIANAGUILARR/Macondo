@@ -165,10 +165,24 @@ class AuthSystem {
 
     async getAccessToken() {
         try {
-            if (this.session?.access_token) return this.session.access_token;
+            if (this.session?.access_token) {
+                const expMs = this.session?.expires_at ? Number(this.session.expires_at) * 1000 : 0;
+                if (expMs && expMs < Date.now() + 60 * 1000 && window.supabaseClient?.auth?.refreshSession) {
+                    const refreshed = await window.supabaseClient.auth.refreshSession();
+                    this.session = refreshed?.data?.session || this.session;
+                }
+                return this.session?.access_token || null;
+            }
             if (!window.supabaseClient?.auth) return null;
             const { data } = await window.supabaseClient.auth.getSession();
-            return data?.session?.access_token || null;
+            let session = data?.session || null;
+            const expMs = session?.expires_at ? Number(session.expires_at) * 1000 : 0;
+            if (session && expMs && expMs < Date.now() + 60 * 1000 && window.supabaseClient?.auth?.refreshSession) {
+                const refreshed = await window.supabaseClient.auth.refreshSession();
+                session = refreshed?.data?.session || session;
+            }
+            this.session = session;
+            return session?.access_token || null;
         } catch (e) {
             return null;
         }

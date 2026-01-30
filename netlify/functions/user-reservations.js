@@ -79,16 +79,17 @@ exports.handler = async (event) => {
 
     const user = await verifySupabaseSession(token);
     if (!user || !user.email) {
-      return json(401, { error: 'Invalid session' });
+      return json(401, { error: 'Invalid session. Please login again.' });
     }
 
     const email = String(user.email).trim();
+    const emailNorm = email.toLowerCase();
 
     const rows = await supabaseRestSelect(
-      `reservations?select=id,nombre,email,telefono,fecha,hora_entrada,personas,estado,mesa,mesa_foto_url,comentarios,created_at&email=eq.${encodeURIComponent(email)}&order=created_at.desc`
+      `reservations?select=id,nombre,email,telefono,fecha,hora_entrada,personas,estado,mesa,mesa_foto_url,comentarios,created_at&email=ilike.${encodeURIComponent(emailNorm)}&order=created_at.desc`
     );
 
-    return json(200, { ok: true, email, reservations: rows || [] });
+    return json(200, { ok: true, email, emailNorm, reservations: rows || [] });
   } catch (e) {
     return json(500, { error: e.message || String(e) });
   }

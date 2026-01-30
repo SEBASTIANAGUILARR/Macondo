@@ -39,10 +39,11 @@ const ReservationSystem = {
     }
 
     try {
+      const emailNorm = String(reservationData.email || '').trim().toLowerCase();
       // Preparar datos, convirtiendo strings vacíos a null para campos opcionales
       const insertData = {
         nombre: reservationData.nombre,
-        email: reservationData.email,
+        email: emailNorm,
         telefono: reservationData.telefono || null,
         fecha: reservationData.fecha,
         hora_entrada: reservationData.horaEntrada || null,
@@ -148,13 +149,62 @@ function setupReservationForm() {
   const form = document.querySelector('#reservas form');
   if (!form) return;
 
+  const applyLoggedInReservationAutofill = () => {
+    const user = window.auth && typeof window.auth.getCurrentUser === 'function' ? window.auth.getCurrentUser() : null;
+
+    const nameInput = document.getElementById('nombre');
+    const emailInput = document.getElementById('email');
+    const phoneInput = document.getElementById('telefono');
+
+    const nameWrap = nameInput ? nameInput.parentElement : null;
+    const emailWrap = emailInput ? emailInput.parentElement : null;
+    const phoneWrap = phoneInput ? phoneInput.parentElement : null;
+
+    const setVisible = (wrap, input, visible) => {
+      if (wrap) wrap.style.display = visible ? '' : 'none';
+      if (input) {
+        if (visible) {
+          input.required = true;
+          input.readOnly = false;
+          input.classList.remove('bg-gray-50');
+        } else {
+          input.required = false;
+          input.readOnly = true;
+          input.classList.add('bg-gray-50');
+        }
+      }
+    };
+
+    if (user?.email) {
+      if (nameInput) nameInput.value = String(user.name || '').trim();
+      if (emailInput) emailInput.value = String(user.email || '').trim();
+      if (phoneInput) phoneInput.value = String(user.phone || '').trim();
+
+      setVisible(nameWrap, nameInput, false);
+      setVisible(emailWrap, emailInput, false);
+      setVisible(phoneWrap, phoneInput, false);
+      return;
+    }
+
+    setVisible(nameWrap, nameInput, true);
+    setVisible(emailWrap, emailInput, true);
+    setVisible(phoneWrap, phoneInput, true);
+  };
+
+  applyLoggedInReservationAutofill();
+  try {
+    window.addEventListener('auth-changed', () => applyLoggedInReservationAutofill());
+  } catch (e) {}
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
 
+    const currentUser = window.auth && typeof window.auth.getCurrentUser === 'function' ? window.auth.getCurrentUser() : null;
+
     const reservationData = {
-      nombre: document.getElementById('nombre')?.value || '',
-      email: document.getElementById('email')?.value || '',
-      telefono: document.getElementById('telefono')?.value || '',
+      nombre: (currentUser?.email ? String(currentUser.name || '').trim() : (document.getElementById('nombre')?.value || '')),
+      email: (currentUser?.email ? String(currentUser.email || '').trim() : (document.getElementById('email')?.value || '')),
+      telefono: (currentUser?.email ? String(currentUser.phone || '').trim() : (document.getElementById('telefono')?.value || '')),
       fecha: document.getElementById('fecha')?.value || '',
       horaEntrada: document.getElementById('hora-entrada')?.value || '',
       personas: document.getElementById('personas')?.value || '1',
