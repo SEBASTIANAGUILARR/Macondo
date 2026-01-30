@@ -797,6 +797,32 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="text-sm text-gray-600">Covers vendidos</div>
+                        <div id="basement-total-sold" class="text-3xl font-bold text-amber-800">—</div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="text-sm text-gray-600">Covers validados</div>
+                        <div id="basement-total-validated" class="text-3xl font-bold text-green-700">—</div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <div class="text-sm text-gray-600">Ingresos (PLN)</div>
+                        <div id="basement-total-revenue" class="text-3xl font-bold text-purple-700">—</div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="text-lg font-bold text-amber-800 mb-4">Compras por hora</h3>
+                        <div id="basement-hourly-purchases" class="space-y-2"></div>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow">
+                        <h3 class="text-lg font-bold text-amber-800 mb-4">Validaciones por hora</h3>
+                        <div id="basement-hourly-validations" class="space-y-2"></div>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white p-4 rounded-lg shadow">
                         <h3 class="text-lg font-bold text-amber-800 mb-4">Covers vendidos por día</h3>
@@ -1873,9 +1899,21 @@
             const tbodyDaily = document.getElementById('basement-daily');
             const tbodyCustomers = document.getElementById('basement-customers');
 
+            const totalSoldEl = document.getElementById('basement-total-sold');
+            const totalValidatedEl = document.getElementById('basement-total-validated');
+            const totalRevenueEl = document.getElementById('basement-total-revenue');
+            const hourlyPurchasesEl = document.getElementById('basement-hourly-purchases');
+            const hourlyValidationsEl = document.getElementById('basement-hourly-validations');
+
             if (statusEl) statusEl.textContent = 'Cargando...';
             if (tbodyDaily) tbodyDaily.innerHTML = '<tr><td colspan="3" class="px-3 py-6 text-center text-gray-500">Cargando...</td></tr>';
             if (tbodyCustomers) tbodyCustomers.innerHTML = '<tr><td colspan="3" class="px-3 py-6 text-center text-gray-500">Cargando...</td></tr>';
+
+            if (totalSoldEl) totalSoldEl.textContent = '—';
+            if (totalValidatedEl) totalValidatedEl.textContent = '—';
+            if (totalRevenueEl) totalRevenueEl.textContent = '—';
+            if (hourlyPurchasesEl) hourlyPurchasesEl.innerHTML = '<p class="text-gray-500">Cargando...</p>';
+            if (hourlyValidationsEl) hourlyValidationsEl.innerHTML = '<p class="text-gray-500">Cargando...</p>';
 
             const accessToken = await getAdminAccessToken();
             if (!accessToken) {
@@ -1900,6 +1938,44 @@
 
                 const daily = Array.isArray(data.daily) ? data.daily : [];
                 const customers = Array.isArray(data.customers) ? data.customers : [];
+                const totals = data.totals || {};
+                const hourlyPurchases = Array.isArray(data.hourly_purchases) ? data.hourly_purchases : [];
+                const hourlyValidations = Array.isArray(data.hourly_validations) ? data.hourly_validations : [];
+
+                if (totalSoldEl) totalSoldEl.textContent = (totals.sold != null) ? String(totals.sold) : '0';
+                if (totalValidatedEl) totalValidatedEl.textContent = (totals.validated != null) ? String(totals.validated) : '0';
+                if (totalRevenueEl) totalRevenueEl.textContent = (totals.revenue_pln != null) ? String(totals.revenue_pln) : '0';
+
+                const renderHourlyBars = (el, rows, colorClass) => {
+                    if (!el) return;
+                    const list = (Array.isArray(rows) ? rows : []).map(r => ({
+                        hour: Number(r?.hour),
+                        count: Number(r?.count)
+                    })).filter(r => Number.isFinite(r.hour) && r.hour >= 0 && r.hour <= 23 && Number.isFinite(r.count));
+
+                    if (list.length === 0) {
+                        el.innerHTML = '<p class="text-gray-500">Sin datos</p>';
+                        return;
+                    }
+
+                    const max = Math.max(...list.map(x => x.count), 1);
+                    el.innerHTML = list.map(x => {
+                        const w = Math.round((x.count / max) * 100);
+                        const hh = String(x.hour).padStart(2, '0');
+                        return `
+                            <div class="flex items-center gap-3">
+                                <div class="w-12 text-sm text-gray-700">${hh}:00</div>
+                                <div class="flex-1 bg-gray-100 rounded-full h-3 overflow-hidden">
+                                    <div class="h-3 ${colorClass}" style="width:${w}%"></div>
+                                </div>
+                                <div class="w-12 text-right text-sm font-bold text-gray-700">${x.count}</div>
+                            </div>
+                        `;
+                    }).join('');
+                };
+
+                renderHourlyBars(hourlyPurchasesEl, hourlyPurchases, 'bg-amber-500');
+                renderHourlyBars(hourlyValidationsEl, hourlyValidations, 'bg-green-600');
 
                 if (tbodyDaily) {
                     if (daily.length === 0) {
@@ -1909,7 +1985,7 @@
                             <tr class="border-t">
                                 <td class="px-3 py-2">${r.date}</td>
                                 <td class="px-3 py-2">${r.sold}</td>
-                                <td class="px-3 py-2">${Number(r.revenue_pln || 0).toFixed(0)}</td>
+                                <td class="px-3 py-2">${Number(r.revenue_pln || 0).toFixed(2)}</td>
                             </tr>
                         `).join('');
                     }

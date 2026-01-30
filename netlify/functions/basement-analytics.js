@@ -24,6 +24,25 @@ function ymd(d) {
   return `${y}-${m}-${day}`;
 }
 
+function getHourInTimeZone(iso, timeZone) {
+  try {
+    if (!iso) return null;
+    const dt = new Date(iso);
+    if (Number.isNaN(dt.getTime())) return null;
+    const parts = new Intl.DateTimeFormat('en-US', {
+      hour: '2-digit',
+      hour12: false,
+      timeZone,
+    }).formatToParts(dt);
+    const hh = parts.find(p => p.type === 'hour')?.value;
+    const n = Number(hh);
+    if (!Number.isFinite(n)) return null;
+    return Math.max(0, Math.min(23, Math.trunc(n)));
+  } catch (e) {
+    return null;
+  }
+}
+
 exports.handler = async (event) => {
   if (event.httpMethod === 'OPTIONS') return json(200, { ok: true });
   if (event.httpMethod !== 'GET') return json(405, { error: 'Method not allowed' });
@@ -49,13 +68,21 @@ exports.handler = async (event) => {
 
     // Covers (últimos N días)
     const coverRows = await fetchAll(
-      `cover_tickets?select=event_date,price_pln,person_email,person_name,person_phone,created_at,status&created_at=gte.${encodeURIComponent(since.toISOString())}`,
+      `cover_tickets?select=event_date,price_pln,person_email,person_name,person_phone,created_at,status,used_at,used_by&created_at=gte.${encodeURIComponent(since.toISOString())}`,
       1000,
       50000
     );
 
     const byDay = new Map();
     const byEmail = new Map();
+
+    const tz = 'Europe/Warsaw';
+    const hourlyPurchases = Array.from({ length: 24 }).map((_, h) => ({ hour: h, count: 0 }));
+    const hourlyValidations = Array.from({ length: 24 }).map((_, h) => ({ hour: h, count: 0 }));
+
+    let totalSold = 0;
+    let totalRevenuePln = 0;
+    let totalValidated = 0;
 
     for (const r of coverRows) {
       const day = r.event_date || ymd(r.created_at || new Date());
@@ -65,6 +92,18 @@ exports.handler = async (event) => {
       cur.sold += 1;
       cur.revenue_pln += price;
       byDay.set(key, cur);
+
+      totalSold += 1;
+      totalRevenuePln += price;
+
+      const hBuy = getHourInTimeZone(r.created_at, tz);
+      if (hBuy != null) hourlyPurchases[hBuy].count += 1;
+
+      if (r.used_at) {
+        totalValidated += 1;
+        const hUse = getHourInTimeZone(r.used_at, tz);
+        if (hUse != null) hourlyValidations[hUse].count += 1;
+      }
 
       const em = String(r.person_email || '').toLowerCase();
       if (em) {
@@ -114,8 +153,15 @@ exports.handler = async (event) => {
     return json(200, {
       ok: true,
       range_days: days,
+      totals: {
+        sold: totalSold,
+        validated: totalValidated,
+        revenue_pln: Number(totalRevenuePln.toFixed(2)),
+      },
       daily,
       customers,
+      hourly_purchases: hourlyPurchases,
+      hourly_validations: hourlyValidations,
     });
   } catch (e) {
     return json(500, { error: e.message || String(e) });
