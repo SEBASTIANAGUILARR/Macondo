@@ -502,15 +502,19 @@ class UserPanel {
                         if (modal) return modal;
                         modal = document.createElement('div');
                         modal.id = 'user-photo-modal';
-                        modal.className = 'fixed inset-0 z-[9999] hidden items-center justify-center bg-black/80 p-4';
+                        modal.className = 'fixed inset-0 z-[9999] hidden flex items-center justify-center bg-black/80 p-4';
                         modal.innerHTML = `
-                            <div class="relative max-w-3xl w-full">
+                            <div class="relative w-full max-w-[92vw] sm:max-w-lg md:max-w-xl lg:max-w-2xl">
+                                <button type="button" id="user-photo-modal-close" aria-label="Cerrar" class="absolute -top-3 -right-3 bg-white text-gray-900 rounded-full w-10 h-10 flex items-center justify-center text-xl font-bold shadow">×</button>
                                 <div id="user-photo-modal-loading" class="text-white text-sm mb-3">Cargando...</div>
-                                <img id="user-photo-modal-img" src="" alt="Foto de mesa" class="w-full h-auto rounded-lg border border-white/10 bg-white" />
+                                <img id="user-photo-modal-img" src="" alt="Foto de mesa" class="w-full max-h-[80vh] object-contain rounded-lg border border-white/10 bg-white" />
                             </div>
                         `;
                         modal.addEventListener('click', (e) => {
                             if (e.target === modal) modal.classList.add('hidden');
+                        });
+                        modal.querySelector('#user-photo-modal-close')?.addEventListener('click', () => {
+                            modal.classList.add('hidden');
                         });
                         document.body.appendChild(modal);
                         return modal;
