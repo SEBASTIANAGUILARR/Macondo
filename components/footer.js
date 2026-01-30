@@ -73,6 +73,44 @@ class CustomFooter extends HTMLElement {
           transform: translateY(-1px);
         }
 
+        .footer-bottom {
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.75rem;
+          margin-top: 0.25rem;
+          font-size: 0.875rem;
+          color: rgba(255, 255, 255, 0.92);
+          text-align: center;
+          flex-wrap: wrap;
+        }
+
+        .email-button {
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+          width: 2.25rem;
+          height: 2.25rem;
+          border-radius: 9999px;
+          border: 1px solid rgba(255, 255, 255, 0.35);
+          background: rgba(0, 0, 0, 0.12);
+          color: white;
+          text-decoration: none;
+          transition: transform 0.15s ease, background-color 0.2s ease;
+        }
+
+        .email-button:hover {
+          background: rgba(0, 0, 0, 0.22);
+          transform: translateY(-1px);
+        }
+
+        .email-icon {
+          width: 1.15rem;
+          height: 1.15rem;
+          display: block;
+        }
+
         @media (max-width: 768px) {
           :host {
             padding: 2rem 1rem;
@@ -105,6 +143,16 @@ class CustomFooter extends HTMLElement {
               Ir a Macondo
             </a>
           </div>
+        </div>
+
+        <div class="footer-bottom">
+          <span>Macondo Bar Latino — Software developed by Sebastian Aguilar</span>
+          <a class="email-button" href="mailto:sebas.pl.kol@gmail.com" aria-label="Enviar email" title="Enviar email">
+            <svg class="email-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+              <path d="m22 6-10 7L2 6"></path>
+            </svg>
+          </a>
         </div>
       </div>
     `;
