@@ -16,14 +16,24 @@ export default async (req) => {
     const jobs = await supabaseRestSelect(
       supabaseUrl,
       serviceKey,
-      'email_jobs?select=id,type,reservation_id,to_email,status,tries,created_at&status=eq.pending&order=created_at.asc&limit=25'
+      'email_jobs?select=id,type,reservation_id,to_email,status,tries,created_at,last_error&order=created_at.asc&limit=25'
     );
 
-    const list = Array.isArray(jobs) ? jobs : [];
-    console.log('process-email-jobs fetched pending jobs', {
-      count: list.length,
+    const all = Array.isArray(jobs) ? jobs : [];
+    const list = all.filter(j => String(j?.status || '').trim().toLowerCase() === 'pending');
+
+    console.log('process-email-jobs fetched jobs (sample)', {
+      total: all.length,
+      pending: list.length,
+      sample: all.slice(0, 5).map(j => ({
+        id: j?.id,
+        status: j?.status,
+        type: j?.type,
+        tries: j?.tries,
+      })),
       supabaseUrl: String(supabaseUrl || '').replace(/\?.*$/, ''),
     });
+
     if (list.length === 0) {
       return new Response(JSON.stringify({ ok: true, processed: 0 }), {
         status: 200,
