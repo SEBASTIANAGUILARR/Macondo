@@ -42,7 +42,7 @@ export default async (req) => {
         const resRows = await supabaseRestSelect(
           supabaseUrl,
           serviceKey,
-          `reservations?select=id,nombre,email,telefono,fecha,hora_entrada,personas,mesa,comentarios,estado,mesa_foto_url,created_at&limit=1&id=eq.${encodeURIComponent(reservationId)}`
+          `reservations?select=id,nombre,email,telefono,fecha,hora_entrada,personas,mesa,comentarios,estado,mesa_foto_url,created_at,lang&limit=1&id=eq.${encodeURIComponent(reservationId)}`
         );
         const reservation = Array.isArray(resRows) ? resRows[0] : null;
         if (!reservation) throw new Error('Reservation not found');
@@ -50,7 +50,7 @@ export default async (req) => {
         const toEmail = String(job?.to_email || reservation.email || '').trim();
         if (!toEmail) throw new Error('Missing to_email');
 
-        const emailPayload = buildReservationEmail(job?.type, reservation);
+        const emailPayload = await buildReservationEmailFromTemplates(supabaseUrl, serviceKey, job?.type, reservation);
         await sendZeptoMail({ to: [{ address: toEmail, name: reservation.nombre || toEmail }], subject: emailPayload.subject, htmlbody: emailPayload.html });
 
         await supabaseRestPatch(supabaseUrl, serviceKey, `email_jobs?id=eq.${encodeURIComponent(jobId)}`, {
@@ -109,6 +109,102 @@ async function supabaseRestSelect(supabaseUrl, serviceKey, pathWithQuery) {
   return await resp.text().catch(() => null);
 }
 
+async function getTemplate(supabaseUrl, serviceKey, key, lang) {
+  const rows = await supabaseRestSelect(
+    supabaseUrl,
+    serviceKey,
+    `email_templates?select=key,lang,enabled,subject_template,html_template&limit=1&key=eq.${encodeURIComponent(key)}&lang=eq.${encodeURIComponent(lang)}`
+  );
+  const t = Array.isArray(rows) ? rows[0] : null;
+  if (!t || t.enabled === false) return null;
+  return t;
+}
+
+function normalizeLang(lang) {
+  const l = String(lang || '').trim().toLowerCase();
+  if (l === 'pl' || l === 'en' || l === 'es') return l;
+  return 'pl';
+}
+
+function templateKeyFromJobType(type, reservation) {
+  const kind = String(type || '').toLowerCase();
+  const estado = String(reservation?.estado || '').toLowerCase();
+
+  if (kind === 'reservation_pending' || estado === 'pendiente') return 'reservation_pending';
+  if (kind === 'reservation_confirmed' || estado === 'confirmada') return 'reservation_confirmed';
+  if (kind === 'reservation_cancelled' || estado === 'cancelada') return 'reservation_cancelled';
+  if (kind === 'reservation_reactivated') return 'reservation_reactivated';
+  return 'reservation_pending';
+}
+
+function safeHtml(s) {
+  return String(s ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function formatDateShort(dateStr) {
+  try {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  } catch (e) {
+    return String(dateStr || '');
+  }
+}
+
+function renderTemplateString(raw, vars) {
+  let out = String(raw || '');
+  for (const [k, v] of Object.entries(vars || {})) {
+    const re = new RegExp(`\\{\\{\\s*${k}\\s*\\}\\}`, 'g');
+    out = out.replace(re, String(v ?? ''));
+  }
+  return out;
+}
+
+async function buildReservationEmailFromTemplates(supabaseUrl, serviceKey, type, reservation) {
+  const key = templateKeyFromJobType(type, reservation);
+  const preferred = normalizeLang(reservation?.lang);
+  const fallbackChain = preferred === 'pl' ? ['pl', 'en', 'es'] : (preferred === 'en' ? ['en', 'pl', 'es'] : ['es', 'pl', 'en']);
+
+  let tpl = null;
+  for (const lang of fallbackChain) {
+    tpl = await getTemplate(supabaseUrl, serviceKey, key, lang);
+    if (tpl) break;
+  }
+
+  const photoUrl = String(reservation?.mesa_foto_url || '').trim();
+  const showPhoto = /^https?:\/\//i.test(photoUrl);
+  const mesaFotoBlock = showPhoto
+    ? `<div style="margin-top:16px"><div style="font-weight:700;margin-bottom:8px">📷 Foto de mesa</div><a href="${photoUrl}">${photoUrl}</a><div style="margin-top:8px"><img src="${photoUrl}" alt="Foto de mesa" style="max-width:520px;width:100%;height:auto;border-radius:12px;border:1px solid #f3f4f6" /></div></div>`
+    : '';
+
+  const vars = {
+    nombre: safeHtml(reservation?.nombre || ''),
+    email: safeHtml(reservation?.email || ''),
+    telefono: safeHtml(reservation?.telefono || ''),
+    fecha: safeHtml(reservation?.fecha ? formatDateShort(reservation.fecha) : ''),
+    hora: safeHtml(reservation?.hora_entrada || ''),
+    personas: safeHtml(reservation?.personas ?? ''),
+    mesa: safeHtml(reservation?.mesa || 'Sin asignar'),
+    comentarios: safeHtml(reservation?.comentarios || ''),
+    mesa_foto_url: safeHtml(photoUrl),
+    mesa_foto_block: mesaFotoBlock,
+  };
+
+  if (tpl) {
+    return {
+      subject: renderTemplateString(tpl.subject_template, vars),
+      html: renderTemplateString(tpl.html_template, vars),
+    };
+  }
+
+  return buildReservationEmail(type, reservation);
+}
+
 async function supabaseRestPatch(supabaseUrl, serviceKey, pathWithQuery, body) {
   const resp = await fetch(`${supabaseUrl}/rest/v1/${pathWithQuery}`, {
     method: 'PATCH',
@@ -155,30 +251,12 @@ async function tryClaimJob(supabaseUrl, serviceKey, job) {
   return Array.isArray(rows) && rows.length > 0;
 }
 
-function formatDateShort(dateStr) {
-  try {
-    if (!dateStr) return '';
-    const d = new Date(dateStr);
-    return d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit', year: 'numeric' });
-  } catch (e) {
-    return String(dateStr || '');
-  }
-}
-
-function safeHtml(s) {
-  return String(s ?? '')
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&#039;');
-}
-
 function buildReservationEmail(type, reservation) {
   const kind = String(type || '').toLowerCase();
   const estado = String(reservation?.estado || '').toLowerCase();
 
   let title = 'Reserva actualizada - Macondo';
+  if (kind === 'reservation_pending' || estado === 'pendiente') title = '📩 Reserva recibida - Macondo';
   if (kind === 'reservation_confirmed' || estado === 'confirmada') title = '✅ Reserva confirmada - Macondo';
   if (kind === 'reservation_cancelled' || estado === 'cancelada') title = '❌ Reserva cancelada - Macondo';
   if (kind === 'reservation_reactivated') title = '🔄 Reserva reactivada - Macondo';

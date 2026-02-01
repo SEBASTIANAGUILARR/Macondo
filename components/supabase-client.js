@@ -90,6 +90,20 @@ const ReservationSystem = {
 
     try {
       const emailNorm = String(reservationData.email || '').trim().toLowerCase();
+      const detectedLang = (() => {
+        try {
+          const i18nLang = window.i18n && typeof window.i18n.getCurrentLanguage === 'function'
+            ? String(window.i18n.getCurrentLanguage() || '')
+            : '';
+          const saved = String(localStorage.getItem('macondo-language') || '').trim();
+          const nav = String((navigator.language || navigator.userLanguage || '') || '').trim();
+          const code = (i18nLang || saved || nav).toLowerCase().split('-')[0];
+          if (code === 'pl' || code === 'en' || code === 'es') return code;
+          return 'pl';
+        } catch (e) {
+          return 'pl';
+        }
+      })();
       // Preparar datos, convirtiendo strings vacíos a null para campos opcionales
       const insertData = {
         nombre: reservationData.nombre,
@@ -100,6 +114,7 @@ const ReservationSystem = {
         personas: parseInt(reservationData.personas) || 1,
         comentarios: reservationData.comentarios || null,
         estado: 'pendiente',
+        lang: detectedLang,
         created_at: new Date().toISOString()
       };
       

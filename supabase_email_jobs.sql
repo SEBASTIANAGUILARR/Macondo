@@ -40,7 +40,9 @@ begin
   v_type := null;
 
   if tg_op = 'INSERT' then
-    if lower(coalesce(new.estado, '')) = 'confirmada' then
+    if lower(coalesce(new.estado, '')) = 'pendiente' then
+      v_type := 'reservation_pending';
+    elsif lower(coalesce(new.estado, '')) = 'confirmada' then
       v_type := 'reservation_confirmed';
     elsif lower(coalesce(new.estado, '')) = 'cancelada' then
       v_type := 'reservation_cancelled';

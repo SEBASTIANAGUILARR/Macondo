@@ -7,6 +7,9 @@
 [functions."send-email"]
   node_bundler = "esbuild"
 
+[functions."email-templates"]
+  node_bundler = "esbuild"
+
 [functions."process-email-jobs"]
   schedule = "*/5 * * * *"
 

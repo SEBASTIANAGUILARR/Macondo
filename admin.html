@@ -277,6 +277,7 @@
                     <option value="pedidos">🛒 Pedidos Online</option>
                     <option value="eventos">🎉 Eventos</option>
                     <option value="menu">🍽️ Menú</option>
+                    <option value="emails">📧 Emails</option>
                     <option value="analytics">📊 Analíticas</option>
                     <option value="basement">🪩 Sótano</option>
                     <option value="clientes">👥 Clientes</option>
@@ -297,6 +298,9 @@
                 </button>
                 <button id="tab-menu" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('menu')">
                     🍽️ Menú
+                </button>
+                <button id="tab-emails" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('emails')">
+                    📧 Emails
                 </button>
                 <button id="tab-analytics" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('analytics')">
                     📊 Analíticas
@@ -516,6 +520,61 @@
                 <!-- Menu Items List -->
                 <div id="menu-items-list">
                     <p class="text-gray-500 text-center py-8">Cargando menú...</p>
+                </div>
+            </div>
+
+            <!-- Emails Section -->
+            <div id="section-emails" class="hidden">
+                <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
+                    <h2 class="text-2xl font-bold text-amber-800">📧 Plantillas de emails</h2>
+                    <button type="button" id="btn-email-templates-reload" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition-colors">
+                        Recargar
+                    </button>
+                </div>
+
+                <div class="bg-white p-4 rounded-lg shadow mb-6">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Tipo</label>
+                            <select id="email-template-key" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="reservation_pending">Reserva pendiente (recibida)</option>
+                                <option value="reservation_confirmed">Reserva confirmada</option>
+                                <option value="reservation_cancelled">Reserva cancelada</option>
+                                <option value="reservation_reactivated">Reserva reactivada</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Idioma</label>
+                            <select id="email-template-lang" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="pl" selected>Polski (PL)</option>
+                                <option value="en">English (EN)</option>
+                                <option value="es">Español (ES)</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <button type="button" id="btn-email-template-load" class="flex-1 bg-gray-800 hover:bg-black text-white font-bold py-3 rounded-lg transition-colors">Cargar</button>
+                            <button type="button" id="btn-email-template-save" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 rounded-lg transition-colors">Guardar</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-amber-700 font-medium mb-1">Asunto</label>
+                        <input id="email-template-subject" type="text" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Asunto del email" />
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="block text-amber-700 font-medium mb-1">HTML</label>
+                        <textarea id="email-template-html" rows="14" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono text-sm" placeholder="Pega aquí el HTML. Variables: {{nombre}} {{fecha}} {{hora}} {{personas}} {{mesa}} {{comentarios}} {{mesa_foto_url}} {{mesa_foto_block}}"></textarea>
+                    </div>
+
+                    <div class="mt-4 flex flex-wrap gap-2 items-center">
+                        <input id="email-template-test-email" type="email" class="flex-1 min-w-[220px] p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Email para prueba (ej: tu@email.com)" />
+                        <button type="button" id="btn-email-template-test" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">Enviar prueba</button>
+                        <label class="flex items-center gap-2 text-sm text-amber-700">
+                            <input id="email-template-enabled" type="checkbox" class="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500" checked>
+                            Activa
+                        </label>
+                    </div>
                 </div>
             </div>
 
@@ -1535,6 +1594,7 @@
             document.getElementById('section-pedidos').classList.add('hidden');
             document.getElementById('section-eventos').classList.add('hidden');
             document.getElementById('section-menu').classList.add('hidden');
+            document.getElementById('section-emails').classList.add('hidden');
             document.getElementById('section-analytics').classList.add('hidden');
             document.getElementById('section-basement').classList.add('hidden');
             document.getElementById('section-clientes').classList.add('hidden');
@@ -1561,68 +1621,123 @@
                 loadCoverManualData();
                 loadCoverTicketsAdmin();
             }
+            if (tab === 'emails') {
+                loadEmailTemplateIntoEditor().catch(() => {});
+            }
             const mobileSelect = document.getElementById('mobile-tab-select');
             if (mobileSelect) {
                 mobileSelect.value = tab;
             }
         }
 
-        async function sendReservationReactivatedEmail(reservation) {
-            const email = String(reservation?.email || '').trim();
-            if (!email) return;
+        function normalizeLangCode(lang) {
+            const l = String(lang || '').trim().toLowerCase();
+            if (l === 'pl' || l === 'en' || l === 'es') return l;
+            return 'pl';
+        }
 
-            const nombre = String(reservation?.nombre || '').trim() || 'Cliente';
-            const fecha = formatDate(reservation?.fecha);
-            const hora = String(reservation?.hora_entrada || '').trim() || '—';
-            const personas = String(reservation?.personas ?? '').trim() || '—';
-            const mesa = String(reservation?.mesa || '').trim();
-            const escapeHtml = (s) => String(s ?? '')
+        function renderTemplateString(raw, vars) {
+            let out = String(raw || '');
+            Object.entries(vars || {}).forEach(([k, v]) => {
+                const re = new RegExp(`\\{\\{\\s*${k}\\s*\\}\\}`, 'g');
+                out = out.replace(re, String(v ?? ''));
+            });
+            return out;
+        }
+
+        function safeHtmlTemplateVar(s) {
+            return String(s ?? '')
                 .replace(/&/g, '&amp;')
                 .replace(/</g, '&lt;')
                 .replace(/>/g, '&gt;')
                 .replace(/"/g, '&quot;')
                 .replace(/'/g, '&#039;');
+        }
 
-            const html = `
-                <div style="font-family:Arial,sans-serif;line-height:1.5;background:#fff;padding:20px">
-                  <div style="max-width:600px;margin:0 auto;border:1px solid #eee;border-radius:12px;overflow:hidden">
-                    <div style="background:#fef3c7;padding:16px 20px">
-                      <div style="display:flex;align-items:center;gap:12px">
-                        <img src="https://macondo.pl/logoamarillo.png" alt="Macondo" style="height:40px;width:auto" />
-                        <div style="font-weight:800;color:#92400e;font-size:18px">Macondo</div>
-                      </div>
-                    </div>
-                    <div style="padding:20px">
-                      <h2 style="margin:0 0 10px 0;color:#92400e">Tu reserva ha sido reactivada</h2>
-                      <p style="margin:0 0 14px 0">Hola ${escapeHtml(nombre)},</p>
-                      <p style="margin:0 0 14px 0">Tu reserva ha sido <b>reactivada</b> y vuelve a estar activa. Por favor, <b>ignora la cancelación anterior</b>.</p>
-                      <p style="margin:0 0 14px 0">Ahora tu reserva está en estado <b>pendiente</b>. Te avisaremos cuando esté confirmada.</p>
-                      <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:10px;padding:14px">
-                        <div><b>Fecha:</b> ${escapeHtml(fecha)}</div>
-                        <div><b>Hora:</b> ${escapeHtml(hora)}</div>
-                        <div><b>Personas:</b> ${escapeHtml(personas)}</div>
-                        <div><b>Mesa:</b> ${escapeHtml(mesa || 'Aún no asignada')}</div>
-                      </div>
-                      <p style="margin:14px 0 0 0;color:#6b7280;font-size:12px">Si no solicitaste este cambio, contáctanos.</p>
-                    </div>
-                  </div>
-                </div>
-            `;
+        function formatDateShortTemplate(dateStr) {
+            try {
+                if (!dateStr) return '';
+                const date = new Date(dateStr);
+                return date.toLocaleDateString('es-ES', { year: 'numeric', month: '2-digit', day: '2-digit' });
+            } catch (e) {
+                return String(dateStr || '');
+            }
+        }
 
-            const subject = '↺ Reserva reactivada - Macondo';
+        async function fetchEmailTemplate(key, lang) {
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) throw new Error('Sesión no válida');
+
+            const qs = new URLSearchParams({ key: String(key || ''), lang: String(lang || '') });
+            const resp = await fetch('/.netlify/functions/email-templates?' + qs.toString(), {
+                method: 'GET',
+                headers: {
+                    'Authorization': 'Bearer ' + accessToken
+                }
+            });
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) throw new Error(data.error || resp.statusText);
+            return data.template || null;
+        }
+
+        async function fetchEmailTemplateWithFallback(key, preferredLang) {
+            const preferred = normalizeLangCode(preferredLang);
+            const chain = preferred === 'pl' ? ['pl', 'en', 'es'] : (preferred === 'en' ? ['en', 'pl', 'es'] : ['es', 'pl', 'en']);
+
+            for (const lang of chain) {
+                const tpl = await fetchEmailTemplate(key, lang).catch(() => null);
+                if (tpl && tpl.enabled !== false) return tpl;
+            }
+            return null;
+        }
+
+        function getReservationTemplateVars(reservation) {
+            const photoUrl = String(reservation?.mesa_foto_url || '').trim();
+            const showPhoto = /^https?:\/\//i.test(photoUrl);
+            const mesaFotoBlock = showPhoto
+                ? `<div style="margin-top:16px"><div style="font-weight:700;margin-bottom:8px">📷 Foto de mesa</div><a href="${photoUrl}">${photoUrl}</a><div style="margin-top:8px"><img src="${photoUrl}" alt="Foto de mesa" style="max-width:520px;width:100%;height:auto;border-radius:12px;border:1px solid #f3f4f6" /></div></div>`
+                : '';
+
+            return {
+                nombre: safeHtmlTemplateVar(reservation?.nombre || ''),
+                email: safeHtmlTemplateVar(reservation?.email || ''),
+                telefono: safeHtmlTemplateVar(reservation?.telefono || ''),
+                fecha: safeHtmlTemplateVar(reservation?.fecha ? formatDateShortTemplate(reservation.fecha) : ''),
+                hora: safeHtmlTemplateVar(reservation?.hora_entrada || ''),
+                personas: safeHtmlTemplateVar(reservation?.personas ?? ''),
+                mesa: safeHtmlTemplateVar(reservation?.mesa || 'Sin asignar'),
+                comentarios: safeHtmlTemplateVar(reservation?.comentarios || ''),
+                mesa_foto_url: safeHtmlTemplateVar(photoUrl),
+                mesa_foto_block: mesaFotoBlock,
+            };
+        }
+
+        async function sendReservationEmailFromTemplate(templateKey, reservation) {
+            const email = String(reservation?.email || '').trim();
+            if (!email) return;
+
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) return;
+
+            const tpl = await fetchEmailTemplateWithFallback(templateKey, reservation?.lang || 'pl');
+            if (!tpl) throw new Error('No hay plantilla configurada para este email');
+
+            const vars = getReservationTemplateVars(reservation);
+            const subject = renderTemplateString(tpl.subject_template, vars);
+            const html = renderTemplateString(tpl.html_template, vars);
 
             const resp = await fetch('/.netlify/functions/send-email', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + (await getAdminAccessToken())
+                    'Authorization': 'Bearer ' + accessToken
                 },
                 body: JSON.stringify({
                     mode: 'single',
                     toEmail: email,
-                    toName: nombre,
+                    toName: reservation.nombre || email,
                     subject,
-                    content: 'Tu reserva ha sido reactivada. Ignora la cancelación anterior.',
+                    content: subject,
                     html
                 })
             });
@@ -1633,12 +1748,163 @@
             }
         }
 
+        async function sendReservationReactivatedEmail(reservation) {
+            await sendReservationEmailFromTemplate('reservation_reactivated', reservation);
+        }
+
+        async function loadEmailTemplateIntoEditor() {
+            const keyEl = document.getElementById('email-template-key');
+            const langEl = document.getElementById('email-template-lang');
+            const subjEl = document.getElementById('email-template-subject');
+            const htmlEl = document.getElementById('email-template-html');
+            const enabledEl = document.getElementById('email-template-enabled');
+
+            if (!keyEl || !langEl || !subjEl || !htmlEl || !enabledEl) return;
+
+            const key = String(keyEl.value || '').trim();
+            const lang = String(langEl.value || '').trim();
+            const tpl = await fetchEmailTemplate(key, lang).catch(() => null);
+            if (!tpl) {
+                subjEl.value = '';
+                htmlEl.value = '';
+                enabledEl.checked = true;
+                return;
+            }
+
+            subjEl.value = String(tpl.subject_template || '');
+            htmlEl.value = String(tpl.html_template || '');
+            enabledEl.checked = tpl.enabled !== false;
+        }
+
+        async function saveEmailTemplateFromEditor() {
+            const keyEl = document.getElementById('email-template-key');
+            const langEl = document.getElementById('email-template-lang');
+            const subjEl = document.getElementById('email-template-subject');
+            const htmlEl = document.getElementById('email-template-html');
+            const enabledEl = document.getElementById('email-template-enabled');
+
+            if (!keyEl || !langEl || !subjEl || !htmlEl || !enabledEl) return;
+
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) throw new Error('Sesión no válida');
+
+            const payload = {
+                key: String(keyEl.value || '').trim(),
+                lang: String(langEl.value || '').trim(),
+                enabled: !!enabledEl.checked,
+                subject_template: String(subjEl.value || '').trim(),
+                html_template: String(htmlEl.value || '').trim(),
+            };
+
+            const resp = await fetch('/.netlify/functions/email-templates', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                },
+                body: JSON.stringify(payload)
+            });
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) throw new Error(data.error || resp.statusText);
+        }
+
+        async function sendEmailTemplateTest() {
+            const testEmailEl = document.getElementById('email-template-test-email');
+            const subjEl = document.getElementById('email-template-subject');
+            const htmlEl = document.getElementById('email-template-html');
+            if (!testEmailEl || !subjEl || !htmlEl) return;
+
+            const testEmail = String(testEmailEl.value || '').trim();
+            if (!testEmail) {
+                alert('Introduce un email de prueba.');
+                return;
+            }
+
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) throw new Error('Sesión no válida');
+
+            const subject = String(subjEl.value || '').trim() || 'Plantilla';
+            const html = String(htmlEl.value || '').trim();
+            if (!html) {
+                alert('La plantilla HTML está vacía.');
+                return;
+            }
+
+            const resp = await fetch('/.netlify/functions/send-email', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                },
+                body: JSON.stringify({
+                    mode: 'test',
+                    testEmail,
+                    subject,
+                    content: subject,
+                    html
+                })
+            });
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) throw new Error(data.error || resp.statusText);
+        }
+
         const mobileTabSelect = document.getElementById('mobile-tab-select');
         if (mobileTabSelect) {
             mobileTabSelect.addEventListener('change', (e) => {
                 switchTab(e.target.value);
             });
         }
+
+        const btnTplReload = document.getElementById('btn-email-templates-reload');
+        if (btnTplReload) {
+            btnTplReload.addEventListener('click', async () => {
+                try {
+                    await loadEmailTemplateIntoEditor();
+                } catch (e) {
+                    alert(e.message || String(e));
+                }
+            });
+        }
+
+        const btnTplLoad = document.getElementById('btn-email-template-load');
+        if (btnTplLoad) {
+            btnTplLoad.addEventListener('click', async () => {
+                try {
+                    await loadEmailTemplateIntoEditor();
+                } catch (e) {
+                    alert(e.message || String(e));
+                }
+            });
+        }
+
+        const btnTplSave = document.getElementById('btn-email-template-save');
+        if (btnTplSave) {
+            btnTplSave.addEventListener('click', async () => {
+                try {
+                    await saveEmailTemplateFromEditor();
+                    alert('✅ Plantilla guardada');
+                } catch (e) {
+                    alert(e.message || String(e));
+                }
+            });
+        }
+
+        const btnTplTest = document.getElementById('btn-email-template-test');
+        if (btnTplTest) {
+            btnTplTest.addEventListener('click', async () => {
+                try {
+                    await sendEmailTemplateTest();
+                    alert('✅ Email de prueba enviado');
+                } catch (e) {
+                    alert(e.message || String(e));
+                }
+            });
+        }
+
+        const selTplKey = document.getElementById('email-template-key');
+        const selTplLang = document.getElementById('email-template-lang');
+        if (selTplKey) selTplKey.addEventListener('change', () => loadEmailTemplateIntoEditor().catch(() => {}));
+        if (selTplLang) selTplLang.addEventListener('change', () => loadEmailTemplateIntoEditor().catch(() => {}));
 
         let authUsersCache = [];
 
@@ -2245,143 +2511,11 @@
         }
 
         async function sendReservationConfirmationEmail(reservation) {
-            const email = String(reservation?.email || '').trim();
-            if (!email) return;
-
-            const accessToken = await getAdminAccessToken();
-            if (!accessToken) return;
-
-            const subject = '✅ Reserva confirmada - Macondo';
-            const content = [
-                `Reserva confirmada`,
-                `Nombre: ${reservation.nombre || ''}`,
-                `Email: ${reservation.email || ''}`,
-                `Teléfono: ${reservation.telefono || ''}`,
-                `Fecha: ${reservation.fecha ? formatDateShort(reservation.fecha) : ''}`,
-                `Hora: ${reservation.hora_entrada || ''}`,
-                `Personas: ${reservation.personas || ''}`,
-                `Mesa: ${reservation.mesa || 'Sin asignar'}`,
-                reservation.comentarios ? `Comentarios: ${reservation.comentarios}` : ''
-            ].filter(Boolean).join('\n');
-
-            const logoUrl = `${window.location.origin}/logoamarillo.png`;
-            const photoUrl = String(reservation?.mesa_foto_url || '').trim();
-            const safe = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-            const html = `
-                <div style="font-family:Arial,sans-serif;line-height:1.5;color:#1f2937">
-                  <div style="text-align:center;margin-bottom:16px">
-                    <img src="${logoUrl}" alt="Macondo" style="max-width:220px;width:70%;height:auto" />
-                  </div>
-                  <h2 style="color:#92400e;margin:0 0 12px 0">✅ Tu reserva ha sido confirmada</h2>
-                  <p style="margin:0 0 16px 0">Hola <strong>${safe(reservation.nombre || '')}</strong>, te confirmamos tu reserva en <strong>Macondo</strong>.</p>
-                  <table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse">
-                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Fecha</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.fecha ? formatDateShort(reservation.fecha) : '')}</td></tr>
-                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Hora</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.hora_entrada || '')}</td></tr>
-                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Personas</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.personas || '')}</td></tr>
-                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Mesa</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.mesa || 'Sin asignar')}</td></tr>
-                    ${reservation.comentarios ? `<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Comentarios</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.comentarios)}</td></tr>` : ''}
-                  </table>
-                  ${photoUrl ? `
-                    <div style="margin-top:16px">
-                      <div style="font-weight:700;margin-bottom:8px">📷 Foto de mesa</div>
-                      <a href="${photoUrl}">${photoUrl}</a>
-                      <div style="margin-top:8px"><img src="${photoUrl}" alt="Foto de mesa" style="max-width:520px;width:100%;height:auto;border-radius:12px;border:1px solid #f3f4f6" /></div>
-                    </div>
-                  ` : ''}
-                  <p style="margin:16px 0 0 0">Gracias,<br><strong>Macondo Bar Latino</strong></p>
-                </div>
-            `;
-
-            const resp = await fetch('/.netlify/functions/send-email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + accessToken
-                },
-                body: JSON.stringify({
-                    mode: 'single',
-                    toEmail: email,
-                    toName: reservation.nombre || email,
-                    subject,
-                    content,
-                    html
-                })
-            });
-
-            const data = await resp.json().catch(() => ({}));
-            if (!resp.ok) {
-                throw new Error(data.error || resp.statusText);
-            }
+            await sendReservationEmailFromTemplate('reservation_confirmed', reservation);
         }
 
         async function sendReservationCancellationEmail(reservation) {
-            const email = String(reservation?.email || '').trim();
-            if (!email) return;
-
-            const accessToken = await getAdminAccessToken();
-            if (!accessToken) return;
-
-            const subject = '❌ Reserva cancelada - Macondo';
-            const content = [
-                `Reserva cancelada`,
-                `Nombre: ${reservation.nombre || ''}`,
-                `Email: ${reservation.email || ''}`,
-                `Teléfono: ${reservation.telefono || ''}`,
-                `Fecha: ${reservation.fecha ? formatDateShort(reservation.fecha) : ''}`,
-                `Hora: ${reservation.hora_entrada || ''}`,
-                `Personas: ${reservation.personas || ''}`,
-                `Mesa: ${reservation.mesa || 'Sin asignar'}`,
-                reservation.comentarios ? `Comentarios: ${reservation.comentarios}` : ''
-            ].filter(Boolean).join('\n');
-
-            const logoUrl = `${window.location.origin}/logoamarillo.png`;
-            const photoUrl = String(reservation?.mesa_foto_url || '').trim();
-            const safe = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#039;');
-            const html = `
-                <div style="font-family:Arial,sans-serif;line-height:1.5;color:#1f2937">
-                  <div style="text-align:center;margin-bottom:16px">
-                    <img src="${logoUrl}" alt="Macondo" style="max-width:220px;width:70%;height:auto" />
-                  </div>
-                  <h2 style="color:#b91c1c;margin:0 0 12px 0">❌ Tu reserva ha sido cancelada</h2>
-                  <p style="margin:0 0 16px 0">Hola <strong>${safe(reservation.nombre || '')}</strong>, te informamos que tu reserva en <strong>Macondo</strong> ha sido cancelada.</p>
-                  <table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse">
-                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Fecha</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.fecha ? formatDateShort(reservation.fecha) : '')}</td></tr>
-                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Hora</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.hora_entrada || '')}</td></tr>
-                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Personas</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.personas || '')}</td></tr>
-                    <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Mesa</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.mesa || 'Sin asignar')}</td></tr>
-                    ${reservation.comentarios ? `<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Comentarios</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safe(reservation.comentarios)}</td></tr>` : ''}
-                  </table>
-                  ${photoUrl ? `
-                    <div style="margin-top:16px">
-                      <div style="font-weight:700;margin-bottom:8px">📷 Foto de mesa (interno)</div>
-                      <a href="${photoUrl}">${photoUrl}</a>
-                      <div style="margin-top:8px"><img src="${photoUrl}" alt="Foto de mesa" style="max-width:520px;width:100%;height:auto;border-radius:12px;border:1px solid #f3f4f6" /></div>
-                    </div>
-                  ` : ''}
-                  <p style="margin:16px 0 0 0">Gracias,<br><strong>Macondo Bar Latino</strong></p>
-                </div>
-            `;
-
-            const resp = await fetch('/.netlify/functions/send-email', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + accessToken
-                },
-                body: JSON.stringify({
-                    mode: 'single',
-                    toEmail: email,
-                    toName: reservation.nombre || email,
-                    subject,
-                    content,
-                    html
-                })
-            });
-
-            const data = await resp.json().catch(() => ({}));
-            if (!resp.ok) {
-                throw new Error(data.error || resp.statusText);
-            }
+            await sendReservationEmailFromTemplate('reservation_cancelled', reservation);
         }
 
         const manualReservationForm = document.getElementById('manual-reservation-form');
