@@ -20,6 +20,10 @@ export default async (req) => {
     );
 
     const list = Array.isArray(jobs) ? jobs : [];
+    console.log('process-email-jobs fetched pending jobs', {
+      count: list.length,
+      supabaseUrl: String(supabaseUrl || '').replace(/\?.*$/, ''),
+    });
     if (list.length === 0) {
       return new Response(JSON.stringify({ ok: true, processed: 0 }), {
         status: 200,
@@ -74,6 +78,7 @@ export default async (req) => {
       }
     }
 
+    console.log('process-email-jobs finished', { processed });
     return new Response(JSON.stringify({ ok: true, processed }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
