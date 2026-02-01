@@ -558,11 +558,60 @@
                     </div>
 
                     <div class="mt-4">
+                        <label class="block text-amber-700 font-medium mb-2">Editor</label>
+                        <div class="flex flex-wrap gap-3">
+                            <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                                <input type="radio" name="email-template-editor-mode" id="email-template-mode-visual" value="visual" class="text-amber-600" checked>
+                                Visual (sin HTML)
+                            </label>
+                            <label class="inline-flex items-center gap-2 text-sm text-gray-700">
+                                <input type="radio" name="email-template-editor-mode" id="email-template-mode-advanced" value="advanced" class="text-amber-600">
+                                Avanzado (HTML)
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
                         <label class="block text-amber-700 font-medium mb-1">Asunto</label>
                         <input id="email-template-subject" type="text" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Asunto del email" />
                     </div>
 
-                    <div class="mt-4">
+                    <div id="email-template-visual-editor" class="mt-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-amber-700 font-medium mb-1">Título (dentro del email)</label>
+                                <input id="email-template-visual-title" type="text" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej: ✅ Tu reserva ha sido confirmada" />
+                            </div>
+                            <div>
+                                <label class="block text-amber-700 font-medium mb-1">Texto principal</label>
+                                <input id="email-template-visual-message" type="text" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej: Hemos confirmado tu reserva..." />
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-amber-700 font-medium mb-2">Mostrar datos (on/off)</label>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+                                <label class="flex items-center gap-2 text-sm text-gray-700"><input id="email-tpl-show-fecha" type="checkbox" class="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500" checked> Fecha</label>
+                                <label class="flex items-center gap-2 text-sm text-gray-700"><input id="email-tpl-show-hora" type="checkbox" class="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500" checked> Hora</label>
+                                <label class="flex items-center gap-2 text-sm text-gray-700"><input id="email-tpl-show-personas" type="checkbox" class="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500" checked> Personas</label>
+                                <label class="flex items-center gap-2 text-sm text-gray-700"><input id="email-tpl-show-mesa" type="checkbox" class="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500" checked> Mesa</label>
+                                <label class="flex items-center gap-2 text-sm text-gray-700"><input id="email-tpl-show-comentarios" type="checkbox" class="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500" checked> Comentarios</label>
+                                <label class="flex items-center gap-2 text-sm text-gray-700"><input id="email-tpl-show-foto" type="checkbox" class="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500" checked> Foto mesa</label>
+                            </div>
+                        </div>
+
+                        <div class="mt-4">
+                            <label class="block text-amber-700 font-medium mb-1">Texto de cierre</label>
+                            <input id="email-template-visual-footer" type="text" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej: Gracias, Macondo Bar Latino" />
+                        </div>
+
+                        <div class="mt-4 flex flex-wrap gap-2">
+                            <button type="button" id="btn-email-template-generate-html" class="bg-slate-700 hover:bg-slate-800 text-white font-bold py-3 px-4 rounded-lg transition-colors">Generar HTML</button>
+                            <div class="text-sm text-gray-500 self-center">Esto rellena el HTML automáticamente (no necesitas tocar código).</div>
+                        </div>
+                    </div>
+
+                    <div id="email-template-advanced-editor" class="mt-4 hidden">
                         <label class="block text-amber-700 font-medium mb-1">HTML</label>
                         <textarea id="email-template-html" rows="14" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 font-mono text-sm" placeholder="Pega aquí el HTML. Variables: {{nombre}} {{fecha}} {{hora}} {{personas}} {{mesa}} {{comentarios}} {{mesa_foto_url}} {{mesa_foto_block}}"></textarea>
                     </div>
@@ -1758,6 +1807,15 @@
             const subjEl = document.getElementById('email-template-subject');
             const htmlEl = document.getElementById('email-template-html');
             const enabledEl = document.getElementById('email-template-enabled');
+            const titleEl = document.getElementById('email-template-visual-title');
+            const msgEl = document.getElementById('email-template-visual-message');
+            const footerEl = document.getElementById('email-template-visual-footer');
+            const showFechaEl = document.getElementById('email-tpl-show-fecha');
+            const showHoraEl = document.getElementById('email-tpl-show-hora');
+            const showPersonasEl = document.getElementById('email-tpl-show-personas');
+            const showMesaEl = document.getElementById('email-tpl-show-mesa');
+            const showComentariosEl = document.getElementById('email-tpl-show-comentarios');
+            const showFotoEl = document.getElementById('email-tpl-show-foto');
 
             if (!keyEl || !langEl || !subjEl || !htmlEl || !enabledEl) return;
 
@@ -1768,12 +1826,124 @@
                 subjEl.value = '';
                 htmlEl.value = '';
                 enabledEl.checked = true;
+                if (titleEl) titleEl.value = '';
+                if (msgEl) msgEl.value = '';
+                if (footerEl) footerEl.value = '';
+                if (showFechaEl) showFechaEl.checked = true;
+                if (showHoraEl) showHoraEl.checked = true;
+                if (showPersonasEl) showPersonasEl.checked = true;
+                if (showMesaEl) showMesaEl.checked = true;
+                if (showComentariosEl) showComentariosEl.checked = true;
+                if (showFotoEl) showFotoEl.checked = true;
+                setEmailTemplateEditorMode('visual');
                 return;
             }
 
             subjEl.value = String(tpl.subject_template || '');
             htmlEl.value = String(tpl.html_template || '');
             enabledEl.checked = tpl.enabled !== false;
+
+            const meta = extractTemplateMetaFromHtml(String(tpl.html_template || ''));
+            if (meta) {
+                setEmailTemplateEditorMode('visual');
+                if (titleEl) titleEl.value = String(meta.title || '');
+                if (msgEl) msgEl.value = String(meta.message || '');
+                if (footerEl) footerEl.value = String(meta.footer || '');
+                if (showFechaEl) showFechaEl.checked = meta.showFecha !== false;
+                if (showHoraEl) showHoraEl.checked = meta.showHora !== false;
+                if (showPersonasEl) showPersonasEl.checked = meta.showPersonas !== false;
+                if (showMesaEl) showMesaEl.checked = meta.showMesa !== false;
+                if (showComentariosEl) showComentariosEl.checked = meta.showComentarios !== false;
+                if (showFotoEl) showFotoEl.checked = meta.showFoto !== false;
+            } else {
+                setEmailTemplateEditorMode('advanced');
+            }
+        }
+
+        function setEmailTemplateEditorMode(mode) {
+            const visualRadio = document.getElementById('email-template-mode-visual');
+            const advRadio = document.getElementById('email-template-mode-advanced');
+            const visual = document.getElementById('email-template-visual-editor');
+            const adv = document.getElementById('email-template-advanced-editor');
+
+            const m = mode === 'advanced' ? 'advanced' : 'visual';
+            if (visualRadio) visualRadio.checked = m === 'visual';
+            if (advRadio) advRadio.checked = m === 'advanced';
+            if (visual) visual.classList.toggle('hidden', m !== 'visual');
+            if (adv) adv.classList.toggle('hidden', m !== 'advanced');
+        }
+
+        function extractTemplateMetaFromHtml(html) {
+            try {
+                const re = /<script[^>]*data-template-meta="1"[^>]*>([\s\S]*?)<\/script>/i;
+                const m = String(html || '').match(re);
+                if (!m || !m[1]) return null;
+                const raw = String(m[1] || '').trim();
+                const parsed = JSON.parse(raw);
+                if (!parsed || typeof parsed !== 'object') return null;
+                return parsed;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function buildVisualTemplateMeta() {
+            return {
+                editor: 'visual_v1',
+                title: String(document.getElementById('email-template-visual-title')?.value || '').trim(),
+                message: String(document.getElementById('email-template-visual-message')?.value || '').trim(),
+                footer: String(document.getElementById('email-template-visual-footer')?.value || '').trim(),
+                showFecha: !!document.getElementById('email-tpl-show-fecha')?.checked,
+                showHora: !!document.getElementById('email-tpl-show-hora')?.checked,
+                showPersonas: !!document.getElementById('email-tpl-show-personas')?.checked,
+                showMesa: !!document.getElementById('email-tpl-show-mesa')?.checked,
+                showComentarios: !!document.getElementById('email-tpl-show-comentarios')?.checked,
+                showFoto: !!document.getElementById('email-tpl-show-foto')?.checked,
+            };
+        }
+
+        function generateEmailHtmlFromVisual() {
+            const meta = buildVisualTemplateMeta();
+            const esc = (s) => String(s ?? '')
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;')
+                .replace(/'/g, '&#039;');
+
+            const title = meta.title || '';
+            const message = meta.message || '';
+            const footer = meta.footer || '';
+
+            const rows = [];
+            if (meta.showFecha) rows.push(['Fecha', '{{fecha}}']);
+            if (meta.showHora) rows.push(['Hora', '{{hora}}']);
+            if (meta.showPersonas) rows.push(['Personas', '{{personas}}']);
+            if (meta.showMesa) rows.push(['Mesa', '{{mesa}}']);
+            if (meta.showComentarios) rows.push(['Comentarios', '{{comentarios}}']);
+
+            const table = rows.length
+                ? `<table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse">${rows.map(([k,v]) => `<tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>${esc(k)}</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${v}</td></tr>`).join('')}</table>`
+                : '';
+
+            const fotoBlock = meta.showFoto ? '{{mesa_foto_block}}' : '';
+
+            const metaJson = JSON.stringify(meta)
+                .replace(/</g, '\\u003c')
+                .replace(/>/g, '\\u003e')
+                .replace(/&/g, '\\u0026');
+            const metaScript = `<script type="application/json" data-template-meta="1">${metaJson}<\\/script>`;
+
+            return `
+                <div style="font-family:Arial,sans-serif;line-height:1.5;color:#1f2937">
+                  <h2 style="color:#92400e;margin:0 0 12px 0">${esc(title)}</h2>
+                  <p style="margin:0 0 16px 0">Hola <strong>{{nombre}}</strong>, ${esc(message)}</p>
+                  ${table}
+                  ${fotoBlock}
+                  <p style="margin:16px 0 0 0">${esc(footer)}</p>
+                  ${metaScript}
+                </div>
+            `;
         }
 
         async function saveEmailTemplateFromEditor() {
@@ -1782,18 +1952,24 @@
             const subjEl = document.getElementById('email-template-subject');
             const htmlEl = document.getElementById('email-template-html');
             const enabledEl = document.getElementById('email-template-enabled');
+            const visualRadio = document.getElementById('email-template-mode-visual');
 
             if (!keyEl || !langEl || !subjEl || !htmlEl || !enabledEl) return;
 
             const accessToken = await getAdminAccessToken();
             if (!accessToken) throw new Error('Sesión no válida');
 
+            const isVisual = !!(visualRadio && visualRadio.checked);
+            const html_template = isVisual
+                ? generateEmailHtmlFromVisual()
+                : String(htmlEl.value || '').trim();
+
             const payload = {
                 key: String(keyEl.value || '').trim(),
                 lang: String(langEl.value || '').trim(),
                 enabled: !!enabledEl.checked,
                 subject_template: String(subjEl.value || '').trim(),
-                html_template: String(htmlEl.value || '').trim(),
+                html_template,
             };
 
             const resp = await fetch('/.netlify/functions/email-templates', {
@@ -1806,6 +1982,10 @@
             });
             const data = await resp.json().catch(() => ({}));
             if (!resp.ok) throw new Error(data.error || resp.statusText);
+
+            if (isVisual) {
+                htmlEl.value = html_template;
+            }
         }
 
         async function sendEmailTemplateTest() {
@@ -1901,6 +2081,21 @@
             });
         }
 
+        const btnTplGenerate = document.getElementById('btn-email-template-generate-html');
+        if (btnTplGenerate) {
+            btnTplGenerate.addEventListener('click', () => {
+                const htmlEl = document.getElementById('email-template-html');
+                if (!htmlEl) return;
+                htmlEl.value = generateEmailHtmlFromVisual();
+                setEmailTemplateEditorMode('advanced');
+            });
+        }
+
+        const visualRadio = document.getElementById('email-template-mode-visual');
+        const advRadio = document.getElementById('email-template-mode-advanced');
+        if (visualRadio) visualRadio.addEventListener('change', () => setEmailTemplateEditorMode('visual'));
+        if (advRadio) advRadio.addEventListener('change', () => setEmailTemplateEditorMode('advanced'));
+
         const selTplKey = document.getElementById('email-template-key');
         const selTplLang = document.getElementById('email-template-lang');
         if (selTplKey) selTplKey.addEventListener('change', () => loadEmailTemplateIntoEditor().catch(() => {}));
@@ -1964,7 +2159,7 @@
                         <td class="px-4 py-3">
                             <div class="flex flex-wrap gap-2 justify-center">
                                 ${actionBtn}
-                                ${isAdmin ? '<span class="text-xs text-gray-500">—</span>' : `<button class="bg-gray-800 hover:bg-black text-white px-3 py-2 rounded-lg" onclick="deleteAuthUserAdmin('${u.id}', '${email.replace(/'/g, "\\'")}')">Eliminar</button>`}
+                                ${isAdmin ? '<span class="text-xs text-gray-500">—</span>' : `<button class="bg-gray-800 hover:bg-black text-white px-3 py-2 rounded-lg" onclick="deleteAuthUserAdmin('${u.id}', ${JSON.stringify(email)})">Eliminar</button>`}
                             </div>
                         </td>
                     </tr>
@@ -2368,7 +2563,7 @@
                                 ${r.comentarios ? `<p class="mt-1"><strong>💬</strong> ${r.comentarios}</p>` : ''}
                                 ${r.mesa_foto_url ? `
                                     <div class="mt-2">
-                                        <button onclick="viewReservationPhoto('${String(r.mesa_foto_url || '').replace(/'/g, "\\'")}')" class="text-amber-700 font-bold underline">📷 Ver foto de mesa</button>
+                                        <button onclick="viewReservationPhoto(${JSON.stringify(String(r.mesa_foto_url || ''))})" class="text-amber-700 font-bold underline">📷 Ver foto de mesa</button>
                                     </div>
                                 ` : ''}
                             </div>
@@ -2397,7 +2592,7 @@
                                 </button>
                             ` : ''}
 
-                            <button onclick="assignTableNumber('${r.id}', '${String(r.mesa || '').replace(/'/g, "\\'")}')"
+                            <button onclick="assignTableNumber('${r.id}', ${JSON.stringify(String(r.mesa || ''))})"
                                 class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors">
                                 🪑 Mesa
                             </button>
