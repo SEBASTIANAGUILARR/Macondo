@@ -2800,7 +2800,7 @@
                     const hasAny = (counts.pendiente + counts.confirmada + counts.cancelada) > 0;
 
                     cells.push(`
-                        <button class="calendar-day ${inMonth ? '' : 'is-outside'} p-2 text-left hover:shadow transition" onclick="openReservationsDayModal(${JSON.stringify(dateStr)});">
+                        <button class="calendar-day ${inMonth ? '' : 'is-outside'} p-2 text-left hover:shadow transition" data-date="${dateStr}" onclick="openReservationsDayModal(${JSON.stringify(dateStr)});">
                             <div class="flex items-center justify-between">
                                 <div class="text-sm font-bold">${day.getDate()}</div>
                                 ${hasAny ? `
@@ -2842,7 +2842,7 @@
                     const hasAny = (counts.pendiente + counts.confirmada + counts.cancelada) > 0;
 
                     cells.push(`
-                        <button class="calendar-day p-3 text-left hover:shadow transition" onclick="openReservationsDayModal(${JSON.stringify(dateStr)});">
+                        <button class="calendar-day p-3 text-left hover:shadow transition" data-date="${dateStr}" onclick="openReservationsDayModal(${JSON.stringify(dateStr)});">
                             <div class="text-xs text-gray-500 font-bold">${day.toLocaleDateString('es-ES', { weekday: 'short' })}</div>
                             <div class="text-lg font-bold text-amber-800">${day.getDate()}</div>
                             ${hasAny ? `
@@ -2891,11 +2891,23 @@
             if (!reservationsDayModalDateStr) return;
 
             const modal = document.getElementById('reservations-day-modal');
-            if (!modal) return;
+            if (!modal) {
+                console.error('No se encontró el modal reservations-day-modal en el DOM');
+                alert('Error: no se encontró el modal de reservas del día.');
+                return;
+            }
             modal.classList.remove('hidden');
 
             renderReservationsDayModal();
         }
+
+        document.addEventListener('click', (e) => {
+            const btn = e.target && e.target.closest ? e.target.closest('button.calendar-day') : null;
+            if (!btn) return;
+            const dateStr = btn.getAttribute('data-date') || '';
+            if (!dateStr) return;
+            openReservationsDayModal(dateStr);
+        });
 
         function closeReservationsDayModal() {
             const modal = document.getElementById('reservations-day-modal');
