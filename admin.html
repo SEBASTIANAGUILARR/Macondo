@@ -10,6 +10,9 @@
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@3.5.29/dist/jspdf.plugin.autotable.min.js"></script>
     <style>
         .admin-container {
             min-height: calc(100vh - 100px);
@@ -266,6 +269,28 @@
         </div>
     </div>
 
+    <div id="reservations-day-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-4 sm:p-6">
+                <div class="flex items-center justify-between gap-3 mb-4">
+                    <div class="flex items-center gap-2">
+                        <button type="button" onclick="shiftReservationsDayModal(-1)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-lg">◀</button>
+                        <div>
+                            <div class="text-xs text-gray-500 font-bold">Reservas del día</div>
+                            <div id="reservations-day-modal-title" class="text-lg sm:text-xl font-bold text-amber-800"></div>
+                        </div>
+                        <button type="button" onclick="shiftReservationsDayModal(1)" class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-lg">▶</button>
+                    </div>
+
+                    <button type="button" onclick="closeReservationsDayModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+
+                <div id="reservations-day-modal-summary" class="bg-amber-50 border border-amber-100 rounded-lg p-3 mb-4"></div>
+                <div id="reservations-day-modal-list"></div>
+            </div>
+        </div>
+    </div>
+
     <!-- Admin Panel -->
     <div id="admin-panel" class="admin-container hidden">
         <div class="container mx-auto">
@@ -323,9 +348,20 @@
             <div id="section-reservas" class="flex flex-col">
                 <div class="order-1 sm:order-1 flex flex-wrap justify-between items-center gap-3 mb-4 sm:mb-6">
                     <h2 class="text-2xl font-bold text-amber-800">Gestión de Reservas</h2>
-                    <button type="button" onclick="showManualReservationModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
-                        <span>+</span> Agregar Reserva
-                    </button>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button type="button" onclick="exportReservationsExcel()" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
+                            Exportar Excel
+                        </button>
+                        <button type="button" onclick="exportReservationsPdf()" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
+                            Exportar PDF
+                        </button>
+                        <button id="btn-clear-reservations" type="button" onclick="deleteAllReservations()" class="hidden bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
+                            Eliminar todo
+                        </button>
+                        <button type="button" onclick="showManualReservationModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                            <span>+</span> Agregar Reserva
+                        </button>
+                    </div>
                 </div>
                 <!-- Stats Reservas -->
                 <div class="order-2 sm:order-2 grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 mb-4 sm:mb-8">
@@ -355,9 +391,30 @@
                     <button class="filter-btn text-sm py-2" data-filter="cancelada">Canceladas</button>
                     <input type="date" id="filter-date" class="sm:ml-auto p-2 border border-amber-300 rounded-lg">
                 </div>
+
+                <div class="order-4 sm:order-4 bg-white rounded-lg shadow p-3 sm:p-4 mb-4 sm:mb-6">
+                    <div class="flex flex-wrap gap-2 items-center justify-between">
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <button id="view-btn-month" class="view-toggle-btn active" onclick="setReservationsView('month')">Mes</button>
+                            <button id="view-btn-week" class="view-toggle-btn" onclick="setReservationsView('week')">Semana</button>
+                            <button id="view-btn-day" class="view-toggle-btn" onclick="setReservationsView('day')">Día</button>
+                        </div>
+
+                        <div class="flex flex-wrap gap-2 items-center">
+                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-lg" onclick="shiftReservationsPeriod(-1)">◀</button>
+                            <div id="reservations-calendar-title" class="font-bold text-amber-800"></div>
+                            <button class="bg-gray-100 hover:bg-gray-200 text-gray-800 px-3 py-2 rounded-lg" onclick="shiftReservationsPeriod(1)">▶</button>
+                            <button class="bg-amber-100 hover:bg-amber-200 text-amber-900 px-3 py-2 rounded-lg" onclick="goToReservationsToday()">Hoy</button>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div id="reservations-calendar" class="grid grid-cols-7 gap-2"></div>
+                    </div>
+                </div>
                 
                 <!-- Reservations List -->
-                <div id="reservations-list" class="order-4 sm:order-4">
+                <div id="reservations-list" class="order-5 sm:order-5">
                     <p class="text-gray-500 text-center py-4 sm:py-8">Cargando reservas...</p>
                 </div>
             </div>
@@ -2474,12 +2531,22 @@
 
         function updateOwnerControls(email) {
             const clearBtn = document.getElementById('btn-clear-analytics');
-            if (!clearBtn) return;
 
-            if (String(email || '').trim().toLowerCase() === 'sebastian.aguilargutierrez@gmail.com') {
-                clearBtn.classList.remove('hidden');
-            } else {
-                clearBtn.classList.add('hidden');
+            if (clearBtn) {
+                if (String(email || '').trim().toLowerCase() === 'sebastian.aguilargutierrez@gmail.com') {
+                    clearBtn.classList.remove('hidden');
+                } else {
+                    clearBtn.classList.add('hidden');
+                }
+            }
+
+            const clearResBtn = document.getElementById('btn-clear-reservations');
+            if (clearResBtn) {
+                if (String(email || '').trim().toLowerCase() === 'sebastian.aguilargutierrez@gmail.com') {
+                    clearResBtn.classList.remove('hidden');
+                } else {
+                    clearResBtn.classList.add('hidden');
+                }
             }
         }
         
@@ -2509,6 +2576,7 @@
             reservations = data;
             updateStats();
             renderReservations();
+            renderReservationsCalendar();
         }
         
         // Actualizar estadísticas
@@ -2610,6 +2678,484 @@
                     </div>
                 </div>
             `).join('');
+        }
+
+        let reservationsView = 'month';
+        let reservationsCalendarDate = new Date();
+        let reservationsSelectedDate = '';
+
+        function setReservationsView(view) {
+            reservationsView = view;
+
+            const monthBtn = document.getElementById('view-btn-month');
+            const weekBtn = document.getElementById('view-btn-week');
+            const dayBtn = document.getElementById('view-btn-day');
+            if (monthBtn) monthBtn.classList.toggle('active', view === 'month');
+            if (weekBtn) weekBtn.classList.toggle('active', view === 'week');
+            if (dayBtn) dayBtn.classList.toggle('active', view === 'day');
+
+            if (view === 'day') {
+                const filterEl = document.getElementById('filter-date');
+                if (filterEl && !filterEl.value) {
+                    const todayStr = toISODate(new Date());
+                    filterEl.value = reservationsSelectedDate || todayStr;
+                }
+            }
+
+            renderReservationsCalendar();
+        }
+
+        function toISODate(d) {
+            const dt = new Date(d);
+            const y = dt.getFullYear();
+            const m = String(dt.getMonth() + 1).padStart(2, '0');
+            const day = String(dt.getDate()).padStart(2, '0');
+            return `${y}-${m}-${day}`;
+        }
+
+        function startOfWeek(d) {
+            const dt = new Date(d);
+            const day = dt.getDay();
+            const diff = (day === 0 ? -6 : 1) - day;
+            dt.setDate(dt.getDate() + diff);
+            dt.setHours(0, 0, 0, 0);
+            return dt;
+        }
+
+        function shiftReservationsPeriod(delta) {
+            const d = new Date(reservationsCalendarDate);
+            if (reservationsView === 'month') {
+                d.setMonth(d.getMonth() + delta);
+            } else if (reservationsView === 'week') {
+                d.setDate(d.getDate() + (delta * 7));
+            } else {
+                d.setDate(d.getDate() + delta);
+            }
+            reservationsCalendarDate = d;
+            renderReservationsCalendar();
+        }
+
+        function goToReservationsToday() {
+            reservationsCalendarDate = new Date();
+            const filterEl = document.getElementById('filter-date');
+            if (reservationsView === 'day' && filterEl) {
+                filterEl.value = toISODate(new Date());
+            }
+            renderReservationsCalendar();
+        }
+
+        function getCountsByDate() {
+            const map = new Map();
+            (reservations || []).forEach(r => {
+                const date = String(r.fecha || '').trim();
+                if (!date) return;
+                const key = date;
+                if (!map.has(key)) map.set(key, { pendiente: 0, confirmada: 0, cancelada: 0 });
+                const item = map.get(key);
+                const st = String(r.estado || '').trim();
+                if (st === 'pendiente' || st === 'confirmada' || st === 'cancelada') {
+                    item[st] = (item[st] || 0) + 1;
+                }
+            });
+            return map;
+        }
+
+        function setSelectedDate(dateStr) {
+            reservationsSelectedDate = dateStr;
+            const filterEl = document.getElementById('filter-date');
+            if (filterEl) {
+                filterEl.value = dateStr;
+            }
+            if (reservationsView !== 'day') {
+                renderReservations();
+            }
+        }
+
+        function renderReservationsCalendar() {
+            const titleEl = document.getElementById('reservations-calendar-title');
+            const calEl = document.getElementById('reservations-calendar');
+            if (!calEl) return;
+
+            const countsByDate = getCountsByDate();
+
+            if (reservationsView === 'month') {
+                const d = new Date(reservationsCalendarDate);
+                const year = d.getFullYear();
+                const month = d.getMonth();
+                const first = new Date(year, month, 1);
+                const start = startOfWeek(first);
+                const monthLabel = first.toLocaleDateString('es-ES', { year: 'numeric', month: 'long' });
+                if (titleEl) titleEl.textContent = monthLabel;
+
+                const dow = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+                const header = dow.map(x => `<div class="text-center text-xs font-bold text-gray-500">${x}</div>`).join('');
+
+                const cells = [];
+                for (let i = 0; i < 42; i++) {
+                    const day = new Date(start);
+                    day.setDate(start.getDate() + i);
+                    const dateStr = toISODate(day);
+                    const inMonth = day.getMonth() === month;
+                    const counts = countsByDate.get(dateStr) || { pendiente: 0, confirmada: 0, cancelada: 0 };
+                    const hasAny = (counts.pendiente + counts.confirmada + counts.cancelada) > 0;
+
+                    cells.push(`
+                        <button class="calendar-day ${inMonth ? '' : 'is-outside'} p-2 text-left hover:shadow transition" onclick="openReservationsDayModal(${JSON.stringify(dateStr)});">
+                            <div class="flex items-center justify-between">
+                                <div class="text-sm font-bold">${day.getDate()}</div>
+                                ${hasAny ? `
+                                    <div class="flex gap-1">
+                                        ${counts.pendiente ? `<span class=\"calendar-dot pendiente\" title=\"Pendientes: ${counts.pendiente}\"></span>` : ''}
+                                        ${counts.confirmada ? `<span class=\"calendar-dot confirmada\" title=\"Confirmadas: ${counts.confirmada}\"></span>` : ''}
+                                        ${counts.cancelada ? `<span class=\"calendar-dot cancelada\" title=\"Canceladas: ${counts.cancelada}\"></span>` : ''}
+                                    </div>
+                                ` : '<div></div>'}
+                            </div>
+                            ${hasAny ? `
+                                <div class="mt-2 text-xs text-gray-600">
+                                    ${counts.pendiente ? `<div>P: ${counts.pendiente}</div>` : ''}
+                                    ${counts.confirmada ? `<div>C: ${counts.confirmada}</div>` : ''}
+                                    ${counts.cancelada ? `<div>X: ${counts.cancelada}</div>` : ''}
+                                </div>
+                            ` : ''}
+                        </button>
+                    `);
+                }
+
+                calEl.innerHTML = header + cells.join('');
+                return;
+            }
+
+            if (reservationsView === 'week') {
+                const start = startOfWeek(reservationsCalendarDate);
+                const end = new Date(start);
+                end.setDate(end.getDate() + 6);
+                const label = `${start.toLocaleDateString('es-ES', { day: '2-digit', month: 'short' })} - ${end.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' })}`;
+                if (titleEl) titleEl.textContent = label;
+
+                const cells = [];
+                for (let i = 0; i < 7; i++) {
+                    const day = new Date(start);
+                    day.setDate(start.getDate() + i);
+                    const dateStr = toISODate(day);
+                    const counts = countsByDate.get(dateStr) || { pendiente: 0, confirmada: 0, cancelada: 0 };
+                    const hasAny = (counts.pendiente + counts.confirmada + counts.cancelada) > 0;
+
+                    cells.push(`
+                        <button class="calendar-day p-3 text-left hover:shadow transition" onclick="openReservationsDayModal(${JSON.stringify(dateStr)});">
+                            <div class="text-xs text-gray-500 font-bold">${day.toLocaleDateString('es-ES', { weekday: 'short' })}</div>
+                            <div class="text-lg font-bold text-amber-800">${day.getDate()}</div>
+                            ${hasAny ? `
+                                <div class="mt-2 flex gap-2 items-center">
+                                    ${counts.pendiente ? `<span class=\"calendar-dot pendiente\" title=\"Pendientes: ${counts.pendiente}\"></span><span class=\"text-xs text-gray-700\">${counts.pendiente}</span>` : ''}
+                                    ${counts.confirmada ? `<span class=\"calendar-dot confirmada\" title=\"Confirmadas: ${counts.confirmada}\"></span><span class=\"text-xs text-gray-700\">${counts.confirmada}</span>` : ''}
+                                    ${counts.cancelada ? `<span class=\"calendar-dot cancelada\" title=\"Canceladas: ${counts.cancelada}\"></span><span class=\"text-xs text-gray-700\">${counts.cancelada}</span>` : ''}
+                                </div>
+                            ` : '<div class="mt-2 text-xs text-gray-400">Sin reservas</div>'}
+                        </button>
+                    `);
+                }
+                calEl.innerHTML = cells.join('');
+                return;
+            }
+
+            if (reservationsView === 'day') {
+                const filterEl = document.getElementById('filter-date');
+                const dateStr = (filterEl && filterEl.value) ? filterEl.value : toISODate(reservationsCalendarDate);
+                if (filterEl && !filterEl.value) filterEl.value = dateStr;
+                reservationsSelectedDate = dateStr;
+
+                const d = new Date(dateStr);
+                if (titleEl) titleEl.textContent = d.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+                const counts = countsByDate.get(dateStr) || { pendiente: 0, confirmada: 0, cancelada: 0 };
+                calEl.innerHTML = `
+                    <div class="col-span-7 bg-amber-50 border border-amber-100 rounded-lg p-4">
+                        <div class="flex flex-wrap gap-4 items-center">
+                            <div class="flex items-center gap-2"><span class="calendar-dot pendiente"></span><span class="text-sm">Pendientes: <strong>${counts.pendiente}</strong></span></div>
+                            <div class="flex items-center gap-2"><span class="calendar-dot confirmada"></span><span class="text-sm">Confirmadas: <strong>${counts.confirmada}</strong></span></div>
+                            <div class="flex items-center gap-2"><span class="calendar-dot cancelada"></span><span class="text-sm">Canceladas: <strong>${counts.cancelada}</strong></span></div>
+                        </div>
+                    </div>
+                `;
+
+                renderReservations();
+                return;
+            }
+        }
+
+        let reservationsDayModalDateStr = '';
+
+        function openReservationsDayModal(dateStr) {
+            reservationsDayModalDateStr = String(dateStr || '').trim();
+            if (!reservationsDayModalDateStr) return;
+
+            const modal = document.getElementById('reservations-day-modal');
+            if (!modal) return;
+            modal.classList.remove('hidden');
+
+            renderReservationsDayModal();
+        }
+
+        function closeReservationsDayModal() {
+            const modal = document.getElementById('reservations-day-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+        }
+
+        function shiftReservationsDayModal(delta) {
+            const base = reservationsDayModalDateStr || toISODate(new Date());
+            const d = new Date(base);
+            d.setDate(d.getDate() + delta);
+            reservationsDayModalDateStr = toISODate(d);
+            renderReservationsDayModal();
+        }
+
+        function renderReservationsDayModal() {
+            const titleEl = document.getElementById('reservations-day-modal-title');
+            const summaryEl = document.getElementById('reservations-day-modal-summary');
+            const listEl = document.getElementById('reservations-day-modal-list');
+            if (!titleEl || !summaryEl || !listEl) return;
+
+            const dateStr = reservationsDayModalDateStr;
+            const d = new Date(dateStr);
+            titleEl.textContent = d.toLocaleDateString('es-ES', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+
+            const dayReservations = (reservations || [])
+                .filter(r => String(r.fecha || '').trim() === dateStr)
+                .sort((a, b) => String(a.hora_entrada || '').localeCompare(String(b.hora_entrada || '')));
+
+            const counts = { pendiente: 0, confirmada: 0, cancelada: 0 };
+            dayReservations.forEach(r => {
+                const st = String(r.estado || '').trim();
+                if (st === 'pendiente' || st === 'confirmada' || st === 'cancelada') counts[st] += 1;
+            });
+
+            summaryEl.innerHTML = `
+                <div class="flex flex-wrap gap-4 items-center">
+                    <div class="flex items-center gap-2"><span class="calendar-dot pendiente"></span><span class="text-sm">Pendientes: <strong>${counts.pendiente}</strong></span></div>
+                    <div class="flex items-center gap-2"><span class="calendar-dot confirmada"></span><span class="text-sm">Confirmadas: <strong>${counts.confirmada}</strong></span></div>
+                    <div class="flex items-center gap-2"><span class="calendar-dot cancelada"></span><span class="text-sm">Canceladas: <strong>${counts.cancelada}</strong></span></div>
+                    <div class="ml-auto text-sm text-gray-600">Total: <strong>${dayReservations.length}</strong></div>
+                </div>
+            `;
+
+            if (dayReservations.length === 0) {
+                listEl.innerHTML = '<p class="text-gray-500 text-center py-8">No hay reservas para este día</p>';
+                return;
+            }
+
+            listEl.innerHTML = dayReservations.map(r => `
+                <div class="reservation-card ${r.estado}">
+                    <div class="flex flex-wrap justify-between items-start gap-4">
+                        <div class="flex-1">
+                            <div class="flex items-center gap-3 mb-2">
+                                <h3 class="text-lg font-bold text-amber-800">${r.nombre}</h3>
+                                <span class="status-badge status-${r.estado}">${r.estado}</span>
+                            </div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-gray-600">
+                                <p><strong>🕐 Hora:</strong> ${r.hora_entrada || 'No especificada'}</p>
+                                <p><strong>👥 Personas:</strong> ${r.personas}</p>
+                                <p><strong>🪑 Mesa:</strong> ${r.mesa || 'Sin asignar'}</p>
+                                <p><strong>📱</strong> ${r.telefono || 'No proporcionado'}</p>
+                            </div>
+                            <div class="mt-2 text-sm text-gray-600">
+                                <p><strong>📧</strong> ${r.email}</p>
+                                ${r.comentarios ? `<p class="mt-1"><strong>💬</strong> ${r.comentarios}</p>` : ''}
+                                ${r.mesa_foto_url ? `
+                                    <div class="mt-2">
+                                        <button onclick="viewReservationPhoto(${JSON.stringify(String(r.mesa_foto_url || ''))})" class="text-amber-700 font-bold underline">📷 Ver foto de mesa</button>
+                                    </div>
+                                ` : ''}
+                            </div>
+                        </div>
+
+                        <div class="flex gap-2">
+                            ${r.estado === 'pendiente' ? `
+                                <button onclick="updateStatus('${r.id}', 'confirmada')" 
+                                    class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                    ✓ Confirmar
+                                </button>
+                                <button onclick="updateStatus('${r.id}', 'cancelada')"
+                                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                    ✕ Cancelar
+                                </button>
+                            ` : ''}
+                            ${r.estado === 'confirmada' ? `
+                                <button onclick="updateStatus('${r.id}', 'cancelada')"
+                                    class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                    ✕ Cancelar
+                                </button>
+                            ` : ''}
+                            ${r.estado === 'cancelada' ? `
+                                <button onclick="updateStatus('${r.id}', 'pendiente')"
+                                    class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors">
+                                    ↺ Reactivar
+                                </button>
+                            ` : ''}
+
+                            <button onclick="assignTableNumber('${r.id}', ${JSON.stringify(String(r.mesa || ''))})"
+                                class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors">
+                                🪑 Mesa
+                            </button>
+
+                            <button onclick="uploadTablePhoto('${r.id}')"
+                                class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
+                                📷 Foto
+                            </button>
+
+                            <button onclick="deleteReservation('${r.id}')"
+                                class="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded-lg transition-colors">
+                                🗑️ Eliminar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function isReservationsDayModalOpen() {
+            const modal = document.getElementById('reservations-day-modal');
+            return !!(modal && !modal.classList.contains('hidden'));
+        }
+
+        async function refreshReservationsDayModalIfOpen() {
+            if (!isReservationsDayModalOpen()) return;
+            renderReservationsDayModal();
+        }
+
+        const __originalUpdateStatus = updateStatus;
+        updateStatus = async function (id, newStatus) {
+            await __originalUpdateStatus(id, newStatus);
+            await refreshReservationsDayModalIfOpen();
+        };
+
+        const __originalAssignTableNumber = assignTableNumber;
+        assignTableNumber = async function (id, currentMesa) {
+            const res = await __originalAssignTableNumber(id, currentMesa);
+            await refreshReservationsDayModalIfOpen();
+            return res;
+        };
+
+        const __originalUploadTablePhoto = uploadTablePhoto;
+        uploadTablePhoto = async function (id) {
+            const res = await __originalUploadTablePhoto(id);
+            await refreshReservationsDayModalIfOpen();
+            return res;
+        };
+
+        const __originalDeleteReservation = deleteReservation;
+        deleteReservation = async function (id) {
+            const res = await __originalDeleteReservation(id);
+            await refreshReservationsDayModalIfOpen();
+            return res;
+        };
+
+        function getReservationsForExport() {
+            const dateFilter = document.getElementById('filter-date')?.value || '';
+            let filtered = reservations || [];
+
+            if (currentFilter !== 'all') {
+                filtered = filtered.filter(r => String(r.estado || '').trim() === currentFilter);
+            }
+            if (dateFilter) {
+                filtered = filtered.filter(r => String(r.fecha || '').trim() === dateFilter);
+            }
+
+            return filtered;
+        }
+
+        function exportReservationsExcel() {
+            try {
+                const rows = getReservationsForExport().map(r => ({
+                    id: r.id,
+                    nombre: r.nombre,
+                    email: r.email,
+                    telefono: r.telefono,
+                    fecha: r.fecha,
+                    hora_entrada: r.hora_entrada,
+                    personas: r.personas,
+                    mesa: r.mesa,
+                    estado: r.estado,
+                    comentarios: r.comentarios,
+                    created_at: r.created_at
+                }));
+
+                const ws = XLSX.utils.json_to_sheet(rows);
+                const wb = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(wb, ws, 'Reservas');
+                const fileName = `reservas_${toISODate(new Date())}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+            } catch (e) {
+                alert('Error exportando a Excel: ' + (e.message || e));
+            }
+        }
+
+        function exportReservationsPdf() {
+            try {
+                const rows = getReservationsForExport();
+                const { jsPDF } = window.jspdf;
+                const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
+
+                const head = [[
+                    'Fecha', 'Hora', 'Nombre', 'Email', 'Teléfono', 'Personas', 'Mesa', 'Estado', 'Comentarios'
+                ]];
+                const body = rows.map(r => ([
+                    r.fecha || '',
+                    r.hora_entrada || '',
+                    r.nombre || '',
+                    r.email || '',
+                    r.telefono || '',
+                    String(r.personas ?? ''),
+                    r.mesa || '',
+                    r.estado || '',
+                    String(r.comentarios || '')
+                ]));
+
+                doc.setFontSize(14);
+                doc.text('Registro de Reservas', 40, 40);
+                doc.setFontSize(10);
+                doc.text(`Generado: ${new Date().toLocaleString('es-ES')}`, 40, 60);
+
+                doc.autoTable({
+                    head,
+                    body,
+                    startY: 80,
+                    styles: { fontSize: 8, cellPadding: 4 },
+                    headStyles: { fillColor: [217, 119, 6] }
+                });
+
+                doc.save(`reservas_${toISODate(new Date())}.pdf`);
+            } catch (e) {
+                alert('Error exportando a PDF: ' + (e.message || e));
+            }
+        }
+
+        async function deleteAllReservations() {
+            try {
+                const total = Array.isArray(reservations) ? reservations.length : 0;
+                if (!confirm(`Vas a eliminar TODAS las reservas (${total}). Esta acción no se puede deshacer. ¿Continuar?`)) return;
+                const typed = prompt('Escribe BORRAR para confirmar:');
+                if (String(typed || '').trim().toUpperCase() !== 'BORRAR') {
+                    alert('Cancelado.');
+                    return;
+                }
+
+                const { error } = await supabaseClient
+                    .from('reservations')
+                    .delete()
+                    .gte('created_at', '1970-01-01T00:00:00Z');
+
+                if (error) {
+                    alert('Error al eliminar todas las reservas: ' + error.message);
+                    return;
+                }
+
+                await loadReservations();
+                alert('Reservas eliminadas.');
+            } catch (e) {
+                alert('Error: ' + (e.message || e));
+            }
         }
         
         // Formatear fecha
@@ -2802,6 +3348,9 @@
             
             document.getElementById('filter-date').addEventListener('change', () => {
                 renderReservations();
+                if (reservationsView === 'day') {
+                    renderReservationsCalendar();
+                }
             });
         }
         
