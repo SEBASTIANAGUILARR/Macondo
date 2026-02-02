@@ -2638,39 +2638,39 @@
                         </div>
                         <div class="flex gap-2">
                             ${r.estado === 'pendiente' ? `
-                                <button onclick="updateStatus('${r.id}', 'confirmada')" 
+                                <button onclick="modalUpdateStatus('${r.id}', 'confirmada')" 
                                     class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition-colors">
                                     ✓ Confirmar
                                 </button>
-                                <button onclick="updateStatus('${r.id}', 'cancelada')"
+                                <button onclick="modalUpdateStatus('${r.id}', 'cancelada')"
                                     class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
                                     ✕ Cancelar
                                 </button>
                             ` : ''}
                             ${r.estado === 'confirmada' ? `
-                                <button onclick="updateStatus('${r.id}', 'cancelada')"
+                                <button onclick="modalUpdateStatus('${r.id}', 'cancelada')"
                                     class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition-colors">
                                     ✕ Cancelar
                                 </button>
                             ` : ''}
                             ${r.estado === 'cancelada' ? `
-                                <button onclick="updateStatus('${r.id}', 'pendiente')"
+                                <button onclick="modalUpdateStatus('${r.id}', 'pendiente')"
                                     class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition-colors">
                                     ↺ Reactivar
                                 </button>
                             ` : ''}
 
-                            <button onclick="assignTableNumber('${r.id}', ${JSON.stringify(String(r.mesa || ''))})"
+                            <button onclick="modalAssignTableNumber('${r.id}', ${JSON.stringify(String(r.mesa || ''))})"
                                 class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors">
                                 🪑 Mesa
                             </button>
 
-                            <button onclick="uploadTablePhoto('${r.id}')"
+                            <button onclick="modalUploadTablePhoto('${r.id}')"
                                 class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
                                 📷 Foto
                             </button>
 
-                            <button onclick="deleteReservation('${r.id}')"
+                            <button onclick="modalDeleteReservation('${r.id}')"
                                 class="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded-lg transition-colors">
                                 🗑️ Eliminar
                             </button>
@@ -3024,32 +3024,25 @@
             renderReservationsDayModal();
         }
 
-        const __originalUpdateStatus = updateStatus;
-        updateStatus = async function (id, newStatus) {
-            await __originalUpdateStatus(id, newStatus);
+        async function modalUpdateStatus(id, newStatus) {
+            await updateStatus(id, newStatus);
             await refreshReservationsDayModalIfOpen();
-        };
+        }
 
-        const __originalAssignTableNumber = assignTableNumber;
-        assignTableNumber = async function (id, currentMesa) {
-            const res = await __originalAssignTableNumber(id, currentMesa);
+        async function modalAssignTableNumber(id, currentMesa) {
+            await assignTableNumber(id, currentMesa);
             await refreshReservationsDayModalIfOpen();
-            return res;
-        };
+        }
 
-        const __originalUploadTablePhoto = uploadTablePhoto;
-        uploadTablePhoto = async function (id) {
-            const res = await __originalUploadTablePhoto(id);
+        async function modalUploadTablePhoto(id) {
+            await uploadTablePhoto(id);
             await refreshReservationsDayModalIfOpen();
-            return res;
-        };
+        }
 
-        const __originalDeleteReservation = deleteReservation;
-        deleteReservation = async function (id) {
-            const res = await __originalDeleteReservation(id);
+        async function modalDeleteReservation(id) {
+            await deleteReservation(id);
             await refreshReservationsDayModalIfOpen();
-            return res;
-        };
+        }
 
         function getReservationsForExport() {
             const dateFilter = document.getElementById('filter-date')?.value || '';
