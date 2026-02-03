@@ -269,6 +269,53 @@
         </div>
     </div>
 
+    <div id="reservations-export-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-amber-800">Exportar reservas</h3>
+                    <button type="button" onclick="closeReservationsExportModal()" class="text-gray-500 hover:text-gray-700 text-2xl">&times;</button>
+                </div>
+
+                <div class="space-y-4">
+                    <div class="bg-amber-50 border border-amber-100 rounded-lg p-3">
+                        <div class="text-sm text-gray-700">Formato: <strong id="reservations-export-format-label"></strong></div>
+                    </div>
+
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-2">Qué exportar</label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <button type="button" class="view-toggle-btn" id="export-mode-all" onclick="setReservationsExportMode('all')">Todo</button>
+                            <button type="button" class="view-toggle-btn" id="export-mode-range" onclick="setReservationsExportMode('range')">Rango</button>
+                            <button type="button" class="view-toggle-btn" id="export-mode-month" onclick="setReservationsExportMode('month')">Mes</button>
+                        </div>
+                    </div>
+
+                    <div id="export-range-fields" class="hidden grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Desde</label>
+                            <input type="date" id="export-date-from" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                        <div>
+                            <label class="block text-amber-700 font-medium mb-1">Hasta</label>
+                            <input type="date" id="export-date-to" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                        </div>
+                    </div>
+
+                    <div id="export-month-fields" class="hidden">
+                        <label class="block text-amber-700 font-medium mb-1">Mes</label>
+                        <input type="month" id="export-month" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                    </div>
+
+                    <div class="flex gap-3 pt-2">
+                        <button type="button" onclick="closeReservationsExportModal()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 rounded-lg transition-colors">Cancelar</button>
+                        <button type="button" onclick="runReservationsExport()" class="flex-1 bg-slate-800 hover:bg-black text-white font-bold py-3 rounded-lg transition-colors">Exportar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div id="reservations-day-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-4 sm:p-6">
@@ -349,10 +396,10 @@
                 <div class="order-1 sm:order-1 flex flex-wrap justify-between items-center gap-3 mb-4 sm:mb-6">
                     <h2 class="text-2xl font-bold text-amber-800">Gestión de Reservas</h2>
                     <div class="flex flex-wrap gap-2 items-center">
-                        <button type="button" onclick="exportReservationsExcel()" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
+                        <button type="button" onclick="openReservationsExportModal('excel')" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
                             Exportar Excel
                         </button>
-                        <button type="button" onclick="exportReservationsPdf()" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
+                        <button type="button" onclick="openReservationsExportModal('pdf')" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
                             Exportar PDF
                         </button>
                         <button id="btn-clear-reservations" type="button" onclick="deleteAllReservations()" class="hidden bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg transition-colors">
@@ -1600,6 +1647,7 @@
         let orders = [];
         let events = [];
         let menuItems = [];
+        let currentAdminEmail = '';
         
         // Verificar sesión al cargar
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1671,6 +1719,8 @@
             document.getElementById('admin-panel').classList.remove('hidden');
             document.getElementById('user-info').classList.remove('hidden');
             document.getElementById('user-email').textContent = email;
+
+            currentAdminEmail = String(email || '').trim().toLowerCase();
 
             updateOwnerControls(email);
             
@@ -3056,23 +3106,96 @@
             await refreshReservationsDayModalIfOpen();
         }
 
-        function getReservationsForExport() {
-            const dateFilter = document.getElementById('filter-date')?.value || '';
+        function getReservationsForExport(criteria) {
+            const c = criteria || {};
             let filtered = reservations || [];
 
             if (currentFilter !== 'all') {
                 filtered = filtered.filter(r => String(r.estado || '').trim() === currentFilter);
             }
-            if (dateFilter) {
-                filtered = filtered.filter(r => String(r.fecha || '').trim() === dateFilter);
+
+            if (c.mode === 'range') {
+                const from = String(c.from || '').trim();
+                const to = String(c.to || '').trim();
+                if (from) filtered = filtered.filter(r => String(r.fecha || '').trim() >= from);
+                if (to) filtered = filtered.filter(r => String(r.fecha || '').trim() <= to);
+            } else if (c.mode === 'month') {
+                const month = String(c.month || '').trim();
+                if (month) {
+                    const prefix = month + '-';
+                    filtered = filtered.filter(r => String(r.fecha || '').trim().startsWith(prefix));
+                }
+            } else {
+                const dateFilter = document.getElementById('filter-date')?.value || '';
+                if (dateFilter) {
+                    filtered = filtered.filter(r => String(r.fecha || '').trim() === dateFilter);
+                }
             }
 
             return filtered;
         }
 
-        function exportReservationsExcel() {
+        let reservationsExportFormat = 'excel';
+        let reservationsExportMode = 'all';
+
+        function openReservationsExportModal(format) {
+            reservationsExportFormat = String(format || 'excel').toLowerCase();
+            const modal = document.getElementById('reservations-export-modal');
+            const label = document.getElementById('reservations-export-format-label');
+            if (label) label.textContent = reservationsExportFormat === 'pdf' ? 'PDF' : 'Excel';
+            if (!modal) return;
+
+            setReservationsExportMode('all');
+            const now = new Date();
+            const m = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            const monthEl = document.getElementById('export-month');
+            if (monthEl && !monthEl.value) monthEl.value = m;
+            modal.classList.remove('hidden');
+        }
+
+        function closeReservationsExportModal() {
+            const modal = document.getElementById('reservations-export-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+        }
+
+        function setReservationsExportMode(mode) {
+            reservationsExportMode = String(mode || 'all');
+
+            const allBtn = document.getElementById('export-mode-all');
+            const rangeBtn = document.getElementById('export-mode-range');
+            const monthBtn = document.getElementById('export-mode-month');
+            if (allBtn) allBtn.classList.toggle('active', reservationsExportMode === 'all');
+            if (rangeBtn) rangeBtn.classList.toggle('active', reservationsExportMode === 'range');
+            if (monthBtn) monthBtn.classList.toggle('active', reservationsExportMode === 'month');
+
+            const rangeFields = document.getElementById('export-range-fields');
+            const monthFields = document.getElementById('export-month-fields');
+            if (rangeFields) rangeFields.classList.toggle('hidden', reservationsExportMode !== 'range');
+            if (monthFields) monthFields.classList.toggle('hidden', reservationsExportMode !== 'month');
+        }
+
+        function runReservationsExport() {
+            const criteria = { mode: reservationsExportMode };
+            if (reservationsExportMode === 'range') {
+                criteria.from = document.getElementById('export-date-from')?.value || '';
+                criteria.to = document.getElementById('export-date-to')?.value || '';
+            }
+            if (reservationsExportMode === 'month') {
+                criteria.month = document.getElementById('export-month')?.value || '';
+            }
+
+            closeReservationsExportModal();
+            if (reservationsExportFormat === 'pdf') {
+                exportReservationsPdf(criteria);
+            } else {
+                exportReservationsExcel(criteria);
+            }
+        }
+
+        function exportReservationsExcel(criteria) {
             try {
-                const rows = getReservationsForExport().map(r => ({
+                const rows = getReservationsForExport(criteria).map(r => ({
                     id: r.id,
                     nombre: r.nombre,
                     email: r.email,
@@ -3096,9 +3219,9 @@
             }
         }
 
-        function exportReservationsPdf() {
+        function exportReservationsPdf(criteria) {
             try {
-                const rows = getReservationsForExport();
+                const rows = getReservationsForExport(criteria);
                 const { jsPDF } = window.jspdf;
                 const doc = new jsPDF({ orientation: 'landscape', unit: 'pt', format: 'a4' });
 
@@ -3138,8 +3261,23 @@
 
         async function deleteAllReservations() {
             try {
+                if (String(currentAdminEmail || '').trim().toLowerCase() !== 'sebastian.aguilargutierrez@gmail.com') {
+                    alert('No autorizado.');
+                    return;
+                }
+
+                const today = toISODate(new Date());
+                const deletableCount = Array.isArray(reservations)
+                    ? reservations.filter(r => String(r.fecha || '').trim() && String(r.fecha || '').trim() < today).length
+                    : 0;
+
+                if (deletableCount === 0) {
+                    alert('No hay reservas anteriores a hoy para eliminar.');
+                    return;
+                }
+
                 const total = Array.isArray(reservations) ? reservations.length : 0;
-                if (!confirm(`Vas a eliminar TODAS las reservas (${total}). Esta acción no se puede deshacer. ¿Continuar?`)) return;
+                if (!confirm(`Vas a eliminar ${deletableCount} reservas anteriores a hoy (hoy y futuras NO se eliminarán). Total actual: ${total}. ¿Continuar?`)) return;
                 const typed = prompt('Escribe BORRAR para confirmar:');
                 if (String(typed || '').trim().toUpperCase() !== 'BORRAR') {
                     alert('Cancelado.');
@@ -3149,7 +3287,7 @@
                 const { error } = await supabaseClient
                     .from('reservations')
                     .delete()
-                    .gte('created_at', '1970-01-01T00:00:00Z');
+                    .lt('fecha', today);
 
                 if (error) {
                     alert('Error al eliminar todas las reservas: ' + error.message);
