@@ -663,16 +663,7 @@
 
                     <div class="mt-4">
                         <label class="block text-amber-700 font-medium mb-2">Editor</label>
-                        <div class="flex flex-wrap gap-3">
-                            <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                                <input type="radio" name="email-template-editor-mode" id="email-template-mode-visual" value="visual" class="text-amber-600" checked>
-                                Visual (sin HTML)
-                            </label>
-                            <label class="inline-flex items-center gap-2 text-sm text-gray-700">
-                                <input type="radio" name="email-template-editor-mode" id="email-template-mode-advanced" value="advanced" class="text-amber-600">
-                                Avanzado (HTML)
-                            </label>
-                        </div>
+                        <div class="text-sm text-gray-700">Visual</div>
                     </div>
 
                     <div class="mt-4">
@@ -1942,7 +1933,6 @@
                 if (showMesaEl) showMesaEl.checked = true;
                 if (showComentariosEl) showComentariosEl.checked = true;
                 if (showFotoEl) showFotoEl.checked = true;
-                setEmailTemplateEditorMode('visual');
                 return;
             }
 
@@ -1952,7 +1942,6 @@
 
             const meta = extractTemplateMetaFromHtml(String(tpl.html_template || ''));
             if (meta) {
-                setEmailTemplateEditorMode('visual');
                 if (titleEl) titleEl.value = String(meta.title || '');
                 if (msgEl) msgEl.value = String(meta.message || '');
                 if (footerEl) footerEl.value = String(meta.footer || '');
@@ -1963,7 +1952,15 @@
                 if (showComentariosEl) showComentariosEl.checked = meta.showComentarios !== false;
                 if (showFotoEl) showFotoEl.checked = meta.showFoto !== false;
             } else {
-                setEmailTemplateEditorMode('advanced');
+                if (titleEl) titleEl.value = '';
+                if (msgEl) msgEl.value = '';
+                if (footerEl) footerEl.value = '';
+                if (showFechaEl) showFechaEl.checked = true;
+                if (showHoraEl) showHoraEl.checked = true;
+                if (showPersonasEl) showPersonasEl.checked = true;
+                if (showMesaEl) showMesaEl.checked = true;
+                if (showComentariosEl) showComentariosEl.checked = true;
+                if (showFotoEl) showFotoEl.checked = true;
             }
         }
 
@@ -2059,17 +2056,24 @@
             const subjEl = document.getElementById('email-template-subject');
             const htmlEl = document.getElementById('email-template-html');
             const enabledEl = document.getElementById('email-template-enabled');
-            const visualRadio = document.getElementById('email-template-mode-visual');
 
             if (!keyEl || !langEl || !subjEl || !htmlEl || !enabledEl) return;
 
             const accessToken = await getAdminAccessToken();
             if (!accessToken) throw new Error('Sesión no válida');
 
-            const isVisual = !!(visualRadio && visualRadio.checked);
-            const html_template = isVisual
-                ? generateEmailHtmlFromVisual()
-                : String(htmlEl.value || '').trim();
+            const currentHtml = String(htmlEl.value || '').trim();
+            const currentMeta = extractTemplateMetaFromHtml(currentHtml);
+
+            const title = String(document.getElementById('email-template-visual-title')?.value || '').trim();
+            const message = String(document.getElementById('email-template-visual-message')?.value || '').trim();
+            const footer = String(document.getElementById('email-template-visual-footer')?.value || '').trim();
+
+            const hasVisualConfig = !!(title || message || footer);
+
+            const html_template = (!currentMeta && !hasVisualConfig)
+                ? currentHtml
+                : generateEmailHtmlFromVisual();
 
             const payload = {
                 key: String(keyEl.value || '').trim(),
@@ -2090,9 +2094,7 @@
             const data = await resp.json().catch(() => ({}));
             if (!resp.ok) throw new Error(data.error || resp.statusText);
 
-            if (isVisual) {
-                htmlEl.value = html_template;
-            }
+            htmlEl.value = html_template;
         }
 
         async function sendEmailTemplateTest() {
@@ -2194,14 +2196,8 @@
                 const htmlEl = document.getElementById('email-template-html');
                 if (!htmlEl) return;
                 htmlEl.value = generateEmailHtmlFromVisual();
-                setEmailTemplateEditorMode('advanced');
             });
         }
-
-        const visualRadio = document.getElementById('email-template-mode-visual');
-        const advRadio = document.getElementById('email-template-mode-advanced');
-        if (visualRadio) visualRadio.addEventListener('change', () => setEmailTemplateEditorMode('visual'));
-        if (advRadio) advRadio.addEventListener('change', () => setEmailTemplateEditorMode('advanced'));
 
         const selTplKey = document.getElementById('email-template-key');
         const selTplLang = document.getElementById('email-template-lang');
