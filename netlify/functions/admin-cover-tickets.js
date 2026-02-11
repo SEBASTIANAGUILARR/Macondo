@@ -1,5 +1,55 @@
 const { json, verifySupabaseSession, supabaseRest, isAdminEmail } = require('./_cover-shared');
 
+async function sendZeptoMail({ to, subject, htmlbody }) {
+  const rawToken = process.env.ZEPTOMAIL_TOKEN;
+  if (!rawToken) throw new Error('Missing ZEPTOMAIL_TOKEN env var');
+
+  const token = String(rawToken)
+    .trim()
+    .replace(/^zoho-enczapikey\s+/i, '')
+    .trim();
+
+  const fromAddress = process.env.ZEPTOMAIL_FROM_ADDRESS_COVER || 'cover@macondo.pl';
+  const fromName = process.env.ZEPTOMAIL_FROM_NAME || 'Macondo Bar Latino';
+
+  const host = process.env.ZEPTOMAIL_API_HOST || 'api.zeptomail.eu';
+  const url = `https://${host}/v1.1/email`;
+
+  const payload = {
+    from: { address: fromAddress, name: fromName },
+    to: to.map(r => ({ email_address: { address: r.address, name: r.name || r.address } })),
+    subject,
+    htmlbody,
+    track_opens: true,
+    track_clicks: true,
+  };
+
+  const resp = await fetch(url, {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+      Authorization: `Zoho-enczapikey ${token}`,
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!resp.ok) {
+    const txt = await resp.text().catch(() => '');
+    throw new Error(`ZeptoMail error: ${resp.status} ${txt}`);
+  }
+  return true;
+}
+
+function escapeHtml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 function clampInt(v, min, max, def) {
   const n = Number(v);
   if (!Number.isFinite(n)) return def;
@@ -123,6 +173,50 @@ exports.handler = async (event) => {
         });
 
         return json(200, { ok: true });
+      }
+
+      if (action === 'accept_private') {
+        const id = body.id;
+        if (!id) return json(400, { error: 'Missing id' });
+
+        const existing = await supabaseRest(`cover_tickets?select=id,person_name,person_email,qr_token,status,dj_name,event_date,used_at&limit=1&id=eq.${encodeURIComponent(String(id))}`);
+        const row = Array.isArray(existing) ? existing[0] : null;
+        if (!row) return json(404, { error: 'Ticket not found' });
+
+        const st = String(row.status || '').toLowerCase();
+        if (st !== 'private_pending') return json(409, { error: 'Ticket no está pendiente' });
+        if (row.used_at) return json(409, { error: 'Ticket ya fue usado' });
+
+        const updatedArr = await supabaseRest(`cover_tickets?id=eq.${encodeURIComponent(String(id))}`, {
+          method: 'PATCH',
+          prefer: 'return=representation',
+          body: { status: 'manual', price_pln: 0 },
+        });
+        const updated = Array.isArray(updatedArr) ? updatedArr[0] : null;
+
+        const baseUrl = process.env.URL || process.env.DEPLOY_PRIME_URL || process.env.SITE_URL || '';
+        const link = `${String(baseUrl).replace(/\/$/, '')}/ticket.html?token=${encodeURIComponent(String(row.qr_token || '').trim())}`;
+
+        const eventTitle = String(row.dj_name || 'Evento privado');
+        const subject = `✅ Invitación aprobada - ${escapeHtml(eventTitle)}`;
+        const htmlbody = `
+          <div style="font-family:Arial,sans-serif;line-height:1.5">
+            <h2 style="color:#92400e;margin:0 0 10px">Invitación aprobada</h2>
+            <p>Hola <b>${escapeHtml(row.person_name || '')}</b>,</p>
+            <p>Tu invitación para <b>${escapeHtml(eventTitle)}</b> ha sido aprobada.</p>
+            <p>Abre este enlace para mostrar tu QR:</p>
+            <p><a href="${link}">${link}</a></p>
+            <p style="margin-top:16px;color:#6b7280;font-size:12px">El QR es válido una sola vez.</p>
+          </div>
+        `;
+
+        await sendZeptoMail({
+          to: [{ address: String(row.person_email || '').trim(), name: String(row.person_name || '').trim() }],
+          subject,
+          htmlbody,
+        });
+
+        return json(200, { ok: true, ticket: updated });
       }
 
       return json(400, { error: 'Unknown action' });

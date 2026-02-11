@@ -41,7 +41,7 @@
 
         <div class="grid lg:grid-cols-3 gap-8">
             <section class="lg:col-span-2">
-                <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <div id="cover-dj-panel" class="bg-white rounded-lg shadow-md p-6 mb-8">
                     <div class="flex flex-wrap items-start justify-between gap-4">
                         <div>
                             <h2 class="text-2xl font-bold text-amber-800">🎧 DJ del finde (Sótano)</h2>
@@ -92,6 +92,52 @@
                     </form>
                 </div>
 
+                <div id="cover-private-panel" class="hidden bg-white rounded-lg shadow-md p-6 mb-8">
+                    <div class="flex flex-wrap items-start justify-between gap-4">
+                        <div>
+                            <h2 id="private-title" class="text-2xl font-bold text-amber-800">🎟️ Evento privado</h2>
+                            <p id="private-description" class="text-gray-600 mt-1">Registro bajo aprobación. Recibirás tu QR por email solo si tu invitación es aceptada.</p>
+                        </div>
+                    </div>
+
+                    <form id="private-cover-form" class="mt-6 space-y-4">
+                        <div class="grid md:grid-cols-3 gap-3">
+                            <input id="private-buyer-name" type="text" placeholder="Nombre" class="p-3 border border-amber-300 rounded-lg" required>
+                            <input id="private-buyer-email" type="email" placeholder="Email" class="p-3 border border-amber-300 rounded-lg" required>
+                            <input id="private-buyer-phone" type="tel" placeholder="Teléfono" class="p-3 border border-amber-300 rounded-lg" required>
+                        </div>
+
+                        <div class="flex items-center justify-between gap-3">
+                            <h3 class="text-lg font-bold text-amber-800">Personas (1 solicitud por persona)</h3>
+                            <button type="button" id="private-add-person" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg">+ Añadir persona</button>
+                        </div>
+
+                        <div class="text-sm text-gray-600">Persona #1 = la principal</div>
+                        <div id="private-people-list" class="space-y-3"></div>
+
+                        <label class="flex items-start gap-3 text-sm text-gray-700">
+                            <input id="private-consent-confirm" type="checkbox" required class="mt-1">
+                            <span>Acepto usar mis datos para comunicaciones relacionadas con mi solicitud.</span>
+                        </label>
+
+                        <label class="flex items-start gap-3 text-sm text-gray-700">
+                            <input id="private-consent-marketing" type="checkbox" class="mt-1">
+                            <span>Acepto recibir información de futuros eventos.</span>
+                        </label>
+
+                        <div class="flex flex-wrap items-center justify-between gap-3">
+                            <div class="text-sm text-gray-700">
+                                <strong>Pago:</strong> No aplica (invitación bajo aprobación)
+                            </div>
+                            <button id="private-submit" type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
+                                Solicitar invitación
+                            </button>
+                        </div>
+
+                        <div id="private-status" class="text-sm text-gray-600"></div>
+                    </form>
+                </div>
+
                 <div id="events-container" class="space-y-8">
                     <p class="text-gray-500 text-center py-8">Cargando eventos...</p>
                 </div>
@@ -130,7 +176,7 @@
     <custom-footer></custom-footer>
 
     <script>
-        let coverConfig = { dj_name: 'Dj Micke', price_pln: 30, active: true };
+        let coverConfig = { dj_name: 'Dj Micke', price_pln: 30, active: true, mode: 'dj', private_title: '', private_description: '' };
 
         function renderPersonRow(index) {
             return `
@@ -163,12 +209,32 @@
                     coverConfig = data.config;
                 }
 
-                document.getElementById('cover-dj-name').textContent = coverConfig.dj_name || 'Dj Micke';
-                document.getElementById('cover-price').textContent = String(coverConfig.price_pln || 30);
-                updateCoverTotal();
+                const mode = String(coverConfig.mode || 'dj').trim().toLowerCase();
+                const djPanel = document.getElementById('cover-dj-panel');
+                const privatePanel = document.getElementById('cover-private-panel');
+                const isPrivate = mode === 'private_event';
+                if (djPanel) djPanel.classList.toggle('hidden', isPrivate);
+                if (privatePanel) privatePanel.classList.toggle('hidden', !isPrivate);
+
+                if (!isPrivate) {
+                    document.getElementById('cover-dj-name').textContent = coverConfig.dj_name || 'Dj Micke';
+                    document.getElementById('cover-price').textContent = String(coverConfig.price_pln || 30);
+                    updateCoverTotal();
+                } else {
+                    const title = String(coverConfig.private_title || '').trim() || '🎟️ Evento privado';
+                    const desc = String(coverConfig.private_description || '').trim() || 'Registro bajo aprobación. Recibirás tu QR por email solo si tu invitación es aceptada.';
+                    const tEl = document.getElementById('private-title');
+                    const dEl = document.getElementById('private-description');
+                    if (tEl) tEl.textContent = title;
+                    if (dEl) dEl.textContent = desc;
+                }
             } catch (e) {
                 // fallback silencioso
             }
+        }
+
+        function updatePrivatePeopleCount() {
+            // placeholder if we later want to show count
         }
 
         function addPerson() {
@@ -181,6 +247,16 @@
             updateCoverTotal();
         }
 
+        function addPrivatePerson() {
+            const list = document.getElementById('private-people-list');
+            if (!list) return;
+            const idx = list.children.length;
+            const wrapper = document.createElement('div');
+            wrapper.innerHTML = renderPersonRow(idx);
+            list.appendChild(wrapper.firstElementChild);
+            updatePrivatePeopleCount();
+        }
+
         function rebuildPersonIndexes() {
             const list = document.getElementById('people-list');
             if (!list) return;
@@ -191,6 +267,18 @@
                 if (btn) btn.dataset.index = String(i);
             });
             updateCoverTotal();
+        }
+
+        function rebuildPrivatePersonIndexes() {
+            const list = document.getElementById('private-people-list');
+            if (!list) return;
+            Array.from(list.children).forEach((child, i) => {
+                const title = child.querySelector('.font-bold.text-amber-800');
+                if (title) title.textContent = `Persona #${i + 2}`;
+                const btn = child.querySelector('.remove-person');
+                if (btn) btn.dataset.index = String(i);
+            });
+            updatePrivatePeopleCount();
         }
 
         // Cargar eventos desde Supabase
@@ -271,6 +359,101 @@
                 });
             }
 
+            const privateForm = document.getElementById('private-cover-form');
+            if (privateForm) {
+                privateForm.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+
+                    const statusEl = document.getElementById('private-status');
+                    const submitBtn = document.getElementById('private-submit');
+                    if (statusEl) statusEl.textContent = '';
+
+                    if (coverConfig.active === false) {
+                        if (statusEl) statusEl.textContent = 'Registro no disponible ahora mismo.';
+                        return;
+                    }
+
+                    const consentConfirm = !!document.getElementById('private-consent-confirm')?.checked;
+                    if (!consentConfirm) {
+                        if (statusEl) statusEl.textContent = 'Debes aceptar el consentimiento para continuar.';
+                        return;
+                    }
+
+                    const consentMarketing = !!document.getElementById('private-consent-marketing')?.checked;
+
+                    const buyer_name = document.getElementById('private-buyer-name').value.trim();
+                    const buyer_email = document.getElementById('private-buyer-email').value.trim();
+                    const buyer_phone = document.getElementById('private-buyer-phone').value.trim();
+
+                    const extraPeople = Array.from(document.querySelectorAll('#private-people-list > div')).map(row => {
+                        return {
+                            name: row.querySelector('[data-field="name"]').value.trim(),
+                            email: row.querySelector('[data-field="email"]').value.trim(),
+                            phone: row.querySelector('[data-field="phone"]').value.trim(),
+                        };
+                    });
+
+                    if (!buyer_name || !buyer_email || !buyer_phone) {
+                        if (statusEl) statusEl.textContent = 'Completa el nombre, email y teléfono.';
+                        return;
+                    }
+
+                    for (const p of extraPeople) {
+                        if (!p.name || !p.email || !p.phone) {
+                            if (statusEl) statusEl.textContent = 'Cada persona debe tener nombre, email y teléfono.';
+                            return;
+                        }
+                    }
+
+                    const people = [{ name: buyer_name, email: buyer_email, phone: buyer_phone }, ...extraPeople];
+
+                    try {
+                        if (submitBtn) {
+                            submitBtn.disabled = true;
+                            submitBtn.textContent = 'Enviando...';
+                        }
+
+                        const resp = await fetch('/.netlify/functions/cover-private-register', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ buyer_name, buyer_email, buyer_phone, people, consentConfirm, consentMarketing })
+                        });
+
+                        const data = await resp.json().catch(() => ({}));
+                        if (!resp.ok) {
+                            if (statusEl) statusEl.textContent = data.error || 'No se pudo enviar la solicitud.';
+                            return;
+                        }
+
+                        if (statusEl) statusEl.textContent = '✅ Solicitud recibida. Revisa tu email: tu invitación debe ser aceptada manualmente. Solo si es aceptada recibirás tu QR.';
+                        privateForm.reset();
+                        const list = document.getElementById('private-people-list');
+                        if (list) list.innerHTML = '';
+                    } catch (err) {
+                        if (statusEl) statusEl.textContent = err.message || String(err);
+                    } finally {
+                        if (submitBtn) {
+                            submitBtn.disabled = false;
+                            submitBtn.textContent = 'Solicitar invitación';
+                        }
+                    }
+                });
+            }
+
+            const privatePeopleList = document.getElementById('private-people-list');
+            if (privatePeopleList) {
+                privatePeopleList.addEventListener('click', (e) => {
+                    const btn = e.target.closest('.remove-person');
+                    if (!btn) return;
+                    const idx = Number(btn.dataset.index);
+                    const children = Array.from(privatePeopleList.children);
+                    if (children[idx]) {
+                        children[idx].remove();
+                        rebuildPrivatePersonIndexes();
+                    }
+                });
+            }
+
             // Cargar eventos dinámicamente
             await loadEvents();
 
@@ -290,6 +473,11 @@
             const addBtn = document.getElementById('add-person');
             if (addBtn) {
                 addBtn.addEventListener('click', () => addPerson());
+            }
+
+            const privateAddBtn = document.getElementById('private-add-person');
+            if (privateAddBtn) {
+                privateAddBtn.addEventListener('click', () => addPrivatePerson());
             }
 
             const peopleList = document.getElementById('people-list');

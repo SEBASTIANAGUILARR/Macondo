@@ -34,9 +34,12 @@ exports.handler = async (event) => {
     }
 
     // Config actual
-    const cfgRows = await supabaseRest('cover_config?select=dj_name,price_pln,active&order=updated_at.desc&limit=1');
-    const cfg = (cfgRows && cfgRows[0]) || { dj_name: 'Dj Micke', price_pln: 30, active: true };
+    const cfgRows = await supabaseRest('cover_config?select=dj_name,price_pln,active,mode&order=updated_at.desc&limit=1');
+    const cfg = (cfgRows && cfgRows[0]) || { dj_name: 'Dj Micke', price_pln: 30, active: true, mode: 'dj' };
     if (cfg.active === false) return json(400, { error: 'Cover no disponible' });
+    if (String(cfg.mode || 'dj').toLowerCase() === 'private_event') {
+      return json(400, { error: 'Pago no disponible para evento privado' });
+    }
 
     const quantity = people.length;
     const unitAmount = Math.round(Number(cfg.price_pln || 0) * 100);

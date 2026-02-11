@@ -43,6 +43,7 @@ exports.handler = async (event) => {
     const rows = await supabaseRest(
       `cover_tickets?select=id,person_name,person_email,person_phone,used_at,status,created_at` +
         `&used_at=is.null` +
+        `&status=in.(paid,manual)` +
         createdFilter +
         `&order=created_at.desc&limit=200`
     );

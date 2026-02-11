@@ -20,17 +20,35 @@ exports.handler = async (event) => {
     if (!allowed) return json(403, { error: 'Not allowed' });
 
     const body = JSON.parse(event.body || '{}');
+    const modeRaw = String(body.mode || 'dj').trim().toLowerCase();
+    const mode = modeRaw === 'private_event' ? 'private_event' : 'dj';
+
     const dj_name = String(body.dj_name || '').trim();
     const price_pln = Number(body.price_pln);
     const active = body.active === undefined ? true : !!body.active;
 
-    if (!dj_name) return json(400, { error: 'Missing dj_name' });
-    if (!Number.isFinite(price_pln) || price_pln <= 0) return json(400, { error: 'Invalid price_pln' });
+    const private_title = String(body.private_title || '').trim();
+    const private_description = String(body.private_description || '').trim();
+
+    if (mode === 'dj') {
+      if (!dj_name) return json(400, { error: 'Missing dj_name' });
+      if (!Number.isFinite(price_pln) || price_pln <= 0) return json(400, { error: 'Invalid price_pln' });
+    } else {
+      if (!private_title) return json(400, { error: 'Missing private_title' });
+    }
 
     await supabaseRest('cover_config', {
       method: 'POST',
       prefer: 'return=minimal',
-      body: [{ dj_name, price_pln, active, updated_at: new Date().toISOString() }],
+      body: [{
+        mode,
+        dj_name: dj_name || null,
+        price_pln: Number.isFinite(price_pln) ? price_pln : null,
+        active,
+        private_title: private_title || null,
+        private_description: private_description || null,
+        updated_at: new Date().toISOString(),
+      }],
     });
 
     return json(200, { ok: true });

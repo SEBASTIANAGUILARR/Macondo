@@ -1156,8 +1156,16 @@
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     <div class="bg-white p-6 rounded-lg shadow">
-                        <h3 class="text-lg font-bold text-amber-800 mb-4">Configuración Cover (DJ + Precio)</h3>
+                        <h3 class="text-lg font-bold text-amber-800 mb-4">Configuración Cover</h3>
                         <form id="cover-config-form" class="space-y-4">
+                            <div>
+                                <label class="block text-amber-700 font-medium mb-1">Modo</label>
+                                <select id="cover-mode" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                    <option value="dj">Covers DJ</option>
+                                    <option value="private_event">Evento privado</option>
+                                </select>
+                            </div>
+
                             <div>
                                 <label class="block text-amber-700 font-medium mb-1">DJ del finde</label>
                                 <input type="text" id="cover-dj" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej: Dj Micke">
@@ -1166,6 +1174,18 @@
                                 <label class="block text-amber-700 font-medium mb-1">Precio (PLN)</label>
                                 <input type="number" id="cover-price" min="1" step="1" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="30">
                             </div>
+
+                            <div id="cover-private-fields" class="hidden">
+                                <div>
+                                    <label class="block text-amber-700 font-medium mb-1">Título del evento</label>
+                                    <input type="text" id="cover-private-title" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej: Evento privado Macondo">
+                                </div>
+                                <div class="mt-4">
+                                    <label class="block text-amber-700 font-medium mb-1">Descripción</label>
+                                    <textarea id="cover-private-description" rows="3" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Descripción del evento..."></textarea>
+                                </div>
+                            </div>
+
                             <div class="flex items-center gap-2">
                                 <input type="checkbox" id="cover-active" class="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500" checked>
                                 <label for="cover-active" class="text-amber-700">Cover activo</label>
@@ -1208,6 +1228,7 @@
                             <option value="paid">paid</option>
                             <option value="manual">manual</option>
                             <option value="manual_pending">manual_pending</option>
+                            <option value="private_pending">private_pending</option>
                             <option value="disabled">disabled</option>
                             <option value="used">used</option>
                         </select>
@@ -4895,19 +4916,43 @@
                 }
 
                 const cfg = data.config || {};
+                const modeEl = document.getElementById('cover-mode');
                 const dj = document.getElementById('cover-dj');
                 const price = document.getElementById('cover-price');
                 const active = document.getElementById('cover-active');
+                const privateTitle = document.getElementById('cover-private-title');
+                const privateDesc = document.getElementById('cover-private-description');
 
+                const mode = String(cfg.mode || 'dj').trim();
+                if (modeEl) modeEl.value = mode === 'private_event' ? 'private_event' : 'dj';
                 if (dj) dj.value = cfg.dj_name || 'Dj Micke';
                 if (price) price.value = Number(cfg.price_pln || 30);
                 if (active) active.checked = cfg.active !== false;
+                if (privateTitle) privateTitle.value = String(cfg.private_title || '');
+                if (privateDesc) privateDesc.value = String(cfg.private_description || '');
+
+                syncCoverModeAdmin();
 
                 if (statusEl) statusEl.textContent = 'OK';
             } catch (e) {
                 if (statusEl) statusEl.textContent = e.message || String(e);
             }
         }
+
+        function syncCoverModeAdmin() {
+            const modeEl = document.getElementById('cover-mode');
+            const privateWrap = document.getElementById('cover-private-fields');
+            const isPrivate = String(modeEl?.value || 'dj') === 'private_event';
+            if (privateWrap) privateWrap.classList.toggle('hidden', !isPrivate);
+
+            const dj = document.getElementById('cover-dj');
+            const price = document.getElementById('cover-price');
+            if (dj) dj.disabled = isPrivate;
+            if (price) price.disabled = isPrivate;
+        }
+
+        const coverModeEl = document.getElementById('cover-mode');
+        if (coverModeEl) coverModeEl.addEventListener('change', () => syncCoverModeAdmin());
 
         const coverConfigForm = document.getElementById('cover-config-form');
         if (coverConfigForm) {
@@ -4925,6 +4970,9 @@
                 const dj_name = String(document.getElementById('cover-dj')?.value || '').trim();
                 const price_pln = Number(document.getElementById('cover-price')?.value);
                 const active = !!document.getElementById('cover-active')?.checked;
+                const mode = String(document.getElementById('cover-mode')?.value || 'dj').trim();
+                const private_title = String(document.getElementById('cover-private-title')?.value || '').trim();
+                const private_description = String(document.getElementById('cover-private-description')?.value || '').trim();
 
                 try {
                     const resp = await fetch('/.netlify/functions/admin-cover-config', {
@@ -4933,7 +4981,7 @@
                             'Content-Type': 'application/json',
                             'Authorization': 'Bearer ' + accessToken
                         },
-                        body: JSON.stringify({ dj_name, price_pln, active })
+                        body: JSON.stringify({ mode, dj_name, price_pln, active, private_title, private_description })
                     });
 
                     const data = await resp.json().catch(() => ({}));
@@ -5207,6 +5255,32 @@
             await loadCoverTicketsAdmin();
         }
 
+        async function coverTicketAcceptPrivate(id) {
+            if (!confirm('¿Aceptar esta invitación? Al aceptar, se enviará el QR por email.')) return;
+
+            const accessToken = await getAdminAccessToken();
+            if (!accessToken) {
+                alert('Sesión inválida. Vuelve a iniciar sesión.');
+                return;
+            }
+
+            const resp = await fetch('/.netlify/functions/admin-cover-tickets', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                },
+                body: JSON.stringify({ action: 'accept_private', id })
+            });
+
+            const data = await resp.json().catch(() => ({}));
+            if (!resp.ok) {
+                alert(data.error || 'Error');
+                return;
+            }
+            await loadCoverTicketsAdmin();
+        }
+
         async function coverTicketDelete(id) {
             if (!confirm('¿Eliminar este ticket? Esta acción no se puede deshacer.')) return;
 
@@ -5299,8 +5373,10 @@
                     const email = String(t.person_email || t.buyer_email || '—');
                     const status = String(t.status || '—');
                     const used = t.used_at ? 'Sí' : 'No';
-                    const isActive = status === 'paid' || status === 'manual';
+                    const stLower = String(status || '').toLowerCase();
+                    const isActive = stLower === 'paid' || stLower === 'manual';
                     const isUsed = !!t.used_at;
+                    const isPrivatePending = stLower === 'private_pending';
 
                     const qrPayload = {
                         person_name: t.person_name,
@@ -5319,6 +5395,7 @@
                             <td class="px-3 py-2">
                                 <div class="flex flex-wrap gap-2 justify-center">
                                     <button type="button" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-3 py-2 rounded-lg" onclick='openCoverQrModal(${JSON.stringify(qrPayload).replace(/</g, "\\u003c")})'>Ver QR</button>
+                                    <button type="button" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-2 rounded-lg" onclick='coverTicketAcceptPrivate(${JSON.stringify(t.id)})' ${isPrivatePending ? '' : 'disabled'}>Aceptar</button>
                                     <button type="button" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-3 py-2 rounded-lg" onclick='coverTicketSetActive(${JSON.stringify(t.id)}, true)' ${isActive ? 'disabled' : ''}>Activar</button>
                                     <button type="button" class="bg-red-600 hover:bg-red-700 text-white font-bold px-3 py-2 rounded-lg" onclick='coverTicketSetActive(${JSON.stringify(t.id)}, false)' ${!isActive ? 'disabled' : ''}>Desactivar</button>
                                     <button type="button" class="bg-green-600 hover:bg-green-700 text-white font-bold px-3 py-2 rounded-lg" onclick='coverTicketResetUsed(${JSON.stringify(t.id)})' ${isUsed ? '' : 'disabled'}>Rehabilitar</button>
