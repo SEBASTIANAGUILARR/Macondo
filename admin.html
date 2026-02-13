@@ -1218,7 +1218,10 @@
                 <div class="bg-white p-6 rounded-lg shadow mt-6">
                     <div class="flex flex-wrap justify-between items-center gap-3 mb-4">
                         <h3 class="text-lg font-bold text-amber-800">📋 Tickets Cover</h3>
-                        <button type="button" onclick="loadCoverTicketsAdmin()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition-colors">Recargar</button>
+                        <div class="flex flex-wrap gap-2">
+                            <button type="button" onclick="exportCoverTicketsPdf()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Exportar PDF</button>
+                            <button type="button" onclick="loadCoverTicketsAdmin()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg transition-colors">Recargar</button>
+                        </div>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
@@ -1792,6 +1795,94 @@
             const mobileSelect = document.getElementById('mobile-tab-select');
             if (mobileSelect) {
                 mobileSelect.value = tab;
+            }
+        }
+
+        async function exportCoverTicketsPdf() {
+            const statusEl = document.getElementById('cover-tickets-status-msg');
+            try {
+                if (!Array.isArray(window.__coverTicketsLast)) {
+                    if (statusEl) statusEl.textContent = 'Cargando...';
+                    await loadCoverTicketsAdmin();
+                }
+
+                const tickets = Array.isArray(window.__coverTicketsLast) ? window.__coverTicketsLast : [];
+                const filters = window.__coverTicketsLastFilters || {};
+
+                const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
+                const now = new Date();
+                const meta = `Generado: ${now.toLocaleString('es-ES')} · Filtro: ${esc(filters.q || '—')} · Estado: ${esc(filters.status || 'Todos')}`;
+
+                const rows = tickets.map(t => {
+                    const created = typeof fmtShortDate === 'function' ? fmtShortDate(t.created_at) : (t.created_at || '');
+                    const person = esc(t.person_name || '—');
+                    const email = esc(t.person_email || t.buyer_email || '—');
+                    const st = esc(t.status || '—');
+                    const used = t.used_at ? 'Sí' : 'No';
+                    return `
+                        <tr>
+                            <td>${esc(created)}</td>
+                            <td>${person}</td>
+                            <td>${email}</td>
+                            <td>${st}</td>
+                            <td>${used}</td>
+                        </tr>
+                    `;
+                }).join('');
+
+                const html = `
+                    <!doctype html>
+                    <html lang="es">
+                    <head>
+                        <meta charset="utf-8" />
+                        <meta name="viewport" content="width=device-width, initial-scale=1" />
+                        <title>Tickets Cover</title>
+                        <style>
+                            body { font-family: Arial, Helvetica, sans-serif; padding: 18px; color: #111827; }
+                            h1 { font-size: 18px; margin: 0 0 6px; }
+                            .meta { font-size: 12px; color: #6b7280; margin-bottom: 12px; }
+                            table { width: 100%; border-collapse: collapse; font-size: 12px; }
+                            th, td { border: 1px solid #e5e7eb; padding: 8px; text-align: left; vertical-align: top; }
+                            th { background: #fef3c7; color: #92400e; }
+                            @media print { button { display: none; } }
+                        </style>
+                    </head>
+                    <body>
+                        <h1>Tickets Cover (${tickets.length})</h1>
+                        <div class="meta">${meta}</div>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Persona</th>
+                                    <th>Email</th>
+                                    <th>Estado</th>
+                                    <th>Usado</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${rows || '<tr><td colspan="5">No hay tickets.</td></tr>'}
+                            </tbody>
+                        </table>
+                        <script>
+                            window.focus();
+                            setTimeout(() => window.print(), 50);
+                        <\/script>
+                    </body>
+                    </html>
+                `;
+
+                const w = window.open('', '_blank');
+                if (!w) {
+                    alert('El navegador bloqueó la ventana emergente. Permite popups para exportar a PDF.');
+                    return;
+                }
+                w.document.open();
+                w.document.write(html);
+                w.document.close();
+            } catch (e) {
+                alert(e.message || String(e));
             }
         }
 
@@ -5359,6 +5450,8 @@
                 if (!resp.ok) throw new Error(data.error || resp.statusText);
 
                 const tickets = Array.isArray(data.tickets) ? data.tickets : [];
+                window.__coverTicketsLast = tickets;
+                window.__coverTicketsLastFilters = { q, status: st };
                 if (statusEl) statusEl.textContent = `OK (${tickets.length})`;
                 if (!listEl) return;
 
