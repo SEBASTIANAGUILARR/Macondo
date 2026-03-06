@@ -193,6 +193,16 @@ async function buildReservationEmailFromTemplates(supabaseUrl, serviceKey, type,
 
   const photoUrl = String(reservation?.mesa_foto_url || '').trim();
   const showPhoto = /^https?:\/\//i.test(photoUrl);
+
+  const pendingNotice = (kind === 'reservation_pending' || estado === 'pendiente') ? `
+      <div style="margin:16px 0;padding:12px 14px;border-radius:12px;border:1px solid #fde68a;background:#fffbeb">
+        <div style="font-weight:700;color:#92400e;margin-bottom:6px">Importante</div>
+        <div style="color:#92400e">
+          Tu reserva ha sido registrada, pero <strong>aún no está confirmada</strong>.
+          Por favor espera la confirmación de nuestro equipo. Recibirás un <strong>nuevo correo</strong> cuando tu reserva sea confirmada.
+        </div>
+      </div>
+  ` : '';
   const mesaFotoBlock = showPhoto
     ? `<div style="margin-top:16px"><div style="font-weight:700;margin-bottom:8px">📷 Foto de mesa</div><a href="${photoUrl}">${photoUrl}</a><div style="margin-top:8px"><img src="${photoUrl}" alt="Foto de mesa" style="max-width:520px;width:100%;height:auto;border-radius:12px;border:1px solid #f3f4f6" /></div></div>`
     : '';
@@ -283,6 +293,7 @@ function buildReservationEmail(type, reservation) {
     <div style="font-family:Arial,sans-serif;line-height:1.5;color:#1f2937">
       <h2 style="color:#92400e;margin:0 0 12px 0">${safeHtml(title)}</h2>
       <p style="margin:0 0 16px 0">Hola <strong>${safeHtml(reservation?.nombre || '')}</strong>,</p>
+      ${pendingNotice}
       <table cellpadding="0" cellspacing="0" style="width:100%;border-collapse:collapse">
         <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Fecha</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safeHtml(reservation?.fecha ? formatDateShort(reservation.fecha) : '')}</td></tr>
         <tr><td style="padding:8px 0;border-bottom:1px solid #f3f4f6"><strong>Hora</strong></td><td style="padding:8px 0;border-bottom:1px solid #f3f4f6">${safeHtml(reservation?.hora_entrada || '')}</td></tr>
