@@ -238,9 +238,49 @@
 
     <script>
         feather.replace();
+
+        let siteConfig = {
+            reservations_enabled: true,
+            menu_enabled: true,
+            events_enabled: true,
+            orders_enabled: true,
+            covers_enabled: true,
+        };
+
+        async function loadSiteConfigPublic() {
+            try {
+                const resp = await fetch('/.netlify/functions/site-config', { method: 'GET' });
+                const data = await resp.json().catch(() => ({}));
+                if (resp.ok && data && data.config) {
+                    siteConfig = { ...siteConfig, ...data.config };
+                }
+            } catch (e) {}
+        }
+
+        function hideSectionWithMessage(sectionId, message) {
+            const el = document.getElementById(sectionId);
+            if (!el) return;
+            el.classList.add('hidden');
+            const msg = document.createElement('div');
+            msg.className = 'mb-16 bg-white p-6 rounded-lg shadow-lg text-center';
+            msg.innerHTML = `<div class="text-2xl font-bold text-amber-800 mb-2">${message}</div>`;
+            el.parentNode.insertBefore(msg, el);
+        }
         
         // Selección de mesas
         document.addEventListener('DOMContentLoaded', async function() {
+            await loadSiteConfigPublic();
+
+            if (!siteConfig.reservations_enabled) {
+                hideSectionWithMessage('reservas', 'Reservas deshabilitadas temporalmente');
+            }
+            if (!siteConfig.menu_enabled) {
+                hideSectionWithMessage('menu', 'Menú deshabilitado temporalmente');
+            }
+            if (!siteConfig.events_enabled) {
+                hideSectionWithMessage('eventos', 'Eventos deshabilitados temporalmente');
+            }
+
             try {
                 window.authModal = new AuthModal();
                 window.authModal.init();
@@ -272,12 +312,11 @@
             
             // Cargar menú y eventos dinámicos desde Supabase
             try {
-                await Promise.allSettled([
-                    loadMenuFromSupabase(),
-                    loadEventsFromSupabase()
-                ]);
+                const jobs = [];
+                if (siteConfig.menu_enabled) jobs.push(loadMenuFromSupabase());
+                if (siteConfig.events_enabled) jobs.push(loadEventsFromSupabase());
+                await Promise.allSettled(jobs);
             } catch (e) {}
-
 
             const hash = (window.location.hash || '').replace('#', '');
             const path = String(window.location.pathname || '').toLowerCase();

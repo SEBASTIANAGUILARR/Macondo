@@ -396,6 +396,9 @@
                 <div class="order-1 sm:order-1 flex flex-wrap justify-between items-center gap-3 mb-4 sm:mb-6">
                     <h2 class="text-2xl font-bold text-amber-800">Gestión de Reservas</h2>
                     <div class="flex flex-wrap gap-2 items-center">
+                        <button id="toggle-public-reservations" type="button" onclick="toggleSiteFlag('reservations_enabled')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors">
+                            Web: —
+                        </button>
                         <button type="button" onclick="openReservationsExportModal('excel')" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
                             Exportar Excel
                         </button>
@@ -516,6 +519,14 @@
 
             <!-- Pedidos Section -->
             <div id="section-pedidos" class="hidden">
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
+                    <h2 class="text-2xl font-bold text-amber-800">Gestión de Pedidos Online</h2>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button id="toggle-public-orders" type="button" onclick="toggleSiteFlag('orders_enabled')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors">
+                            Web: —
+                        </button>
+                    </div>
+                </div>
                 <!-- Stats Pedidos -->
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
                     <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
@@ -556,9 +567,14 @@
                 <!-- Header con botón agregar -->
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold text-amber-800">Gestión de Eventos</h2>
-                    <button onclick="showEventModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
-                        <span>+</span> Nuevo Evento
-                    </button>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button id="toggle-public-events" type="button" onclick="toggleSiteFlag('events_enabled')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors">
+                            Web: —
+                        </button>
+                        <button onclick="showEventModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                            <span>+</span> Nuevo Evento
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Stats Eventos -->
@@ -588,9 +604,14 @@
                 <!-- Header con botón agregar -->
                 <div class="flex justify-between items-center mb-6">
                     <h2 class="text-2xl font-bold text-amber-800">Gestión del Menú</h2>
-                    <button onclick="showMenuItemModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
-                        <span>+</span> Nuevo Plato/Bebida
-                    </button>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button id="toggle-public-menu" type="button" onclick="toggleSiteFlag('menu_enabled')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors">
+                            Web: —
+                        </button>
+                        <button onclick="showMenuItemModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
+                            <span>+</span> Nuevo Plato/Bebida
+                        </button>
+                    </div>
                 </div>
                 
                 <!-- Stats Menú -->
@@ -1149,9 +1170,14 @@
             <div id="section-cover" class="hidden">
                 <div class="flex flex-wrap justify-between items-center mb-6 gap-4">
                     <h2 class="text-2xl font-bold text-amber-800">🎟️ Covers / Staff</h2>
-                    <a href="staff.html" target="_blank" rel="noopener noreferrer" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
-                        Abrir página Staff
-                    </a>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button id="toggle-public-covers" type="button" onclick="toggleSiteFlag('covers_enabled')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors">
+                            Web: —
+                        </button>
+                        <a href="staff.html" target="_blank" rel="noopener noreferrer" class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
+                            Abrir página Staff
+                        </a>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1660,6 +1686,13 @@
         let events = [];
         let menuItems = [];
         let currentAdminEmail = '';
+        let siteConfig = {
+            reservations_enabled: true,
+            menu_enabled: true,
+            events_enabled: true,
+            orders_enabled: true,
+            covers_enabled: true,
+        };
         
         // Verificar sesión al cargar
         document.addEventListener('DOMContentLoaded', async () => {
@@ -1743,6 +1776,81 @@
             setupFilters();
             setupOrderFilters();
             setupMenuFilters();
+
+            loadSiteConfigAdmin();
+        }
+
+        function renderSiteFlagButton(btnId, enabled) {
+            const el = document.getElementById(btnId);
+            if (!el) return;
+
+            const on = !!enabled;
+            el.textContent = `Web: ${on ? 'ON' : 'OFF'}`;
+
+            el.classList.remove('bg-gray-200', 'hover:bg-gray-300', 'text-gray-700');
+            el.classList.remove('bg-green-600', 'hover:bg-green-700', 'text-white');
+            el.classList.remove('bg-red-600', 'hover:bg-red-700', 'text-white');
+
+            if (on) {
+                el.classList.add('bg-green-600', 'hover:bg-green-700', 'text-white');
+            } else {
+                el.classList.add('bg-red-600', 'hover:bg-red-700', 'text-white');
+            }
+        }
+
+        function renderAllSiteFlags() {
+            renderSiteFlagButton('toggle-public-reservations', siteConfig.reservations_enabled);
+            renderSiteFlagButton('toggle-public-menu', siteConfig.menu_enabled);
+            renderSiteFlagButton('toggle-public-events', siteConfig.events_enabled);
+            renderSiteFlagButton('toggle-public-orders', siteConfig.orders_enabled);
+            renderSiteFlagButton('toggle-public-covers', siteConfig.covers_enabled);
+        }
+
+        async function loadSiteConfigAdmin() {
+            try {
+                const resp = await fetch('/.netlify/functions/site-config', { method: 'GET' });
+                const data = await resp.json().catch(() => ({}));
+                if (resp.ok && data && data.config) {
+                    siteConfig = { ...siteConfig, ...data.config };
+                }
+            } catch (e) {
+                // ignore
+            } finally {
+                renderAllSiteFlags();
+            }
+        }
+
+        async function toggleSiteFlag(flagKey) {
+            try {
+                const current = !!siteConfig[flagKey];
+                const next = !current;
+
+                const accessToken = await getAdminAccessToken();
+                if (!accessToken) {
+                    alert('Sesión inválida. Vuelve a iniciar sesión.');
+                    return;
+                }
+
+                const resp = await fetch('/.netlify/functions/admin-site-config', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer ' + accessToken
+                    },
+                    body: JSON.stringify({ [flagKey]: next })
+                });
+
+                const data = await resp.json().catch(() => ({}));
+                if (!resp.ok) {
+                    alert(data.error || 'Error');
+                    return;
+                }
+
+                siteConfig[flagKey] = next;
+                renderAllSiteFlags();
+            } catch (e) {
+                alert(e.message || String(e));
+            }
         }
         
         // Cambiar entre pestañas

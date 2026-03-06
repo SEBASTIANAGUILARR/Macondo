@@ -178,6 +178,33 @@
     <script>
         let coverConfig = { dj_name: 'Dj Micke', price_pln: 30, active: true, mode: 'dj', private_title: '', private_description: '' };
 
+        let siteConfig = {
+            reservations_enabled: true,
+            menu_enabled: true,
+            events_enabled: true,
+            orders_enabled: true,
+            covers_enabled: true,
+        };
+
+        async function loadSiteConfigPublic() {
+            try {
+                const resp = await fetch('/.netlify/functions/site-config', { method: 'GET' });
+                const data = await resp.json().catch(() => ({}));
+                if (resp.ok && data && data.config) {
+                    siteConfig = { ...siteConfig, ...data.config };
+                }
+            } catch (e) {}
+        }
+
+        function hideElWithMessage(el, message) {
+            if (!el) return;
+            el.classList.add('hidden');
+            const msg = document.createElement('div');
+            msg.className = 'bg-white rounded-lg shadow-md p-6 mb-8 text-center';
+            msg.innerHTML = `<div class="text-2xl font-bold text-amber-800 mb-2">${message}</div>`;
+            el.parentNode.insertBefore(msg, el);
+        }
+
         function renderPersonRow(index) {
             return `
                 <div class="p-4 border border-amber-200 rounded-lg bg-amber-50">
@@ -344,6 +371,8 @@
         }
 
         async function startEvents() {
+            await loadSiteConfigPublic();
+
             if (typeof feather !== 'undefined') {
                 feather.replace();
             }
@@ -454,12 +483,22 @@
                 });
             }
 
-            // Cargar eventos dinámicamente
-            await loadEvents();
+            const eventsWrap = document.getElementById('events-container');
+            if (!siteConfig.events_enabled) {
+                hideElWithMessage(eventsWrap, 'Eventos deshabilitados temporalmente');
+            } else {
+                await loadEvents();
+            }
 
-            // Inicializar cover
-            loadCoverConfig();
-            updateCoverTotal();
+            const djPanel = document.getElementById('cover-dj-panel');
+            const privatePanel = document.getElementById('cover-private-panel');
+            if (!siteConfig.covers_enabled) {
+                if (djPanel) hideElWithMessage(djPanel, 'Covers deshabilitados temporalmente');
+                if (privatePanel) privatePanel.classList.add('hidden');
+            } else {
+                loadCoverConfig();
+                updateCoverTotal();
+            }
 
             const openTicketBtn = document.getElementById('cover-open-ticket');
             if (openTicketBtn) {

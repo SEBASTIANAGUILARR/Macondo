@@ -121,6 +121,24 @@
 
     <script>
         let menuSupabaseClient = window.supabaseClient;
+
+        let siteConfig = {
+            reservations_enabled: true,
+            menu_enabled: true,
+            events_enabled: true,
+            orders_enabled: true,
+            covers_enabled: true,
+        };
+
+        async function loadSiteConfigPublic() {
+            try {
+                const resp = await fetch('/.netlify/functions/site-config', { method: 'GET' });
+                const data = await resp.json().catch(() => ({}));
+                if (resp.ok && data && data.config) {
+                    siteConfig = { ...siteConfig, ...data.config };
+                }
+            } catch (e) {}
+        }
         
         let allMenuItems = [];
         let currentFilter = 'all';
@@ -249,6 +267,21 @@
         }
 
         async function startMenu() {
+            await loadSiteConfigPublic();
+
+            if (!siteConfig.menu_enabled) {
+                const container = document.querySelector('.container');
+                if (container) {
+                    container.innerHTML = `
+                        <div class="bg-white rounded-lg shadow-md p-8 text-center">
+                            <div class="text-3xl font-bold text-amber-800 mb-2">Menú deshabilitado temporalmente</div>
+                            <div class="text-gray-600">Vuelve a intentarlo más tarde.</div>
+                        </div>
+                    `;
+                }
+                return;
+            }
+
             if (!window.supabaseClient) {
                 await new Promise(resolve => {
                     const done = () => {
