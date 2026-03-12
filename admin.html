@@ -4171,7 +4171,8 @@
         
         // Subir imagen a Supabase Storage
         async function uploadImage(file, folder) {
-            const fileExt = file.name.split('.').pop();
+            const fileExtRaw = String(file?.name || '').split('.').pop();
+            const fileExt = (fileExtRaw && fileExtRaw !== String(file?.name || '')) ? fileExtRaw : 'jpg';
             const fileName = `${folder}_${Date.now()}.${fileExt}`;
             const filePath = `${folder}/${fileName}`;
             
@@ -4179,7 +4180,8 @@
                 .from('images')
                 .upload(filePath, file, {
                     cacheControl: '3600',
-                    upsert: false
+                    upsert: true,
+                    contentType: file?.type || 'image/jpeg'
                 });
             
             if (error) {
