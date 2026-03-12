@@ -362,7 +362,7 @@
                     });
                 }
 
-                const cacheKey = 'macondo_home_menu_cache_v1';
+                const cacheKey = 'macondo_home_menu_cache_v2';
                 const ttlMs = 5 * 60 * 1000;
                 try {
                     const raw = localStorage.getItem(cacheKey);
@@ -383,11 +383,32 @@
                     return;
                 }
 
-                const selectCols = 'nombre,descripcion,precio,imagen_url,categoria';
-                const [platosRes, bebidasRes] = await Promise.all([
-                    client.from('menu_items').select(selectCols).eq('activo', true).eq('categoria', 'plato').order('nombre', { ascending: true }).limit(6),
-                    client.from('menu_items').select(selectCols).eq('activo', true).eq('categoria', 'bebida').order('nombre', { ascending: true }).limit(4),
-                ]);
+                const selectCols = 'nombre,descripcion,precio,imagen_url,categoria,home_section';
+
+                // Preferir selección manual desde Admin (menu_items.home_section)
+                let platosRes = null;
+                let bebidasRes = null;
+                try {
+                    [platosRes, bebidasRes] = await Promise.all([
+                        client.from('menu_items').select(selectCols).eq('activo', true).eq('home_section', 'platos').order('nombre', { ascending: true }),
+                        client.from('menu_items').select(selectCols).eq('activo', true).eq('home_section', 'bebidas').order('nombre', { ascending: true }),
+                    ]);
+                } catch (e) {
+                    platosRes = { data: null, error: e };
+                    bebidasRes = { data: null, error: e };
+                }
+
+                const featuredQueryFailed = !!(platosRes?.error || bebidasRes?.error);
+                const featuredPlatos = Array.isArray(platosRes?.data) ? platosRes.data : [];
+                const featuredBebidas = Array.isArray(bebidasRes?.data) ? bebidasRes.data : [];
+
+                // Si no hay destacados configurados (o la columna aún no existe), caer al comportamiento anterior
+                if (featuredQueryFailed || (featuredPlatos.length === 0 && featuredBebidas.length === 0)) {
+                    [platosRes, bebidasRes] = await Promise.all([
+                        client.from('menu_items').select('nombre,descripcion,precio,imagen_url,categoria').eq('activo', true).eq('categoria', 'plato').order('nombre', { ascending: true }).limit(6),
+                        client.from('menu_items').select('nombre,descripcion,precio,imagen_url,categoria').eq('activo', true).eq('categoria', 'bebida').order('nombre', { ascending: true }).limit(4),
+                    ]);
+                }
 
                 if (platosRes.error) {
                     console.error('Error cargando platos:', platosRes.error);

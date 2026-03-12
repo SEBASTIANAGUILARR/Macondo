@@ -1562,6 +1562,16 @@
                                 placeholder="https://ejemplo.com/imagen.jpg">
                         </div>
                     </div>
+
+                    <div>
+                        <label class="block text-amber-700 font-medium mb-1">Mostrar en inicio</label>
+                        <select id="menu-item-home-section"
+                            class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                            <option value="">No</option>
+                            <option value="platos">Platos Típicos Colombianos (Inicio)</option>
+                            <option value="bebidas">Bebidas y Cócteles (Inicio)</option>
+                        </select>
+                    </div>
                     
                     <div class="flex items-center gap-2">
                         <input type="checkbox" id="menu-item-activo" checked class="w-5 h-5 text-amber-600">
@@ -4073,6 +4083,8 @@
                     document.getElementById('menu-item-categoria').value = item.categoria;
                     document.getElementById('menu-item-imagen').value = item.imagen_url || '';
                     document.getElementById('menu-item-activo').checked = item.activo;
+                    const homeSel = document.getElementById('menu-item-home-section');
+                    if (homeSel) homeSel.value = item.home_section || '';
                 }
             }
         }
@@ -4223,12 +4235,15 @@
                 }
                 
                 const itemId = document.getElementById('menu-item-id').value;
+                const homeSectionRaw = String(document.getElementById('menu-item-home-section')?.value || '').trim();
+                const homeSection = homeSectionRaw ? homeSectionRaw : null;
                 const itemData = {
                     nombre: document.getElementById('menu-item-nombre').value,
                     descripcion: document.getElementById('menu-item-descripcion').value || null,
                     precio: parseFloat(document.getElementById('menu-item-precio').value),
                     categoria: document.getElementById('menu-item-categoria').value,
                     imagen_url: imageUrl,
+                    home_section: homeSection,
                     activo: document.getElementById('menu-item-activo').checked
                 };
                 
