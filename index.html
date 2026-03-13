@@ -439,7 +439,6 @@
 
         function renderHomeMenu(platos, bebidas) {
             try {
-                
                 // Renderizar platos
                 const platosContainer = document.getElementById('platos-container');
                 if (platos.length > 0) {
@@ -448,7 +447,6 @@
                     platosContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay platos disponibles.</p>';
                 }
 
-                
                 // Renderizar bebidas
                 const bebidasContainer = document.getElementById('bebidas-container');
                 if (bebidas.length > 0) {
@@ -456,7 +454,7 @@
                 } else {
                     bebidasContainer.innerHTML = '<p class="text-gray-500 text-center py-8 col-span-full">No hay bebidas disponibles.</p>';
                 }
-                
+
                 // Reinicializar feather icons
                 if (typeof feather !== 'undefined') {
                     feather.replace();
@@ -465,14 +463,14 @@
                 console.error('Error en renderHomeMenu:', err);
             }
         }
-        
+
         // Función para renderizar un item del menú
         function renderMenuItem(item) {
             const priceFormatted = item.precio.toFixed(2).replace('.', ',');
             const itemId = item.nombre.toLowerCase().replace(/\s+/g, '-');
             return `
                 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
-                    ${item.imagen_url ? `<img src="${item.imagen_url}" alt="${item.nombre}" class="w-full h-48 object-cover">` : '<div class="w-full h-48 bg-gray-200 flex items-center justify-center text-4xl">🍽️</div>'}
+                    ${item.imagen_url ? `<img src="${item.imagen_url}" alt="${item.nombre}" class="w-full object-cover" style="aspect-ratio: 1 / 1;">` : '<div class="w-full bg-gray-200 flex items-center justify-center text-4xl" style="aspect-ratio: 1 / 1;">🍽️</div>'}
                     <div class="p-4">
                         <h4 class="text-xl font-bold text-amber-800">${item.nombre}</h4>
                         <p class="text-gray-600 mb-2">${item.descripcion || ''}</p>
