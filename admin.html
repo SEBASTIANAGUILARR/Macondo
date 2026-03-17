@@ -1771,6 +1771,7 @@
                     <div class="text-lg font-extrabold text-amber-800 truncate">Promo para redes</div>
                 </div>
                 <div class="flex items-center gap-2">
+                    <button id="social-editor-toggle-move" type="button" onclick="toggleEditorMoveMode()" class="bg-slate-800 hover:bg-black text-white font-bold px-4 py-2 rounded-lg transition-colors">Mover imagen</button>
                     <button type="button" onclick="downloadSocialEditorPng()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg transition-colors">Descargar</button>
                     <button type="button" onclick="closeSocialEditor()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2 rounded-lg transition-colors">Cerrar</button>
                 </div>
@@ -2089,6 +2090,7 @@
             titleColor: '#ffffff',
             subtitleColor: '#ffffff',
             overlayStrength: 0.65,
+            interactionMode: 'scroll',
         };
 
         function formatToSize(fmt) {
@@ -2212,6 +2214,7 @@
             socialEditorState.imageY = 0;
             socialEditorState.title = String(title || '');
             socialEditorState.subtitle = String(subtitle || '');
+            socialEditorState.interactionMode = 'scroll';
 
             const titleInput = document.getElementById('social-editor-title');
             const subInput = document.getElementById('social-editor-subtitle');
@@ -2226,6 +2229,7 @@
             try { document.body.style.overflow = 'hidden'; } catch (e) {}
             bindEditorResizeHandler();
             setupSocialEditorCanvas();
+            updateEditorInteractionUi();
             if (socialEditorState.imageSrc) {
                 loadEditorImageFromUrl(socialEditorState.imageSrc).catch(() => {});
             } else {
@@ -2238,6 +2242,31 @@
             if (!modal) return;
             modal.classList.add('hidden');
             try { document.body.style.overflow = ''; } catch (e) {}
+        }
+
+        function toggleEditorMoveMode() {
+            socialEditorState.interactionMode = socialEditorState.interactionMode === 'move' ? 'scroll' : 'move';
+            updateEditorInteractionUi();
+        }
+
+        function updateEditorInteractionUi() {
+            const btn = document.getElementById('social-editor-toggle-move');
+            const canvas = document.getElementById('social-editor-canvas');
+            if (btn) {
+                btn.textContent = socialEditorState.interactionMode === 'move' ? 'Scroll' : 'Mover imagen';
+                if (socialEditorState.interactionMode === 'move') {
+                    btn.classList.remove('bg-slate-800', 'hover:bg-black');
+                    btn.classList.add('bg-blue-600', 'hover:bg-blue-700');
+                } else {
+                    btn.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+                    btn.classList.add('bg-slate-800', 'hover:bg-black');
+                }
+            }
+            if (canvas) {
+                canvas.style.touchAction = socialEditorState.interactionMode === 'move' ? 'none' : 'pan-y';
+            }
+            __editorPointers = new Map();
+            __editorGesture = null;
         }
 
         function setupSocialEditorCanvas() {
@@ -2254,6 +2283,7 @@
             canvas.style.width = `${Math.floor(socialEditorState.width * scale)}px`;
             canvas.style.height = `${Math.floor(socialEditorState.height * scale)}px`;
             attachEditorGestureHandlers(canvas);
+            updateEditorInteractionUi();
         }
 
         let __editorResizeBound = false;
@@ -2438,7 +2468,7 @@
             if (!canvas || canvas.__gestureBound) return;
             canvas.__gestureBound = true;
 
-            canvas.style.touchAction = 'none';
+            canvas.style.touchAction = 'pan-y';
             canvas.addEventListener('pointerdown', onEditorPointerDown);
             canvas.addEventListener('pointermove', onEditorPointerMove);
             canvas.addEventListener('pointerup', onEditorPointerUp);
@@ -2454,6 +2484,7 @@
         }
 
         function onEditorPointerDown(e) {
+            if (socialEditorState.interactionMode !== 'move') return;
             const canvas = e.currentTarget;
             canvas.setPointerCapture(e.pointerId);
             __editorPointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
@@ -2461,12 +2492,14 @@
         }
 
         function onEditorPointerMove(e) {
+            if (socialEditorState.interactionMode !== 'move') return;
             if (!__editorPointers.has(e.pointerId)) return;
             __editorPointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
             applyGesture();
         }
 
         function onEditorPointerUp(e) {
+            if (socialEditorState.interactionMode !== 'move') return;
             __editorPointers.delete(e.pointerId);
             __editorGesture = buildGestureSnapshot();
         }
