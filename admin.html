@@ -6,6 +6,9 @@
     <title>Panel de Administración - Macondo Bar Latino</title>
     <link rel="icon" type="image/png" href="favicon.png">
     <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Montserrat:wght@400;600;800&family=Pacifico&family=Playfair+Display:wght@600;800&family=Poppins:wght@400;600;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -349,6 +352,7 @@
                     <option value="pedidos">🛒 Pedidos Online</option>
                     <option value="eventos">🎉 Eventos</option>
                     <option value="menu">🍽️ Menú</option>
+                    <option value="editor">🎨 Editor</option>
                     <option value="emails">📧 Emails</option>
                     <option value="analytics">📊 Analíticas</option>
                     <option value="basement">🪩 Sótano</option>
@@ -370,6 +374,9 @@
                 </button>
                 <button id="tab-menu" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('menu')">
                     🍽️ Menú
+                </button>
+                <button id="tab-editor" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('editor')">
+                    🎨 Editor
                 </button>
                 <button id="tab-emails" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('emails')">
                     📧 Emails
@@ -645,6 +652,81 @@
                 <!-- Menu Items List -->
                 <div id="menu-items-list">
                     <p class="text-gray-500 text-center py-8">Cargando menú...</p>
+                </div>
+            </div>
+
+            <div id="section-editor" class="hidden">
+                <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
+                    <h2 class="text-2xl font-bold text-amber-800">🎨 Editor (Promos para redes)</h2>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <button type="button" onclick="resetSocialEditorHome()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2 rounded-lg transition-colors">
+                            Reiniciar
+                        </button>
+                    </div>
+                </div>
+
+                <div id="editor-home" class="bg-white rounded-lg shadow p-4 sm:p-6">
+                    <div class="text-sm text-gray-600 mb-4">Elige cómo quieres comenzar.</div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button type="button" onclick="openEditorStartFromItem()" class="text-left bg-amber-50 hover:bg-amber-100 border border-amber-200 rounded-xl p-5">
+                            <div class="text-lg font-extrabold text-amber-800">Usar item de la web</div>
+                            <div class="text-sm text-gray-700 mt-1">Precarga foto, título y descripción de un evento/plato/bebida.</div>
+                        </button>
+                        <button type="button" onclick="openEditorNewProject()" class="text-left bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl p-5">
+                            <div class="text-lg font-extrabold text-slate-800">Proyecto nuevo</div>
+                            <div class="text-sm text-gray-700 mt-1">Empieza desde cero: importa foto y escribe el texto.</div>
+                        </button>
+                    </div>
+
+                    <div id="editor-start-from-item" class="hidden mt-6">
+                        <div class="font-bold text-amber-800 mb-2">Seleccionar item</div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-amber-700 font-medium mb-1">Tipo</label>
+                                <select id="editor-item-type" class="w-full p-3 border border-amber-300 rounded-lg bg-white" onchange="refreshEditorItemList()">
+                                    <option value="event">Evento</option>
+                                    <option value="menu">Plato/Bebida</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-amber-700 font-medium mb-1">Item</label>
+                                <select id="editor-item-id" class="w-full p-3 border border-amber-300 rounded-lg bg-white"></select>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mt-4">
+                            <div>
+                                <label class="block text-amber-700 font-medium mb-1">Formato</label>
+                                <select id="editor-format" class="w-full p-3 border border-amber-300 rounded-lg bg-white">
+                                    <option value="9:16" selected>9:16 (Story)</option>
+                                    <option value="1:1">1:1 (Post)</option>
+                                    <option value="4:3">4:3 (Post)</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2 flex items-end gap-2">
+                                <button type="button" onclick="startEditorFromSelectedItem()" class="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">Abrir editor</button>
+                                <button type="button" onclick="cancelEditorStartFromItem()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-lg transition-colors">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="editor-new-project" class="hidden mt-6">
+                        <div class="font-bold text-slate-800 mb-2">Proyecto nuevo</div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-amber-700 font-medium mb-1">Formato</label>
+                                <select id="editor-format-new" class="w-full p-3 border border-amber-300 rounded-lg bg-white">
+                                    <option value="9:16" selected>9:16 (Story)</option>
+                                    <option value="1:1">1:1 (Post)</option>
+                                    <option value="4:3">4:3 (Post)</option>
+                                </select>
+                            </div>
+                            <div class="md:col-span-2 flex items-end gap-2">
+                                <button type="button" onclick="startEditorNewProject()" class="flex-1 bg-slate-800 hover:bg-black text-white font-bold py-3 px-4 rounded-lg transition-colors">Abrir editor</button>
+                                <button type="button" onclick="cancelEditorNewProject()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold py-3 px-4 rounded-lg transition-colors">Cancelar</button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -1681,6 +1763,75 @@
         </div>
     </div>
 
+    <div id="social-editor-modal" class="fixed inset-0 bg-black bg-opacity-70 hidden z-[60] flex flex-col">
+        <div class="bg-white w-full h-full flex flex-col">
+            <div class="p-3 border-b border-gray-200 flex items-center justify-between gap-3">
+                <div class="min-w-0">
+                    <div class="text-xs text-gray-500 font-bold">Editor</div>
+                    <div class="text-lg font-extrabold text-amber-800 truncate">Promo para redes</div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="downloadSocialEditorPng()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg transition-colors">Descargar</button>
+                    <button type="button" onclick="closeSocialEditor()" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-bold px-4 py-2 rounded-lg transition-colors">Cerrar</button>
+                </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto">
+                <div class="p-3">
+                    <div id="social-editor-canvas-wrap" class="w-full flex justify-center">
+                        <canvas id="social-editor-canvas" class="bg-black rounded-xl shadow" aria-label="Editor canvas"></canvas>
+                    </div>
+                </div>
+
+                <div class="px-3 pb-6">
+                    <div class="bg-gray-50 border border-gray-200 rounded-xl p-3">
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <div>
+                                <label class="block text-amber-700 font-medium mb-1">Formato</label>
+                                <select id="social-editor-format" class="w-full p-3 border border-amber-300 rounded-lg bg-white" onchange="onEditorFormatChange()">
+                                    <option value="9:16" selected>9:16 (Story)</option>
+                                    <option value="1:1">1:1 (Post)</option>
+                                    <option value="4:3">4:3 (Post)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-amber-700 font-medium mb-1">Tipografía</label>
+                                <select id="social-editor-font" class="w-full p-3 border border-amber-300 rounded-lg bg-white" onchange="onEditorFontChange()">
+                                    <option value="Poppins" selected>Poppins</option>
+                                    <option value="Montserrat">Montserrat</option>
+                                    <option value="Playfair Display">Playfair Display</option>
+                                    <option value="Bebas Neue">Bebas Neue</option>
+                                    <option value="Pacifico">Pacifico</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-amber-700 font-medium mb-1">Imagen</label>
+                                <input id="social-editor-import" type="file" accept="image/*" class="w-full p-2 border border-amber-300 rounded-lg bg-white text-sm" onchange="importEditorImageFile(this.files && this.files[0])" />
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-3">
+                            <div>
+                                <label class="block text-amber-700 font-medium mb-1">Título</label>
+                                <input id="social-editor-title" type="text" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" oninput="onEditorTextChange()" placeholder="Ej: Bandeja Paisa" />
+                            </div>
+                            <div>
+                                <label class="block text-amber-700 font-medium mb-1">Descripción</label>
+                                <input id="social-editor-subtitle" type="text" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" oninput="onEditorTextChange()" placeholder="Ej: Sabor colombiano..." />
+                            </div>
+                        </div>
+
+                        <div class="mt-3">
+                            <label class="block text-amber-700 font-medium mb-1">Oscurecer fondo (para leer el texto)</label>
+                            <input id="social-editor-overlay" type="range" min="0" max="0.95" step="0.05" value="0.65" class="w-full" oninput="onEditorOverlayChange()" />
+                            <div class="text-xs text-gray-500 mt-1">Tip móvil: arrastra para mover la imagen, usa dos dedos para zoom.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script>
         // Configuración de Supabase
         const SUPABASE_URL = 'https://imqcifvmklkccwagpkee.supabase.co';
@@ -1880,6 +2031,7 @@
             document.getElementById('section-pedidos').classList.add('hidden');
             document.getElementById('section-eventos').classList.add('hidden');
             document.getElementById('section-menu').classList.add('hidden');
+            document.getElementById('section-editor').classList.add('hidden');
             document.getElementById('section-emails').classList.add('hidden');
             document.getElementById('section-analytics').classList.add('hidden');
             document.getElementById('section-basement').classList.add('hidden');
@@ -1910,10 +2062,472 @@
             if (tab === 'emails') {
                 loadEmailTemplateIntoEditor().catch(() => {});
             }
+            if (tab === 'editor') {
+                ensureEditorDataLoaded().catch(() => {});
+                resetSocialEditorHome();
+            }
             const mobileSelect = document.getElementById('mobile-tab-select');
             if (mobileSelect) {
                 mobileSelect.value = tab;
             }
+        }
+
+        let socialEditorState = {
+            format: '9:16',
+            width: 1080,
+            height: 1920,
+            image: null,
+            imageSrc: '',
+            imageScale: 1,
+            imageX: 0,
+            imageY: 0,
+            title: '',
+            subtitle: '',
+            fontFamily: 'Poppins',
+            titleSize: 84,
+            subtitleSize: 40,
+            titleColor: '#ffffff',
+            subtitleColor: '#ffffff',
+            overlayStrength: 0.65,
+        };
+
+        function formatToSize(fmt) {
+            const f = String(fmt || '').trim();
+            if (f === '1:1') return { width: 1080, height: 1080 };
+            if (f === '4:3') return { width: 1440, height: 1080 };
+            return { width: 1080, height: 1920 };
+        }
+
+        function resetSocialEditorHome() {
+            const a = document.getElementById('editor-start-from-item');
+            const b = document.getElementById('editor-new-project');
+            if (a) a.classList.add('hidden');
+            if (b) b.classList.add('hidden');
+        }
+
+        function openEditorStartFromItem() {
+            resetSocialEditorHome();
+            const a = document.getElementById('editor-start-from-item');
+            if (a) a.classList.remove('hidden');
+            refreshEditorItemList();
+        }
+
+        function cancelEditorStartFromItem() {
+            resetSocialEditorHome();
+        }
+
+        function openEditorNewProject() {
+            resetSocialEditorHome();
+            const b = document.getElementById('editor-new-project');
+            if (b) b.classList.remove('hidden');
+        }
+
+        function cancelEditorNewProject() {
+            resetSocialEditorHome();
+        }
+
+        async function ensureEditorDataLoaded() {
+            const jobs = [];
+            if (!Array.isArray(events) || events.length === 0) {
+                if (typeof loadEvents === 'function') jobs.push(loadEvents());
+            }
+            if (!Array.isArray(menuItems) || menuItems.length === 0) {
+                if (typeof loadMenuItems === 'function') jobs.push(loadMenuItems());
+            }
+            await Promise.allSettled(jobs);
+            refreshEditorItemList();
+        }
+
+        function refreshEditorItemList() {
+            const typeSel = document.getElementById('editor-item-type');
+            const itemSel = document.getElementById('editor-item-id');
+            if (!typeSel || !itemSel) return;
+
+            const t = String(typeSel.value || 'event');
+            const list = t === 'menu' ? (Array.isArray(menuItems) ? menuItems : []) : (Array.isArray(events) ? events : []);
+
+            itemSel.innerHTML = '';
+            const frag = document.createDocumentFragment();
+            for (const it of list) {
+                const opt = document.createElement('option');
+                opt.value = it.id;
+                opt.textContent = t === 'menu' ? `${it.nombre || 'Item'} (${it.categoria || ''})` : `${it.titulo || 'Evento'} (${it.fecha || ''})`;
+                frag.appendChild(opt);
+            }
+            itemSel.appendChild(frag);
+        }
+
+        function startEditorFromSelectedItem() {
+            const typeSel = document.getElementById('editor-item-type');
+            const itemSel = document.getElementById('editor-item-id');
+            const formatSel = document.getElementById('editor-format');
+            if (!typeSel || !itemSel || !formatSel) return;
+
+            const t = String(typeSel.value || 'event');
+            const id = String(itemSel.value || '').trim();
+            const fmt = String(formatSel.value || '9:16');
+
+            let payload = null;
+            if (t === 'menu') {
+                payload = (Array.isArray(menuItems) ? menuItems : []).find(x => String(x.id) === id) || null;
+                openSocialEditor({
+                    format: fmt,
+                    imageUrl: payload?.imagen_url || '',
+                    title: payload?.nombre || '',
+                    subtitle: payload?.descripcion || '',
+                });
+                return;
+            }
+
+            payload = (Array.isArray(events) ? events : []).find(x => String(x.id) === id) || null;
+            const title = payload?.titulo || '';
+            const desc = payload?.descripcion || '';
+            const meta = [payload?.fecha || '', payload?.hora || ''].filter(Boolean).join(' ');
+            openSocialEditor({
+                format: fmt,
+                imageUrl: payload?.imagen_url || '',
+                title,
+                subtitle: meta ? `${meta}${desc ? ' · ' + desc : ''}` : desc,
+            });
+        }
+
+        function startEditorNewProject() {
+            const formatSel = document.getElementById('editor-format-new');
+            const fmt = formatSel ? String(formatSel.value || '9:16') : '9:16';
+            openSocialEditor({ format: fmt, imageUrl: '', title: '', subtitle: '' });
+        }
+
+        function openSocialEditor({ format, imageUrl, title, subtitle }) {
+            const modal = document.getElementById('social-editor-modal');
+            if (!modal) return;
+
+            const { width, height } = formatToSize(format);
+            socialEditorState.format = format || '9:16';
+            socialEditorState.width = width;
+            socialEditorState.height = height;
+            socialEditorState.image = null;
+            socialEditorState.imageSrc = String(imageUrl || '');
+            socialEditorState.imageScale = 1;
+            socialEditorState.imageX = 0;
+            socialEditorState.imageY = 0;
+            socialEditorState.title = String(title || '');
+            socialEditorState.subtitle = String(subtitle || '');
+
+            const titleInput = document.getElementById('social-editor-title');
+            const subInput = document.getElementById('social-editor-subtitle');
+            const formatSel = document.getElementById('social-editor-format');
+            const fontSel = document.getElementById('social-editor-font');
+            if (titleInput) titleInput.value = socialEditorState.title;
+            if (subInput) subInput.value = socialEditorState.subtitle;
+            if (formatSel) formatSel.value = socialEditorState.format;
+            if (fontSel) fontSel.value = socialEditorState.fontFamily;
+
+            modal.classList.remove('hidden');
+            try { document.body.style.overflow = 'hidden'; } catch (e) {}
+            bindEditorResizeHandler();
+            setupSocialEditorCanvas();
+            if (socialEditorState.imageSrc) {
+                loadEditorImageFromUrl(socialEditorState.imageSrc).catch(() => {});
+            } else {
+                redrawSocialEditor();
+            }
+        }
+
+        function closeSocialEditor() {
+            const modal = document.getElementById('social-editor-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+            try { document.body.style.overflow = ''; } catch (e) {}
+        }
+
+        function setupSocialEditorCanvas() {
+            const canvas = document.getElementById('social-editor-canvas');
+            const wrap = document.getElementById('social-editor-canvas-wrap');
+            if (!canvas || !wrap) return;
+
+            canvas.width = socialEditorState.width;
+            canvas.height = socialEditorState.height;
+
+            const r = wrap.getBoundingClientRect();
+            const maxW = Math.max(280, Math.floor(r.width));
+            const scale = maxW / socialEditorState.width;
+            canvas.style.width = `${Math.floor(socialEditorState.width * scale)}px`;
+            canvas.style.height = `${Math.floor(socialEditorState.height * scale)}px`;
+            attachEditorGestureHandlers(canvas);
+        }
+
+        let __editorResizeBound = false;
+        function bindEditorResizeHandler() {
+            if (__editorResizeBound) return;
+            __editorResizeBound = true;
+            const handler = () => {
+                const modal = document.getElementById('social-editor-modal');
+                if (!modal || modal.classList.contains('hidden')) return;
+                setupSocialEditorCanvas();
+                redrawSocialEditor();
+            };
+            window.addEventListener('resize', handler);
+            window.addEventListener('orientationchange', handler);
+        }
+
+        async function loadEditorImageFromUrl(url) {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            await new Promise((resolve, reject) => {
+                img.onload = resolve;
+                img.onerror = reject;
+                img.src = url;
+            });
+            socialEditorState.image = img;
+            fitImageToCanvas();
+            redrawSocialEditor();
+        }
+
+        function fitImageToCanvas() {
+            const img = socialEditorState.image;
+            if (!img) return;
+            const cw = socialEditorState.width;
+            const ch = socialEditorState.height;
+            const scale = Math.max(cw / img.width, ch / img.height);
+            socialEditorState.imageScale = scale;
+            socialEditorState.imageX = (cw - img.width * scale) / 2;
+            socialEditorState.imageY = (ch - img.height * scale) / 2;
+        }
+
+        function redrawSocialEditor() {
+            const canvas = document.getElementById('social-editor-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            if (!ctx) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (socialEditorState.image) {
+                const img = socialEditorState.image;
+                ctx.drawImage(
+                    img,
+                    socialEditorState.imageX,
+                    socialEditorState.imageY,
+                    img.width * socialEditorState.imageScale,
+                    img.height * socialEditorState.imageScale
+                );
+            } else {
+                ctx.fillStyle = '#111827';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+
+            const g = ctx.createLinearGradient(0, canvas.height * 0.35, 0, canvas.height);
+            g.addColorStop(0, 'rgba(0,0,0,0)');
+            g.addColorStop(1, `rgba(0,0,0,${Math.max(0, Math.min(0.95, socialEditorState.overlayStrength))})`);
+            ctx.fillStyle = g;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const fontFamily = String(socialEditorState.fontFamily || 'Poppins');
+            const title = String(socialEditorState.title || '').trim();
+            const subtitle = String(socialEditorState.subtitle || '').trim();
+
+            const pad = 72;
+            let y = canvas.height - pad;
+
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'bottom';
+
+            if (subtitle) {
+                ctx.fillStyle = socialEditorState.subtitleColor;
+                ctx.font = `600 ${socialEditorState.subtitleSize}px "${fontFamily}", sans-serif`;
+                const lines = wrapText(ctx, subtitle, canvas.width - pad * 2);
+                for (let i = lines.length - 1; i >= 0; i--) {
+                    ctx.fillText(lines[i], pad, y);
+                    y -= Math.floor(socialEditorState.subtitleSize * 1.15);
+                }
+                y -= 18;
+            }
+
+            if (title) {
+                ctx.fillStyle = socialEditorState.titleColor;
+                ctx.font = `800 ${socialEditorState.titleSize}px "${fontFamily}", sans-serif`;
+                const lines = wrapText(ctx, title, canvas.width - pad * 2);
+                for (let i = lines.length - 1; i >= 0; i--) {
+                    ctx.fillText(lines[i], pad, y);
+                    y -= Math.floor(socialEditorState.titleSize * 1.05);
+                }
+            }
+        }
+
+        function wrapText(ctx, text, maxWidth) {
+            const words = String(text || '').split(/\s+/).filter(Boolean);
+            const lines = [];
+            let line = '';
+            for (const w of words) {
+                const test = line ? (line + ' ' + w) : w;
+                if (ctx.measureText(test).width <= maxWidth) {
+                    line = test;
+                } else {
+                    if (line) lines.push(line);
+                    line = w;
+                }
+            }
+            if (line) lines.push(line);
+            return lines;
+        }
+
+        function onEditorFormatChange() {
+            const sel = document.getElementById('social-editor-format');
+            if (!sel) return;
+            const fmt = String(sel.value || '9:16');
+            const { width, height } = formatToSize(fmt);
+            socialEditorState.format = fmt;
+            socialEditorState.width = width;
+            socialEditorState.height = height;
+            setupSocialEditorCanvas();
+            if (socialEditorState.image) fitImageToCanvas();
+            redrawSocialEditor();
+        }
+
+        function onEditorTextChange() {
+            const titleInput = document.getElementById('social-editor-title');
+            const subInput = document.getElementById('social-editor-subtitle');
+            if (titleInput) socialEditorState.title = String(titleInput.value || '');
+            if (subInput) socialEditorState.subtitle = String(subInput.value || '');
+            redrawSocialEditor();
+        }
+
+        async function onEditorFontChange() {
+            const fontSel = document.getElementById('social-editor-font');
+            if (!fontSel) return;
+            socialEditorState.fontFamily = String(fontSel.value || 'Poppins');
+            try {
+                await document.fonts.load(`800 24px "${socialEditorState.fontFamily}"`);
+            } catch (e) {}
+            redrawSocialEditor();
+        }
+
+        function onEditorOverlayChange() {
+            const rng = document.getElementById('social-editor-overlay');
+            if (!rng) return;
+            socialEditorState.overlayStrength = Number(rng.value || 0.65);
+            redrawSocialEditor();
+        }
+
+        async function importEditorImageFile(file) {
+            if (!file) return;
+            const url = URL.createObjectURL(file);
+            try {
+                await loadEditorImageFromUrl(url);
+            } finally {
+                setTimeout(() => URL.revokeObjectURL(url), 60000);
+            }
+        }
+
+        function downloadSocialEditorPng() {
+            const canvas = document.getElementById('social-editor-canvas');
+            if (!canvas) return;
+            const url = canvas.toDataURL('image/png');
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `macondo_promo_${String(socialEditorState.format).replace(':','x')}.png`;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+        }
+
+        let __editorPointers = new Map();
+        let __editorGesture = null;
+
+        function attachEditorGestureHandlers(canvas) {
+            if (!canvas || canvas.__gestureBound) return;
+            canvas.__gestureBound = true;
+
+            canvas.style.touchAction = 'none';
+            canvas.addEventListener('pointerdown', onEditorPointerDown);
+            canvas.addEventListener('pointermove', onEditorPointerMove);
+            canvas.addEventListener('pointerup', onEditorPointerUp);
+            canvas.addEventListener('pointercancel', onEditorPointerUp);
+            canvas.addEventListener('pointerleave', onEditorPointerUp);
+        }
+
+        function getCanvasToImageScale() {
+            const canvas = document.getElementById('social-editor-canvas');
+            if (!canvas) return 1;
+            const cssW = canvas.getBoundingClientRect().width || 1;
+            return canvas.width / cssW;
+        }
+
+        function onEditorPointerDown(e) {
+            const canvas = e.currentTarget;
+            canvas.setPointerCapture(e.pointerId);
+            __editorPointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+            __editorGesture = buildGestureSnapshot();
+        }
+
+        function onEditorPointerMove(e) {
+            if (!__editorPointers.has(e.pointerId)) return;
+            __editorPointers.set(e.pointerId, { x: e.clientX, y: e.clientY });
+            applyGesture();
+        }
+
+        function onEditorPointerUp(e) {
+            __editorPointers.delete(e.pointerId);
+            __editorGesture = buildGestureSnapshot();
+        }
+
+        function buildGestureSnapshot() {
+            const pts = Array.from(__editorPointers.values());
+            if (pts.length === 0) return null;
+            const snap = {
+                pts,
+                imageX: socialEditorState.imageX,
+                imageY: socialEditorState.imageY,
+                imageScale: socialEditorState.imageScale,
+                dist: pts.length >= 2 ? distance(pts[0], pts[1]) : 0,
+                mid: pts.length >= 2 ? midpoint(pts[0], pts[1]) : pts[0],
+            };
+            return snap;
+        }
+
+        function applyGesture() {
+            if (!socialEditorState.image) return;
+            if (!__editorGesture) return;
+            const pts = Array.from(__editorPointers.values());
+            if (pts.length === 0) return;
+            const k = getCanvasToImageScale();
+
+            if (pts.length === 1 || __editorGesture.pts.length === 1) {
+                const p0 = pts[0];
+                const s0 = __editorGesture.pts[0];
+                const dx = (p0.x - s0.x) * k;
+                const dy = (p0.y - s0.y) * k;
+                socialEditorState.imageX = __editorGesture.imageX + dx;
+                socialEditorState.imageY = __editorGesture.imageY + dy;
+                redrawSocialEditor();
+                return;
+            }
+
+            const distNow = distance(pts[0], pts[1]);
+            const midNow = midpoint(pts[0], pts[1]);
+            const scaleFactor = __editorGesture.dist > 0 ? (distNow / __editorGesture.dist) : 1;
+
+            const nextScale = Math.max(0.1, Math.min(__editorGesture.imageScale * scaleFactor, 10));
+
+            const canvasMidX = midNow.x * k;
+            const canvasMidY = midNow.y * k;
+            const prevCanvasMidX = __editorGesture.mid.x * k;
+            const prevCanvasMidY = __editorGesture.mid.y * k;
+
+            socialEditorState.imageScale = nextScale;
+            socialEditorState.imageX = __editorGesture.imageX + (canvasMidX - prevCanvasMidX);
+            socialEditorState.imageY = __editorGesture.imageY + (canvasMidY - prevCanvasMidY);
+            redrawSocialEditor();
+        }
+
+        function distance(a, b) {
+            const dx = (a.x - b.x);
+            const dy = (a.y - b.y);
+            return Math.sqrt(dx * dx + dy * dy);
+        }
+
+        function midpoint(a, b) {
+            return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 };
         }
 
         async function exportCoverTicketsPdf() {
