@@ -255,43 +255,6 @@ class CustomNavbar extends HTMLElement {
           background-color: #b91c1c;
         }
         
-        .cart-icon {
-          position: relative;
-          cursor: pointer;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          padding: 0.5rem;
-          border-radius: 0.5rem;
-          transition: background-color 0.3s ease;
-        }
-        
-        .cart-icon:hover {
-          background-color: rgba(146, 64, 14, 0.1);
-        }
-        
-        .cart-icon svg {
-          width: 24px;
-          height: 24px;
-        }
-        
-        .cart-count {
-          position: absolute;
-          top: 0;
-          right: 0;
-          background-color: #dc2626;
-          color: white;
-          border-radius: 50%;
-          min-width: 18px;
-          height: 18px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 0.7rem;
-          font-weight: bold;
-          padding: 0 4px;
-        }
-        
         @media (max-width: 768px) {
           nav {
             padding: 0.75rem 1rem;
@@ -553,7 +516,7 @@ class CustomNavbar extends HTMLElement {
         
         <div class="nav-links">
           <a href="/" data-i18n="navbar.home">Inicio</a>
-          <a href="/menu" data-i18n="navbar.menu">Menú</a>
+          <a href="carta.pdf" target="_blank" rel="noopener" data-i18n="navbar.menu">Menú</a>
           <a href="/reservas" data-i18n="navbar.reservations">Reservas</a>
           <a href="/events" data-i18n="navbar.events">Eventos</a>
           <a href="/contacto" data-i18n="navbar.contact">Contacto</a>
@@ -561,16 +524,6 @@ class CustomNavbar extends HTMLElement {
           <!-- Selector de idioma -->
           <div class="language-selector-container">
             <language-selector></language-selector>
-          </div>
-          
-          <!-- Carrito de compras -->
-          <div class="cart-icon">
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#92400e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <circle cx="9" cy="21" r="1"></circle>
-              <circle cx="20" cy="21" r="1"></circle>
-              <path d="m1 1 4 4 2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-            </svg>
-            <span class="cart-count" id="cart-count">0</span>
           </div>
           
           <!-- Sección de autenticación -->
@@ -625,7 +578,6 @@ class CustomNavbar extends HTMLElement {
     const userMenuCoversTop = this.shadowRoot.getElementById('user-menu-covers-top');
     const userMenuOrdersTop = this.shadowRoot.getElementById('user-menu-orders-top');
     const userMenuLogoutTop = this.shadowRoot.getElementById('user-menu-logout-top');
-    const cartIcon = this.shadowRoot.querySelector('.cart-icon');
     
     if (loginBtn) {
       loginBtn.addEventListener('click', () => {
@@ -743,16 +695,6 @@ class CustomNavbar extends HTMLElement {
       });
     }
     
-    if (cartIcon) {
-      cartIcon.addEventListener('click', () => {
-        if (window.cart) {
-          window.cart.toggle();
-        } else {
-          console.error('cart no está disponible');
-        }
-      });
-    }
-
     this.syncAuthUI();
 
     window.addEventListener('auth-changed', () => {

@@ -15,9 +15,7 @@
     <script src="components/footer.js"></script>
     <script src="components/auth.js"></script>
     <script src="components/auth-modal.js"></script>
-    <script src="components/cart.js"></script>
     <script src="components/orders.js"></script>
-    <script src="components/checkout.js"></script>
     <script src="components/user-panel.js"></script>
     <script src="components/analytics-tracker.js"></script>
     
@@ -40,13 +38,6 @@
                 window.authModal.init();
             } catch (error) {
                 console.error('❌ Error inicializando AuthModal:', error);
-            }
-            
-            try {
-                window.checkout = new CheckoutSystem();
-                window.checkout.init();
-            } catch (error) {
-                console.error('❌ Error inicializando CheckoutSystem:', error);
             }
             
             try {
@@ -232,7 +223,8 @@
             const itemId = item.nombre.toLowerCase().replace(/\s+/g, '-');
             
             return `
-                <div class="menu-item bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow" data-category="${category}">
+                <div class="menu-item" data-category="${category}">
+                    <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                     ${item.imagen_url ? `<img src="${item.imagen_url}" alt="${item.nombre}" class="w-full h-48 object-cover">` : '<div class="w-full h-48 bg-gray-200 flex items-center justify-center text-4xl">🍽️</div>'}
                     <div class="p-4">
                         <h3 class="text-xl font-bold text-amber-800 mb-2">${item.nombre}</h3>
@@ -240,15 +232,6 @@
                         <div class="flex justify-between items-center mb-3">
                             <span class="text-amber-600 font-bold text-lg">${priceFormatted} PLN</span>
                         </div>
-                        <button onclick="window.cart.addItem({
-                            id: '${itemId}',
-                            name: '${item.nombre.replace(/'/g, "\\'")}',
-                            price: '${priceFormatted} PLN',
-                            image: '${item.imagen_url || ''}'
-                        })" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors flex items-center justify-center">
-                            <i data-feather="shopping-cart" class="w-4 h-4 mr-2"></i>
-                            Agregar al Carrito
-                        </button>
                     </div>
                 </div>
             `;
