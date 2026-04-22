@@ -109,15 +109,15 @@ class CheckoutSystem {
                             </div>
                         </div>
 
-                        <div class="space-y-2 text-left">
+                        <div class="space-y-2">
                             <label class="flex items-start gap-3 text-sm text-gray-700">
                                 <input id="checkout-consent-confirm" type="checkbox" required class="mt-1 flex-shrink-0">
-                                <span>Acepto recibir confirmaciones relacionadas con mi pedido.</span>
+                                <span class="flex-1 min-w-0">Acepto recibir confirmaciones relacionadas con mi pedido.</span>
                             </label>
 
                             <label class="flex items-start gap-3 text-sm text-gray-700">
                                 <input id="checkout-consent-marketing" type="checkbox" class="mt-1 flex-shrink-0">
-                                <span>Acepto recibir promociones y los próximos eventos.</span>
+                                <span class="flex-1 min-w-0">Acepto recibir promociones y los próximos eventos.</span>
                             </label>
                         </div>
 
