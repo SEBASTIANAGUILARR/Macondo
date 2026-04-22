@@ -178,7 +178,9 @@
       "card1Title": "Live music",
       "card1Description": "Every weekend we feature live music with the most influential Latin artists.",
       "card2Title": "Latin nights",
-      "card2Description": "A vibrant atmosphere, Latin rhythms and the best energy to enjoy with friends."
+      "card2Description": "A vibrant atmosphere, Latin rhythms and the best energy to enjoy with friends.",
+      "card3Title": "Top local artists",
+      "card3Description": "The most popular and talked-about: the top Latin artists in Poland, live at Macondo."
     },
     "loading": "Loading events...",
     "loadError": "Events could not be loaded.",

@@ -178,7 +178,9 @@
       "card1Title": "Música en vivo",
       "card1Description": "Siempre cada fin de semana tenemos música en vivo con los artistas latinos más influyentes.",
       "card2Title": "Noches latinas",
-      "card2Description": "Un ambiente vibrante, ritmos latinos y la mejor energía para disfrutar con amigos."
+      "card2Description": "Un ambiente vibrante, ritmos latinos y la mejor energía para disfrutar con amigos.",
+      "card3Title": "Artistas locales TOP",
+      "card3Description": "Los más concurridos y sonados: los top de los artistas latinos de Polonia, en vivo en Macondo."
     },
     "loading": "Cargando eventos...",
     "loadError": "No se pudieron cargar los eventos.",
