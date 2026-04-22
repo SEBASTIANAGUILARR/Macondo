@@ -173,6 +173,13 @@
     "title": "Wydarzenia i Specjalne Wieczory",
     "pageTitle": "Wydarzenia",
     "pageSubtitle": "Wszystkie nasze wyjątkowe wieczory, muzyka na żywo i doświadczenia Macondo",
+    "home": {
+      "badge": "W każdy weekend",
+      "card1Title": "Muzyka na żywo",
+      "card1Description": "W każdy weekend gramy muzykę na żywo z najbardziej wpływowymi artystami latynoskimi.",
+      "card2Title": "Latynoskie wieczory",
+      "card2Description": "Vibracyjna atmosfera, latynoskie rytmy i najlepsza energia do spędzenia czasu ze znajomymi."
+    },
     "loading": "Ładowanie wydarzeń...",
     "loadError": "Nie udało się załadować wydarzeń.",
     "noEvents": "Obecnie nie ma zaplanowanych wydarzeń.",

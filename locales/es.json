@@ -173,6 +173,13 @@
     "title": "Eventos y Noches Especiales",
     "pageTitle": "Eventos",
     "pageSubtitle": "Todas nuestras noches especiales, música en vivo y experiencias Macondo",
+    "home": {
+      "badge": "Cada fin de semana",
+      "card1Title": "Música en vivo",
+      "card1Description": "Siempre cada fin de semana tenemos música en vivo con los artistas latinos más influyentes.",
+      "card2Title": "Noches latinas",
+      "card2Description": "Un ambiente vibrante, ritmos latinos y la mejor energía para disfrutar con amigos."
+    },
     "loading": "Cargando eventos...",
     "loadError": "No se pudieron cargar los eventos.",
     "noEvents": "No hay eventos programados por el momento.",

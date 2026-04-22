@@ -173,6 +173,13 @@
     "title": "Events and Special Nights",
     "pageTitle": "Events",
     "pageSubtitle": "All our special nights, live music and Macondo experiences",
+    "home": {
+      "badge": "Every weekend",
+      "card1Title": "Live music",
+      "card1Description": "Every weekend we feature live music with the most influential Latin artists.",
+      "card2Title": "Latin nights",
+      "card2Description": "A vibrant atmosphere, Latin rhythms and the best energy to enjoy with friends."
+    },
     "loading": "Loading events...",
     "loadError": "Events could not be loaded.",
     "noEvents": "There are no scheduled events at the moment.",
