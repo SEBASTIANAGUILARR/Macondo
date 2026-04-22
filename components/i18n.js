@@ -17,6 +17,11 @@ class I18n {
         
         // Aplicar traducciones a la página
         this.applyTranslations();
+
+        // Notificar para que componentes con Shadow DOM (navbar/footer/hero) apliquen traducciones
+        window.dispatchEvent(new CustomEvent('languageChanged', {
+            detail: { language: this.currentLang }
+        }));
         
         // Configurar listener para cambios de idioma
         this.setupLanguageListener();
