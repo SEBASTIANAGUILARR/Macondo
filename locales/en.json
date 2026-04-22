@@ -282,6 +282,13 @@
     "goToMacondo": "Go to Macondo",
     "rights": "All rights reserved."
   },
+  "menuViewer": {
+    "title": "Our Menu",
+    "subtitle": "Explore our options",
+    "foodTab": "Food",
+    "drinksTab": "Drinks",
+    "downloadPdf": "Download PDF"
+  },
   "common": {
     "price": "PLN",
     "from": "From",

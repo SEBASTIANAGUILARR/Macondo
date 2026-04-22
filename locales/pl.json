@@ -282,6 +282,13 @@
     "goToMacondo": "Przejdź do Macondo",
     "rights": "Wszelkie prawa zastrzeżone."
   },
+  "menuViewer": {
+    "title": "Nasze Menu",
+    "subtitle": "Poznaj nasze opcje",
+    "foodTab": "Jedzenie",
+    "drinksTab": "Napoje",
+    "downloadPdf": "Pobierz PDF"
+  },
   "common": {
     "price": "PLN",
     "from": "Od",

@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menú - Macondo Bar Latino</title>
+    <base href="/">
+    <link rel="icon" type="image/png" href="favicon.png">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
+    <script src="components/i18n.js"></script>
+    <script src="components/language-selector.js"></script>
+    <script src="components/supabase-client.js"></script>
+    <script src="components/navbar.js"></script>
+    <script src="components/footer.js"></script>
+    <script src="components/auth.js"></script>
+    <script src="components/auth-modal.js"></script>
+    <script src="components/user-panel.js"></script>
+    <script src="components/analytics-tracker.js"></script>
+    <style>
+        .menu-page-img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        .tab-btn.active {
+            background-color: #b45309;
+            color: white;
+        }
+        .tab-btn:not(.active) {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        .tab-btn:not(.active):hover {
+            background-color: #e5e7eb;
+        }
+    </style>
+</head>
+<body class="bg-amber-50">
+    <custom-navbar></custom-navbar>
+
+    <div class="container mx-auto px-4 py-8 mt-20">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-amber-800 mb-2" data-i18n="menuViewer.title">Nuestro Menú</h1>
+            <p class="text-lg text-gray-600" data-i18n="menuViewer.subtitle">Explora nuestras opciones</p>
+        </div>
+
+        <!-- Tab buttons: Food / Drinks -->
+        <div class="flex justify-center gap-4 mb-8">
+            <button id="tab-food" class="tab-btn active px-8 py-3 rounded-lg font-bold text-lg transition-colors" onclick="switchTab('food')">
+                <span data-i18n="menuViewer.foodTab">Comidas</span>
+            </button>
+            <button id="tab-drinks" class="tab-btn px-8 py-3 rounded-lg font-bold text-lg transition-colors" onclick="switchTab('drinks')">
+                <span data-i18n="menuViewer.drinksTab">Bebidas</span>
+            </button>
+        </div>
+
+        <!-- Image preview container -->
+        <div id="menu-images" class="max-w-3xl mx-auto space-y-6 mb-8">
+            <!-- Images injected by JS -->
+        </div>
+
+        <!-- Download PDF button -->
+        <div class="text-center mb-8">
+            <a id="download-pdf-btn" href="#" target="_blank" rel="noopener" class="inline-flex items-center bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-8 rounded-lg transition-colors text-lg">
+                <i data-feather="download" class="w-5 h-5 mr-3"></i>
+                <span data-i18n="menuViewer.downloadPdf">Descargar PDF</span>
+            </a>
+        </div>
+
+        <!-- Back button -->
+        <div class="text-center mb-8">
+            <a href="index.html" class="inline-flex items-center text-amber-700 hover:text-amber-900 font-semibold transition-colors">
+                <i data-feather="arrow-left" class="w-5 h-5 mr-2"></i>
+                <span data-i18n="common.backHome">Volver al Inicio</span>
+            </a>
+        </div>
+    </div>
+
+    <custom-footer></custom-footer>
+
+    <script>
+        let currentTab = 'food';
+        let currentLang = 'en';
+
+        function getMenuConfig() {
+            const lang = window.i18n ? window.i18n.getCurrentLanguage() : 'en';
+            currentLang = lang;
+            return {
+                food: {
+                    prefix: `menu-${lang}`,
+                    pdf: `menus/menu-${lang}.pdf`
+                },
+                drinks: {
+                    prefix: `bar-${lang}`,
+                    pdf: `menus/bar-${lang}.pdf`
+                }
+            };
+        }
+
+        function switchTab(tab) {
+            currentTab = tab;
+            document.getElementById('tab-food').classList.toggle('active', tab === 'food');
+            document.getElementById('tab-drinks').classList.toggle('active', tab === 'drinks');
+            renderMenu();
+        }
+
+        function renderMenu() {
+            const config = getMenuConfig();
+            const section = config[currentTab];
+            const container = document.getElementById('menu-images');
+
+            // Try loading pages 1 and 2 (we know each PDF has 2 pages)
+            let html = '';
+            for (let i = 1; i <= 2; i++) {
+                html += `
+                    <div class="flex justify-center">
+                        <img src="menus/img/${section.prefix}-page${i}.jpg" 
+                             alt="Menu page ${i}" 
+                             class="menu-page-img"
+                             loading="${i === 1 ? 'eager' : 'lazy'}">
+                    </div>`;
+            }
+            container.innerHTML = html;
+
+            // Update download button
+            const downloadBtn = document.getElementById('download-pdf-btn');
+            if (downloadBtn) {
+                downloadBtn.href = section.pdf;
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Read tab from URL param
+            const params = new URLSearchParams(window.location.search);
+            const tab = params.get('tab');
+            if (tab === 'drinks') {
+                switchTab('drinks');
+            } else {
+                switchTab('food');
+            }
+
+            renderMenu();
+
+            if (typeof feather !== 'undefined') {
+                feather.replace();
+            }
+
+            try {
+                window.authModal = new AuthModal();
+                window.authModal.init();
+            } catch (error) {}
+
+            try {
+                window.userPanel = new UserPanel();
+                window.userPanel.init();
+            } catch (error) {}
+        });
+
+        // Re-render when language changes
+        window.addEventListener('languageChanged', function() {
+            renderMenu();
+        });
+    </script>
+</body>
+</html>

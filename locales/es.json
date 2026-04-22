@@ -279,6 +279,13 @@
     "goToMacondo": "Ir a Macondo",
     "rights": "Todos los derechos reservados."
   },
+  "menuViewer": {
+    "title": "Nuestro Menú",
+    "subtitle": "Explora nuestras opciones",
+    "foodTab": "Comidas",
+    "drinksTab": "Bebidas",
+    "downloadPdf": "Descargar PDF"
+  },
   "common": {
     "price": "PLN",
     "from": "Desde",

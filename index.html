@@ -40,11 +40,11 @@
         <section id="menu" class="mb-16">
             <h2 class="text-4xl font-bold text-amber-800 mb-8 text-center" data-i18n="menu.title">Nuestro Menú</h2>
             <div class="text-center mt-8 mb-16 flex flex-wrap gap-4 justify-center">
-                <a id="home-menu-link" href="menus/menu-es.pdf" target="_blank" rel="noopener" class="inline-flex items-center bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-8 rounded-lg transition-colors text-lg">
+                <a href="menu-viewer.html?tab=food" class="inline-flex items-center bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-8 rounded-lg transition-colors text-lg">
                     <i data-feather="menu" class="w-5 h-5 mr-3"></i>
                     <span data-i18n="common.viewFullMenu">Ver Menú</span>
                 </a>
-                <a id="home-bar-link" href="menus/bar-es.pdf" target="_blank" rel="noopener" class="inline-flex items-center bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-lg transition-colors text-lg">
+                <a href="menu-viewer.html?tab=drinks" class="inline-flex items-center bg-amber-500 hover:bg-amber-600 text-white font-bold py-3 px-8 rounded-lg transition-colors text-lg">
                     <i data-feather="coffee" class="w-5 h-5 mr-3"></i>
                     <span data-i18n="common.viewBarMenu">Carta de Bar</span>
                 </a>
@@ -216,16 +216,6 @@
                 }
             } catch (e) {}
         }
-
-        function updateHomeMenuLinks() {
-            const lang = window.i18n ? window.i18n.getCurrentLanguage() : 'en';
-            const menuLink = document.getElementById('home-menu-link');
-            const barLink = document.getElementById('home-bar-link');
-            if (menuLink) menuLink.href = `menus/menu-${lang}.pdf`;
-            if (barLink) barLink.href = `menus/bar-${lang}.pdf`;
-        }
-
-        window.addEventListener('languageChanged', updateHomeMenuLinks);
 
         function hideSectionWithMessage(sectionId, message) {
             const el = document.getElementById(sectionId);
