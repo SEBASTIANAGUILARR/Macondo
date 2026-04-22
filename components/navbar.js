@@ -516,7 +516,7 @@ class CustomNavbar extends HTMLElement {
         
         <div class="nav-links">
           <a href="/" data-i18n="navbar.home">Inicio</a>
-          <a href="carta.pdf" target="_blank" rel="noopener" data-i18n="navbar.menu">Menú</a>
+          <a id="nav-menu-link" href="menus/menu-es.pdf" target="_blank" rel="noopener" data-i18n="navbar.menu">Menú</a>
           <a href="/reservas" data-i18n="navbar.reservations">Reservas</a>
           <a href="/events" data-i18n="navbar.events">Eventos</a>
           <a href="/contacto" data-i18n="navbar.contact">Contacto</a>
@@ -704,6 +704,7 @@ class CustomNavbar extends HTMLElement {
     // Escuchar cambios de idioma
     window.addEventListener('languageChanged', () => {
       this.applyTranslations();
+      this.updateMenuLink();
     });
   }
   
@@ -718,6 +719,16 @@ class CustomNavbar extends HTMLElement {
         element.textContent = translation;
       }
     });
+
+    this.updateMenuLink();
+  }
+
+  updateMenuLink() {
+    const lang = window.i18n ? window.i18n.getCurrentLanguage() : 'en';
+    const menuLink = this.shadowRoot && this.shadowRoot.getElementById('nav-menu-link');
+    if (menuLink) {
+      menuLink.href = `menus/menu-${lang}.pdf`;
+    }
   }
 
   syncAuthUI() {
