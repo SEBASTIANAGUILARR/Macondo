@@ -44,47 +44,47 @@
                 <div id="cover-dj-panel" class="bg-white rounded-lg shadow-md p-6 mb-8">
                     <div class="flex flex-wrap items-start justify-between gap-4">
                         <div>
-                            <h2 class="text-2xl font-bold text-amber-800">🎧 DJ del finde (Sótano)</h2>
-                            <p class="text-gray-600 mt-1">Compra tu cover online y recibe tu QR por email.</p>
+                            <h2 class="text-2xl font-bold text-amber-800" data-i18n="events.cover.djTitle">🎧 DJ del finde (Sótano)</h2>
+                            <p class="text-gray-600 mt-1" data-i18n="events.cover.djSubtitle">Compra tu cover online y recibe tu QR por email.</p>
                             <div class="mt-3 text-sm text-gray-700">
-                                <div><strong>DJ:</strong> <span id="cover-dj-name">Dj Micke</span></div>
-                                <div><strong>Precio:</strong> <span id="cover-price">30</span> PLN por persona</div>
+                                <div><strong data-i18n="events.cover.djLabel">DJ:</strong> <span id="cover-dj-name">Dj Micke</span></div>
+                                <div><strong data-i18n="events.cover.priceLabel">Precio:</strong> <span id="cover-price">30</span> PLN <span data-i18n="events.cover.perPerson">por persona</span></div>
                             </div>
                         </div>
-                        <button type="button" id="cover-open-ticket" class="text-amber-700 hover:text-amber-800 font-bold underline">Ver ticket (con token)</button>
+                        <button type="button" id="cover-open-ticket" class="text-amber-700 hover:text-amber-800 font-bold underline" data-i18n="events.cover.viewTicket">Ver ticket (con token)</button>
                     </div>
 
                     <form id="cover-form" class="mt-6 space-y-4">
                         <div class="grid md:grid-cols-3 gap-3">
-                            <input id="buyer-name" type="text" placeholder="Nombre comprador" class="p-3 border border-amber-300 rounded-lg" required>
-                            <input id="buyer-email" type="email" placeholder="Email comprador" class="p-3 border border-amber-300 rounded-lg" required>
-                            <input id="buyer-phone" type="tel" placeholder="Teléfono comprador" class="p-3 border border-amber-300 rounded-lg" required>
+                            <input id="buyer-name" type="text" placeholder="Nombre comprador" data-i18n="events.cover.buyerName" class="p-3 border border-amber-300 rounded-lg" required>
+                            <input id="buyer-email" type="email" placeholder="Email comprador" data-i18n="events.cover.buyerEmail" class="p-3 border border-amber-300 rounded-lg" required>
+                            <input id="buyer-phone" type="tel" placeholder="Teléfono comprador" data-i18n="events.cover.buyerPhone" class="p-3 border border-amber-300 rounded-lg" required>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
-                            <h3 class="text-lg font-bold text-amber-800">Personas (1 QR por persona)</h3>
-                            <button type="button" id="add-person" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg">+ Añadir persona</button>
+                            <h3 class="text-lg font-bold text-amber-800" data-i18n="events.cover.peopleTitle">Personas (1 QR por persona)</h3>
+                            <button type="button" id="add-person" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg" data-i18n="events.cover.addPerson">+ Añadir persona</button>
                         </div>
 
-                        <div class="text-sm text-gray-600">Persona #1 = comprador</div>
+                        <div class="text-sm text-gray-600" data-i18n="events.cover.person1Note">Persona #1 = comprador</div>
                         <div id="people-list" class="space-y-3"></div>
 
                         <label class="flex items-start gap-3 text-sm text-gray-700">
                             <input id="cover-consent-confirm" type="checkbox" required class="mt-1">
-                            <span>Acepto usar mis datos para confirmaciones relacionadas con mi compra.</span>
+                            <span data-i18n="events.cover.consentConfirm">Acepto usar mis datos para confirmaciones relacionadas con mi compra.</span>
                         </label>
 
                         <label class="flex items-start gap-3 text-sm text-gray-700">
                             <input id="cover-consent-marketing" type="checkbox" class="mt-1">
-                            <span>Acepto recibir información de futuros eventos.</span>
+                            <span data-i18n="events.cover.consentMarketing">Acepto recibir información de futuros eventos.</span>
                         </label>
 
                         <div class="flex flex-wrap items-center justify-between gap-3">
                             <div class="text-sm text-gray-700">
-                                Total: <strong><span id="cover-total">0</span> PLN</strong>
+                                <span data-i18n="events.cover.totalLabel">Total:</span> <strong><span id="cover-total">0</span> PLN</strong>
                             </div>
                             <button id="cover-submit" type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                                Comprar Cover (pago online)
+                                <span data-i18n="events.cover.buyButton">Comprar Cover (pago online)</span>
                             </button>
                         </div>
 
@@ -95,42 +95,42 @@
                 <div id="cover-private-panel" class="hidden bg-white rounded-lg shadow-md p-6 mb-8">
                     <div class="flex flex-wrap items-start justify-between gap-4">
                         <div>
-                            <h2 id="private-title" class="text-2xl font-bold text-amber-800">🎟️ Evento privado</h2>
-                            <p id="private-description" class="text-gray-600 mt-1">Registro bajo aprobación. Recibirás tu QR por email solo si tu invitación es aceptada.</p>
+                            <h2 id="private-title" class="text-2xl font-bold text-amber-800" data-i18n="events.private.title">🎟️ Evento privado</h2>
+                            <p id="private-description" class="text-gray-600 mt-1" data-i18n="events.private.description">Registro bajo aprobación. Recibirás tu QR por email solo si tu invitación es aceptada.</p>
                         </div>
                     </div>
 
                     <form id="private-cover-form" class="mt-6 space-y-4">
                         <div class="grid md:grid-cols-3 gap-3">
-                            <input id="private-buyer-name" type="text" placeholder="Nombre" class="p-3 border border-amber-300 rounded-lg" required>
-                            <input id="private-buyer-email" type="email" placeholder="Email" class="p-3 border border-amber-300 rounded-lg" required>
-                            <input id="private-buyer-phone" type="tel" placeholder="Teléfono" class="p-3 border border-amber-300 rounded-lg" required>
+                            <input id="private-buyer-name" type="text" placeholder="Nombre" data-i18n="events.private.buyerName" class="p-3 border border-amber-300 rounded-lg" required>
+                            <input id="private-buyer-email" type="email" placeholder="Email" data-i18n="events.private.buyerEmail" class="p-3 border border-amber-300 rounded-lg" required>
+                            <input id="private-buyer-phone" type="tel" placeholder="Teléfono" data-i18n="events.private.buyerPhone" class="p-3 border border-amber-300 rounded-lg" required>
                         </div>
 
                         <div class="flex items-center justify-between gap-3">
-                            <h3 class="text-lg font-bold text-amber-800">Personas (1 solicitud por persona)</h3>
-                            <button type="button" id="private-add-person" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg">+ Añadir persona</button>
+                            <h3 class="text-lg font-bold text-amber-800" data-i18n="events.private.peopleTitle">Personas (1 solicitud por persona)</h3>
+                            <button type="button" id="private-add-person" class="bg-amber-600 hover:bg-amber-700 text-white font-bold px-4 py-2 rounded-lg" data-i18n="events.private.addPerson">+ Añadir persona</button>
                         </div>
 
-                        <div class="text-sm text-gray-600">Persona #1 = la principal</div>
+                        <div class="text-sm text-gray-600" data-i18n="events.private.person1Note">Persona #1 = la principal</div>
                         <div id="private-people-list" class="space-y-3"></div>
 
                         <label class="flex items-start gap-3 text-sm text-gray-700">
                             <input id="private-consent-confirm" type="checkbox" required class="mt-1">
-                            <span>Acepto usar mis datos para comunicaciones relacionadas con mi solicitud.</span>
+                            <span data-i18n="events.private.consentConfirm">Acepto usar mis datos para comunicaciones relacionadas con mi solicitud.</span>
                         </label>
 
                         <label class="flex items-start gap-3 text-sm text-gray-700">
                             <input id="private-consent-marketing" type="checkbox" class="mt-1">
-                            <span>Acepto recibir información de futuros eventos.</span>
+                            <span data-i18n="events.private.consentMarketing">Acepto recibir información de futuros eventos.</span>
                         </label>
 
                         <div class="flex flex-wrap items-center justify-between gap-3">
                             <div class="text-sm text-gray-700">
-                                <strong>Pago:</strong> No aplica (invitación bajo aprobación)
+                                <strong data-i18n="events.private.paymentLabel">Pago:</strong> <span data-i18n="events.private.paymentValue">No aplica (invitación bajo aprobación)</span>
                             </div>
                             <button id="private-submit" type="submit" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                                Solicitar invitación
+                                <span data-i18n="events.private.requestButton">Solicitar invitación</span>
                             </button>
                         </div>
 
@@ -139,32 +139,32 @@
                 </div>
 
                 <div id="events-container" class="space-y-8">
-                    <p class="text-gray-500 text-center py-8">Cargando eventos...</p>
+                    <p class="text-gray-500 text-center py-8" data-i18n="events.loading">Cargando eventos...</p>
                 </div>
             </section>
 
             <aside class="lg:col-span-1">
                 <div class="bg-white rounded-lg shadow-md p-6 sticky top-24">
-                    <h3 class="text-xl font-bold text-amber-800 mb-4">Navegación</h3>
+                    <h3 class="text-xl font-bold text-amber-800 mb-4" data-i18n="events.sidebar.navigation">Navegación</h3>
                     <div class="space-y-3">
-                        <a href="index.html#eventos" class="block w-full text-center bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">Volver al Home</a>
-                        <a href="menu.html" class="block w-full text-center bg-white border border-amber-600 text-amber-700 hover:bg-amber-50 font-bold py-2 px-4 rounded-lg transition-colors">Ver Menú Completo</a>
+                        <a href="index.html#eventos" class="block w-full text-center bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors" data-i18n="events.sidebar.backHome">Volver al Home</a>
+                        <a href="menu.html" class="block w-full text-center bg-white border border-amber-600 text-amber-700 hover:bg-amber-50 font-bold py-2 px-4 rounded-lg transition-colors" data-i18n="events.sidebar.viewFullMenu">Ver Menú Completo</a>
                     </div>
 
                     <div class="mt-6">
-                        <h4 class="text-lg font-bold text-amber-800 mb-3">Próximamente</h4>
+                        <h4 class="text-lg font-bold text-amber-800 mb-3" data-i18n="events.sidebar.comingSoon">Próximamente</h4>
                         <ul class="space-y-2 text-gray-700">
                             <li class="flex items-start">
                                 <i data-feather="calendar" class="w-4 h-4 mr-2 mt-1 text-amber-700"></i>
-                                <span>Más noches temáticas cada semana</span>
+                                <span data-i18n="events.sidebar.item1">Más noches temáticas cada semana</span>
                             </li>
                             <li class="flex items-start">
                                 <i data-feather="music" class="w-4 h-4 mr-2 mt-1 text-amber-700"></i>
-                                <span>Sesiones acústicas y DJ invitados</span>
+                                <span data-i18n="events.sidebar.item2">Sesiones acústicas y DJ invitados</span>
                             </li>
                             <li class="flex items-start">
                                 <i data-feather="users" class="w-4 h-4 mr-2 mt-1 text-amber-700"></i>
-                                <span>Eventos privados y caterings</span>
+                                <span data-i18n="events.sidebar.item3">Eventos privados y caterings</span>
                             </li>
                         </ul>
                     </div>
@@ -206,16 +206,17 @@
         }
 
         function renderPersonRow(index) {
+            const t = (key, params) => (window.t ? window.t(key, params) : key);
             return `
                 <div class="p-4 border border-amber-200 rounded-lg bg-amber-50">
                     <div class="flex items-center justify-between gap-3 mb-3">
-                        <div class="font-bold text-amber-800">Persona #${index + 2}</div>
-                        <button type="button" class="remove-person text-red-600 hover:text-red-700 font-bold" data-index="${index}">Eliminar</button>
+                        <div class="font-bold text-amber-800">${t('events.cover.personNumber', { number: index + 2 })}</div>
+                        <button type="button" class="remove-person text-red-600 hover:text-red-700 font-bold" data-index="${index}">${t('events.cover.removePerson')}</button>
                     </div>
                     <div class="grid md:grid-cols-3 gap-3">
-                        <input data-field="name" type="text" placeholder="Nombre" class="p-3 border border-amber-300 rounded-lg" required>
-                        <input data-field="email" type="email" placeholder="Email" class="p-3 border border-amber-300 rounded-lg" required>
-                        <input data-field="phone" type="tel" placeholder="Teléfono" class="p-3 border border-amber-300 rounded-lg" required>
+                        <input data-field="name" type="text" placeholder="${t('events.cover.fieldName')}" class="p-3 border border-amber-300 rounded-lg" required>
+                        <input data-field="email" type="email" placeholder="${t('events.cover.fieldEmail')}" class="p-3 border border-amber-300 rounded-lg" required>
+                        <input data-field="phone" type="tel" placeholder="${t('events.cover.fieldPhone')}" class="p-3 border border-amber-300 rounded-lg" required>
                     </div>
                 </div>
             `;
@@ -248,8 +249,8 @@
                     document.getElementById('cover-price').textContent = String(coverConfig.price_pln || 30);
                     updateCoverTotal();
                 } else {
-                    const title = String(coverConfig.private_title || '').trim() || '🎟️ Evento privado';
-                    const desc = String(coverConfig.private_description || '').trim() || 'Registro bajo aprobación. Recibirás tu QR por email solo si tu invitación es aceptada.';
+                    const title = String(coverConfig.private_title || '').trim() || (window.t ? window.t('events.private.title') : '🎟️ Evento privado');
+                    const desc = String(coverConfig.private_description || '').trim() || (window.t ? window.t('events.private.description') : 'Registro bajo aprobación. Recibirás tu QR por email solo si tu invitación es aceptada.');
                     const tEl = document.getElementById('private-title');
                     const dEl = document.getElementById('private-description');
                     if (tEl) tEl.textContent = title;
@@ -315,7 +316,7 @@
             try {
                 const supabaseClient = window.supabaseClient;
                 if (!supabaseClient) {
-                    container.innerHTML = '<p class="text-gray-500 text-center py-8">No se pudieron cargar los eventos.</p>';
+                    container.innerHTML = `<p class="text-gray-500 text-center py-8">${window.t ? window.t('events.loadError') : 'No se pudieron cargar los eventos.'}</p>`;
                     return;
                 }
 
@@ -327,12 +328,12 @@
                 
                 if (error) {
                     console.error('Error cargando eventos:', error);
-                    container.innerHTML = '<p class="text-gray-500 text-center py-8">No se pudieron cargar los eventos.</p>';
+                    container.innerHTML = `<p class="text-gray-500 text-center py-8">${window.t ? window.t('events.loadError') : 'No se pudieron cargar los eventos.'}</p>`;
                     return;
                 }
                 
                 if (!events || events.length === 0) {
-                    container.innerHTML = '<p class="text-gray-500 text-center py-8">No hay eventos programados por el momento.</p>';
+                    container.innerHTML = `<p class="text-gray-500 text-center py-8">${window.t ? window.t('events.noEvents') : 'No hay eventos programados por el momento.'}</p>`;
                     return;
                 }
                 
@@ -342,16 +343,16 @@
                         <div class="p-6">
                             <div class="flex items-center justify-between mb-3 flex-wrap gap-2">
                                 <h2 class="text-2xl font-bold text-amber-800">${event.titulo}</h2>
-                                <span class="text-sm text-gray-500">${formatEventDate(event.fecha)} · ${event.hora || 'Hora por confirmar'}</span>
+                                <span class="text-sm text-gray-500">${formatEventDate(event.fecha)} · ${event.hora || (window.t ? window.t('events.timeTbd') : 'Hora por confirmar')}</span>
                             </div>
                             <p class="text-gray-700 mb-4">${event.descripcion || ''}</p>
                             <div class="flex items-center justify-between flex-wrap gap-3">
                                 <div class="text-sm text-gray-600">
-                                    <span class="mr-4">📍 ${event.ubicacion || 'Macondo Bar Latino'}</span>
-                                    <span>💰 ${event.precio || 'Entrada libre'}</span>
+                                    <span class="mr-4">📍 ${event.ubicacion || (window.t ? window.t('events.defaultLocation') : 'Macondo Bar Latino')}</span>
+                                    <span>💰 ${event.precio || (window.t ? window.t('events.freeEntry') : 'Entrada libre')}</span>
                                 </div>
                                 <div class="flex flex-col sm:flex-row gap-3">
-                                    <a href="index.html#reservas" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-center">Reservar</a>
+                                    <a href="index.html#reservas" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors text-center">${window.t ? window.t('events.reserveCta') : 'Reservar'}</a>
                                 </div>
                             </div>
                         </div>
@@ -359,7 +360,7 @@
                 `).join('');
             } catch (e) {
                 console.error('Error en loadEvents:', e);
-                container.innerHTML = '<p class="text-gray-500 text-center py-8">No se pudieron cargar los eventos.</p>';
+                container.innerHTML = `<p class="text-gray-500 text-center py-8">${window.t ? window.t('events.loadError') : 'No se pudieron cargar los eventos.'}</p>`;
             }
         }
         
@@ -367,7 +368,9 @@
         function formatEventDate(dateStr) {
             const date = new Date(dateStr);
             const options = { weekday: 'long', day: 'numeric', month: 'long' };
-            return date.toLocaleDateString('es-ES', options);
+            const lang = window.i18n ? window.i18n.getCurrentLanguage() : 'es';
+            const locale = lang === 'pl' ? 'pl-PL' : (lang === 'en' ? 'en-US' : 'es-ES');
+            return date.toLocaleDateString(locale, options);
         }
 
         async function startEvents() {
@@ -454,7 +457,7 @@
                             return;
                         }
 
-                        if (statusEl) statusEl.textContent = '✅ Solicitud recibida. Revisa tu email: tu invitación debe ser aceptada manualmente. Solo si es aceptada recibirás tu QR.';
+                        if (statusEl) statusEl.textContent = window.t ? window.t('events.private.requestReceived') : '✅ Solicitud recibida. Revisa tu email: tu invitación debe ser aceptada manualmente. Solo si es aceptada recibirás tu QR.';
                         privateForm.reset();
                         const list = document.getElementById('private-people-list');
                         if (list) list.innerHTML = '';
@@ -463,7 +466,7 @@
                     } finally {
                         if (submitBtn) {
                             submitBtn.disabled = false;
-                            submitBtn.textContent = 'Solicitar invitación';
+                            submitBtn.textContent = window.t ? window.t('events.private.requestButton') : 'Solicitar invitación';
                         }
                     }
                 });
@@ -604,13 +607,13 @@
                             return;
                         }
 
-                        if (statusEl) statusEl.textContent = 'No se pudo iniciar el pago.';
+                        if (statusEl) statusEl.textContent = window.t ? window.t('events.cover.paymentError') : 'No se pudo iniciar el pago.';
                     } catch (err) {
                         if (statusEl) statusEl.textContent = err.message || String(err);
                     } finally {
                         if (submitBtn) {
                             submitBtn.disabled = false;
-                            submitBtn.textContent = 'Comprar Cover (pago online)';
+                            submitBtn.textContent = window.t ? window.t('events.cover.buyButton') : 'Comprar Cover (pago online)';
                         }
                     }
                 });
@@ -623,10 +626,10 @@
                 const cancel = params.get('cover_cancel');
                 const statusEl = document.getElementById('cover-status');
                 if (ok === '1' && statusEl) {
-                    statusEl.textContent = '✅ Pago recibido. Te enviaremos el QR por email en unos momentos.';
+                    statusEl.textContent = window.t ? window.t('events.cover.paymentSuccess') : '✅ Pago recibido. Te enviaremos el QR por email en unos momentos.';
                 }
                 if (cancel === '1' && statusEl) {
-                    statusEl.textContent = 'Pago cancelado.';
+                    statusEl.textContent = window.t ? window.t('events.cover.paymentCanceled') : 'Pago cancelado.';
                 }
             } catch (e) {}
 
