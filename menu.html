@@ -10,6 +10,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
+    <script src="components/i18n.js"></script>
+    <script src="components/language-selector.js"></script>
     <script src="components/supabase-client.js"></script>
     <script src="components/navbar.js"></script>
     <script src="components/footer.js"></script>
@@ -55,47 +57,47 @@
     <div class="container mx-auto px-4 py-8 mt-20">
         <!-- Header del Menú -->
         <div class="text-center mb-12">
-            <h1 class="text-5xl font-bold text-amber-800 mb-4">Menú Completo</h1>
-            <p class="text-xl text-gray-600">Descubre todos nuestros platos y bebidas tradicionales</p>
+            <h1 class="text-5xl font-bold text-amber-800 mb-4" data-i18n="menu.fullTitle">Menú Completo</h1>
+            <p class="text-xl text-gray-600" data-i18n="menu.fullSubtitle">Descubre todos nuestros platos y bebidas tradicionales</p>
         </div>
 
         <!-- Filtros -->
         <div class="mb-8 flex flex-wrap gap-4 justify-center">
             <button class="filter-btn px-6 py-2 bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors" data-category="all">
-                Todos
+                <span data-i18n="menu.filters.all">Todos</span>
             </button>
             <button class="filter-btn px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors" data-category="platos">
-                Platos
+                <span data-i18n="menu.filters.dishes">Platos</span>
             </button>
             <button class="filter-btn px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors" data-category="bebidas">
-                Bebidas
+                <span data-i18n="menu.filters.drinks">Bebidas</span>
             </button>
             <button class="filter-btn px-6 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors" data-category="postres">
-                Postres
+                <span data-i18n="menu.filters.desserts">Postres</span>
             </button>
         </div>
 
         <!-- Platos Principales -->
         <section class="mb-16">
-            <h2 class="text-3xl font-bold text-amber-800 mb-8 text-center">Platos Típicos Colombianos</h2>
+            <h2 class="text-3xl font-bold text-amber-800 mb-8 text-center" data-i18n="menu.colombianDishes">Platos Típicos Colombianos</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="platos-section">
-                <p class="text-gray-500 text-center py-8 col-span-full">Cargando platos...</p>
+                <p class="text-gray-500 text-center py-8 col-span-full" data-i18n="menu.loadingDishes">Cargando platos...</p>
             </div>
         </section>
 
         <!-- Bebidas -->
         <section class="mb-16">
-            <h2 class="text-3xl font-bold text-amber-800 mb-8 text-center">Bebidas y Cócteles</h2>
+            <h2 class="text-3xl font-bold text-amber-800 mb-8 text-center" data-i18n="menu.drinks">Bebidas y Cócteles</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="bebidas-section">
-                <p class="text-gray-500 text-center py-8 col-span-full">Cargando bebidas...</p>
+                <p class="text-gray-500 text-center py-8 col-span-full" data-i18n="menu.loadingDrinks">Cargando bebidas...</p>
             </div>
         </section>
 
         <!-- Ofertas -->
         <section class="mb-16">
-            <h2 class="text-3xl font-bold text-amber-800 mb-8 text-center">Ofertas Especiales</h2>
+            <h2 class="text-3xl font-bold text-amber-800 mb-8 text-center" data-i18n="menu.specialOffers">Ofertas Especiales</h2>
             <div class="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" id="ofertas-section">
-                <p class="text-gray-500 text-center py-8 col-span-full">Cargando ofertas...</p>
+                <p class="text-gray-500 text-center py-8 col-span-full" data-i18n="menu.loadingOffers">Cargando ofertas...</p>
             </div>
         </section>
 
@@ -103,7 +105,7 @@
         <div class="text-center mb-8">
             <a href="index.html" class="inline-flex items-center bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
                 <i data-feather="arrow-left" class="w-5 h-5 mr-2"></i>
-                Volver al Inicio
+                <span data-i18n="common.backHome">Volver al Inicio</span>
             </a>
         </div>
     </div>

@@ -9,6 +9,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="components/i18n.js"></script>
+    <script src="components/language-selector.js"></script>
     <script src="components/navbar.js"></script>
     <script src="components/footer.js"></script>
     <style>
@@ -125,34 +126,34 @@
                 </svg>
             </div>
             
-            <h1 class="text-3xl font-bold text-amber-800 mb-4">¡Pago Exitoso!</h1>
+            <h1 class="text-3xl font-bold text-amber-800 mb-4" data-i18n="success.title">¡Pago Exitoso!</h1>
             
-            <p class="text-gray-600 mb-4">
+            <p class="text-gray-600 mb-4" data-i18n="success.subtitle">
                 Gracias por tu compra en Macondo Bar Latino. Tu pedido ha sido procesado correctamente.
             </p>
             
             <div class="order-details" id="order-details">
-                <p><strong>Número de pedido:</strong> <span id="order-number">Cargando...</span></p>
-                <p><strong>Estado:</strong> <span class="text-green-600 font-semibold">Confirmado</span></p>
-                <p><strong>Fecha:</strong> <span id="order-date"></span></p>
+                <p><strong data-i18n="success.orderNumber">Número de pedido:</strong> <span id="order-number">Cargando...</span></p>
+                <p><strong data-i18n="success.status">Estado:</strong> <span class="text-green-600 font-semibold" data-i18n="success.confirmed">Confirmado</span></p>
+                <p><strong data-i18n="success.date">Fecha:</strong> <span id="order-date"></span></p>
             </div>
             
-            <p class="text-gray-500 text-sm mb-6">
+            <p class="text-gray-500 text-sm mb-6" data-i18n="success.emailNotice">
                 Recibirás un correo electrónico con los detalles de tu pedido. Si tienes alguna pregunta, no dudes en contactarnos.
             </p>
             
             <div class="space-y-3">
                 <a href="index.html" class="block w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-6 rounded-lg transition-colors">
-                    Volver al Inicio
+                    <span data-i18n="common.backHome">Volver al Inicio</span>
                 </a>
                 
                 <a href="index.html#menu" class="block w-full bg-white border-2 border-amber-600 text-amber-600 hover:bg-amber-50 font-bold py-3 px-6 rounded-lg transition-colors">
-                    Ver Menú
+                    <span data-i18n="common.viewMenu">Ver Menú</span>
                 </a>
             </div>
             
             <div class="mt-6 pt-6 border-t border-gray-200">
-                <p class="text-gray-500 text-sm">
+                <p class="text-gray-500 text-sm" data-i18n="success.needHelp">
                     ¿Necesitas ayuda? Contáctanos:
                 </p>
                 <p class="text-amber-700 font-medium">

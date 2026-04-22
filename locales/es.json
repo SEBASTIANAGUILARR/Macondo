@@ -22,6 +22,17 @@
     "drinks": "Bebidas y Cócteles",
     "specialOffers": "Ofertas Especiales",
     "addToCart": "Agregar al Carrito",
+    "fullTitle": "Menú Completo",
+    "fullSubtitle": "Descubre todos nuestros platos y bebidas tradicionales",
+    "loadingDishes": "Cargando platos...",
+    "loadingDrinks": "Cargando bebidas...",
+    "loadingOffers": "Cargando ofertas...",
+    "filters": {
+      "all": "Todos",
+      "dishes": "Platos",
+      "drinks": "Bebidas",
+      "desserts": "Postres"
+    },
     "viewFullMenu": "Ver Menú Completo"
   },
   "offers": {
@@ -106,6 +117,8 @@
     "noConfirmation": "¿No has recibido confirmación por parte de nuestro equipo?",
     "contactUs": "Contáctanos",
     "callButton": "Llamar",
+    "consentConfirm": "Acepto recibir confirmaciones relacionadas con mi reserva o pedido.",
+    "consentMarketing": "Acepto recibir promociones y los próximos eventos.",
     "selectTable": "Selecciona tu Mesa",
     "table": "Mesa",
     "available": "Disponible",
@@ -120,6 +133,8 @@
   },
   "events": {
     "title": "Eventos y Noches Especiales",
+    "pageTitle": "Eventos",
+    "pageSubtitle": "Todas nuestras noches especiales, música en vivo y experiencias Macondo",
     "vallenatoNight": {
       "name": "Noche de Vallenato",
       "date": "Viernes 15 de Julio, 8:00 PM",
@@ -138,6 +153,16 @@
     "reserveNow": "Reservar Ahora",
     "viewAllEvents": "Ver Todos los Eventos"
   },
+  "success": {
+    "title": "¡Pago Exitoso!",
+    "subtitle": "Gracias por tu compra en Macondo Bar Latino. Tu pedido ha sido procesado correctamente.",
+    "orderNumber": "Número de pedido:",
+    "status": "Estado:",
+    "confirmed": "Confirmado",
+    "date": "Fecha:",
+    "emailNotice": "Recibirás un correo electrónico con los detalles de tu pedido. Si tienes alguna pregunta, no dudes en contactarnos.",
+    "needHelp": "¿Necesitas ayuda? Contáctanos:"
+  },
   "footer": {
     "description": "Macondo Bar Latino - Tu rincón colombiano en Polonia",
     "address": "Dirección",
@@ -149,6 +174,7 @@
     "ourMenu": "Nuestro Menú",
     "gallery": "Galería",
     "aboutUs": "Sobre Nosotros",
+    "goToMacondo": "Ir a Macondo",
     "rights": "Todos los derechos reservados."
   },
   "common": {
@@ -157,6 +183,8 @@
     "perPerson": "Por persona",
     "perEvent": "Por evento",
     "people": "personas",
+    "backHome": "Volver al Inicio",
+    "viewMenu": "Ver Menú",
     "register": "Registrarse",
     "logout": "Cerrar Sesión",
     "myPanel": "Mi Panel",

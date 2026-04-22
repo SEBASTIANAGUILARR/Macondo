@@ -10,6 +10,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/feather-icons/dist/feather.min.js"></script>
     <script src="https://unpkg.com/feather-icons"></script>
+    <script src="components/i18n.js"></script>
+    <script src="components/language-selector.js"></script>
     <script src="components/supabase-client.js"></script>
     <script src="components/navbar.js"></script>
     <script src="components/footer.js"></script>
@@ -33,8 +35,8 @@
 
     <main class="container mx-auto px-4 py-8 mt-20">
         <div class="text-center mb-12">
-            <h1 class="text-5xl font-bold text-amber-800 mb-4">Eventos</h1>
-            <p class="text-xl text-gray-600">Todas nuestras noches especiales, música en vivo y experiencias Macondo</p>
+            <h1 class="text-5xl font-bold text-amber-800 mb-4" data-i18n="events.pageTitle">Eventos</h1>
+            <p class="text-xl text-gray-600" data-i18n="events.pageSubtitle">Todas nuestras noches especiales, música en vivo y experiencias Macondo</p>
         </div>
 
         <div class="grid lg:grid-cols-3 gap-8">

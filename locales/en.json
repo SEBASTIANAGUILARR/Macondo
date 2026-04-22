@@ -22,6 +22,17 @@
     "drinks": "Drinks and Cocktails",
     "specialOffers": "Special Offers",
     "addToCart": "Add to Cart",
+    "fullTitle": "Full Menu",
+    "fullSubtitle": "Discover all our traditional dishes and drinks",
+    "loadingDishes": "Loading dishes...",
+    "loadingDrinks": "Loading drinks...",
+    "loadingOffers": "Loading offers...",
+    "filters": {
+      "all": "All",
+      "dishes": "Dishes",
+      "drinks": "Drinks",
+      "desserts": "Desserts"
+    },
     "viewFullMenu": "View Full Menu"
   },
   "offers": {
@@ -106,6 +117,8 @@
     "noConfirmation": "Haven't received confirmation from our team?",
     "contactUs": "Contact us",
     "callButton": "Call",
+    "consentConfirm": "I agree to receive confirmations related to my reservation or order.",
+    "consentMarketing": "I agree to receive promotions and upcoming events.",
     "selectTable": "Select Your Table",
     "table": "Table",
     "available": "Available",
@@ -120,6 +133,8 @@
   },
   "events": {
     "title": "Events and Special Nights",
+    "pageTitle": "Events",
+    "pageSubtitle": "All our special nights, live music and Macondo experiences",
     "vallenatoNight": {
       "name": "Vallenato Night",
       "date": "Friday July 15, 8:00 PM",
@@ -138,6 +153,16 @@
     "reserveNow": "Reserve Now",
     "viewAllEvents": "View All Events"
   },
+  "success": {
+    "title": "Payment Successful!",
+    "subtitle": "Thank you for your purchase at Macondo Bar Latino. Your order has been processed successfully.",
+    "orderNumber": "Order number:",
+    "status": "Status:",
+    "confirmed": "Confirmed",
+    "date": "Date:",
+    "emailNotice": "You will receive an email with your order details. If you have any questions, feel free to contact us.",
+    "needHelp": "Need help? Contact us:"
+  },
   "footer": {
     "description": "Macondo Bar Latino - Your Colombian corner in Poland",
     "address": "Address",
@@ -149,6 +174,7 @@
     "ourMenu": "Our Menu",
     "gallery": "Gallery",
     "aboutUs": "About Us",
+    "goToMacondo": "Go to Macondo",
     "rights": "All rights reserved."
   },
   "common": {
@@ -157,6 +183,8 @@
     "perPerson": "Per person",
     "perEvent": "Per event",
     "people": "people",
+    "backHome": "Back to Home",
+    "viewMenu": "View Menu",
     "register": "Register",
     "logout": "Logout",
     "myPanel": "My Panel",

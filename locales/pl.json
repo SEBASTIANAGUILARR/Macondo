@@ -22,6 +22,17 @@
     "drinks": "Napoje i Koktajle",
     "specialOffers": "Specjalne Oferty",
     "addToCart": "Dodaj do Koszyka",
+    "fullTitle": "Pełne Menu",
+    "fullSubtitle": "Odkryj wszystkie nasze tradycyjne dania i napoje",
+    "loadingDishes": "Ładowanie dań...",
+    "loadingDrinks": "Ładowanie napojów...",
+    "loadingOffers": "Ładowanie ofert...",
+    "filters": {
+      "all": "Wszystko",
+      "dishes": "Dania",
+      "drinks": "Napoje",
+      "desserts": "Desery"
+    },
     "viewFullMenu": "Zobacz Pełne Menu"
   },
   "offers": {
@@ -106,6 +117,8 @@
     "noConfirmation": "Nie otrzymałeś/-aś potwierdzenia od naszego zespołu?",
     "contactUs": "Skontaktuj się z nami",
     "callButton": "Zadzwoń",
+    "consentConfirm": "Wyrażam zgodę na otrzymywanie potwierdzeń związanych z moją rezerwacją lub zamówieniem.",
+    "consentMarketing": "Wyrażam zgodę na otrzymywanie promocji i informacji o nadchodzących wydarzeniach.",
     "selectTable": "Wybierz Swój Stolik",
     "table": "Stolik",
     "available": "Dostępny",
@@ -120,6 +133,8 @@
   },
   "events": {
     "title": "Wydarzenia i Specjalne Wieczory",
+    "pageTitle": "Wydarzenia",
+    "pageSubtitle": "Wszystkie nasze wyjątkowe wieczory, muzyka na żywo i doświadczenia Macondo",
     "vallenatoNight": {
       "name": "Wieczór Vallenato",
       "date": "Piątek 15 lipca, 20:00",
@@ -138,6 +153,16 @@
     "reserveNow": "Zarezerwuj Teraz",
     "viewAllEvents": "Zobacz Wszystkie Wydarzenia"
   },
+  "success": {
+    "title": "Płatność zakończona sukcesem!",
+    "subtitle": "Dziękujemy za zakup w Macondo Bar Latino. Twoje zamówienie zostało pomyślnie przetworzone.",
+    "orderNumber": "Numer zamówienia:",
+    "status": "Status:",
+    "confirmed": "Potwierdzone",
+    "date": "Data:",
+    "emailNotice": "Otrzymasz e-mail ze szczegółami zamówienia. Jeśli masz pytania, skontaktuj się z nami.",
+    "needHelp": "Potrzebujesz pomocy? Skontaktuj się z nami:"
+  },
   "footer": {
     "description": "Macondo Bar Latino - Twój kolumbijski zakątek w Polsce",
     "address": "Adres",
@@ -149,6 +174,7 @@
     "ourMenu": "Nasze Menu",
     "gallery": "Galeria",
     "aboutUs": "O Nas",
+    "goToMacondo": "Przejdź do Macondo",
     "rights": "Wszelkie prawa zastrzeżone."
   },
   "common": {
@@ -157,6 +183,8 @@
     "perPerson": "Na osobę",
     "perEvent": "Na wydarzenie",
     "people": "osób",
+    "backHome": "Powrót do strony głównej",
+    "viewMenu": "Zobacz menu",
     "register": "Zarejestruj się",
     "logout": "Wyloguj się",
     "myPanel": "Mój Panel",

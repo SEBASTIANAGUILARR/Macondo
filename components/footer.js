@@ -114,7 +114,7 @@ class CustomFooter extends HTMLElement {
             src="https://www.google.com/maps?q=52.2250841,21.01948&z=16&output=embed">
           </iframe>
           <div class="map-actions">
-            <a class="map-button" href="https://maps.app.goo.gl/SubxFp7CB7s8yKdz7" target="_blank" rel="noopener noreferrer">
+            <a class="map-button" href="https://maps.app.goo.gl/SubxFp7CB7s8yKdz7" target="_blank" rel="noopener noreferrer" data-i18n="footer.goToMacondo">
               Ir a Macondo
             </a>
           </div>
