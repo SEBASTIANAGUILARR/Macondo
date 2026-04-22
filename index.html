@@ -106,15 +106,17 @@
                         <textarea id="comentarios" rows="3" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Alergias, ocasión especial, preferencias..."></textarea>
                     </div>
 
-                    <label class="flex items-start gap-3 text-sm text-gray-700 w-full text-left">
-                        <input id="reservas-consent-confirm" type="checkbox" required class="mt-0.5 flex-shrink-0">
-                        <span><span data-i18n="reservations.consentConfirm">Acepto recibir confirmaciones relacionadas con mi reserva o pedido.</span> <span class="text-red-600 font-bold">*</span></span>
-                    </label>
+                    <div class="space-y-2 text-left">
+                        <label class="flex items-start gap-3 text-sm text-gray-700">
+                            <input id="reservas-consent-confirm" type="checkbox" required class="mt-1 flex-shrink-0">
+                            <span><span data-i18n="reservations.consentConfirm">Acepto recibir confirmaciones relacionadas con mi reserva o pedido.</span> <span class="text-red-600 font-bold">*</span></span>
+                        </label>
 
-                    <label class="flex items-start gap-3 text-sm text-gray-700 w-full text-left">
-                        <input id="reservas-consent-marketing" type="checkbox" class="mt-0.5 flex-shrink-0">
-                        <span data-i18n="reservations.consentMarketing">Acepto recibir promociones y los próximos eventos.</span>
-                    </label>
+                        <label class="flex items-start gap-3 text-sm text-gray-700">
+                            <input id="reservas-consent-marketing" type="checkbox" class="mt-1 flex-shrink-0">
+                            <span data-i18n="reservations.consentMarketing">Acepto recibir promociones y los próximos eventos.</span>
+                        </label>
+                    </div>
                     
                     <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
                         <span data-i18n="reservations.reserveButton">Reservar Mesa</span>

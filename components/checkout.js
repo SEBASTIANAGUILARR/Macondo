@@ -109,15 +109,17 @@ class CheckoutSystem {
                             </div>
                         </div>
 
-                        <label class="flex items-start gap-3 text-sm text-gray-700 w-full text-left">
-                            <input id="checkout-consent-confirm" type="checkbox" required class="mt-0.5 flex-shrink-0">
-                            <span>Acepto recibir confirmaciones relacionadas con mi pedido.</span>
-                        </label>
+                        <div class="space-y-2 text-left">
+                            <label class="flex items-start gap-3 text-sm text-gray-700">
+                                <input id="checkout-consent-confirm" type="checkbox" required class="mt-1 flex-shrink-0">
+                                <span>Acepto recibir confirmaciones relacionadas con mi pedido.</span>
+                            </label>
 
-                        <label class="flex items-start gap-3 text-sm text-gray-700 w-full text-left">
-                            <input id="checkout-consent-marketing" type="checkbox" class="mt-0.5 flex-shrink-0">
-                            <span>Acepto recibir promociones y los próximos eventos.</span>
-                        </label>
+                            <label class="flex items-start gap-3 text-sm text-gray-700">
+                                <input id="checkout-consent-marketing" type="checkbox" class="mt-1 flex-shrink-0">
+                                <span>Acepto recibir promociones y los próximos eventos.</span>
+                            </label>
+                        </div>
 
                         <!-- Botones -->
                         <div class="flex gap-3">
