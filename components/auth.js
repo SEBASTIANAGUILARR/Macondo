@@ -64,7 +64,7 @@ class AuthSystem {
 
     async register(userData) {
         if (!window.supabaseClient?.auth) {
-            throw new Error('Supabase no está listo. Recarga la página.');
+            throw new Error(window.t ? window.t('auth.supabaseNotReady') : 'Supabase no está listo. Recarga la página.');
         }
 
         const emailRedirectTo = `${window.location.origin}/`;
@@ -79,7 +79,7 @@ class AuthSystem {
         });
 
         if (error) {
-            throw new Error(error.message || 'Error registrando usuario');
+            throw new Error(error.message || (window.t ? window.t('auth.registerGenericError') : 'Error registrando usuario'));
         }
 
         // Forzamos que el usuario NO quede logueado tras el registro.
@@ -100,12 +100,12 @@ class AuthSystem {
 
     async login(email, password) {
         if (!window.supabaseClient?.auth) {
-            throw new Error('Supabase no está listo. Recarga la página.');
+            throw new Error(window.t ? window.t('auth.supabaseNotReady') : 'Supabase no está listo. Recarga la página.');
         }
 
         const { data, error } = await window.supabaseClient.auth.signInWithPassword({ email, password });
         if (error) {
-            throw new Error(error.message || 'Email o contraseña incorrectos');
+            throw new Error(error.message || (window.t ? window.t('auth.invalidCredentials') : 'Email o contraseña incorrectos'));
         }
 
         this.session = data?.session || null;
@@ -190,7 +190,7 @@ class AuthSystem {
 
     async resendConfirmationEmail(email) {
         if (!window.supabaseClient?.auth) {
-            throw new Error('Supabase no está listo. Recarga la página.');
+            throw new Error(window.t ? window.t('auth.supabaseNotReady') : 'Supabase no está listo. Recarga la página.');
         }
 
         const emailRedirectTo = `${window.location.origin}/`;
@@ -202,7 +202,7 @@ class AuthSystem {
         });
 
         if (error) {
-            throw new Error(error.message || 'No se pudo reenviar el email de confirmación');
+            throw new Error(error.message || (window.t ? window.t('auth.resendGenericError') : 'No se pudo reenviar el email de confirmación'));
         }
 
         return true;

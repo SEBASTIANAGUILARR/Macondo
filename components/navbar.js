@@ -501,11 +501,11 @@ class CustomNavbar extends HTMLElement {
               <i data-feather="chevron-down"></i>
             </button>
             <div class="user-menu-dropdown" id="user-menu-dropdown-top">
-              <button class="user-menu-item" id="user-menu-reservations-top" type="button"><i data-feather="calendar"></i> Mis Reservas</button>
-              <button class="user-menu-item" id="user-menu-covers-top" type="button"><i data-feather="credit-card"></i> Mis Covers (QR)</button>
-              <button class="user-menu-item" id="user-menu-orders-top" type="button"><i data-feather="shopping-bag"></i> Mis Pedidos</button>
+              <button class="user-menu-item" id="user-menu-reservations-top" type="button"><i data-feather="calendar"></i> <span data-i18n="navbar.myReservations">Mis Reservas</span></button>
+              <button class="user-menu-item" id="user-menu-covers-top" type="button"><i data-feather="credit-card"></i> <span data-i18n="navbar.myCovers">Mis Covers (QR)</span></button>
+              <button class="user-menu-item" id="user-menu-orders-top" type="button"><i data-feather="shopping-bag"></i> <span data-i18n="navbar.myOrders">Mis Pedidos</span></button>
               <div style="height:1px;background:rgba(0,0,0,0.08);margin:8px 0"></div>
-              <button class="user-menu-item" id="user-menu-logout-top" type="button"><i data-feather="log-out"></i> Cerrar Sesión</button>
+              <button class="user-menu-item" id="user-menu-logout-top" type="button"><i data-feather="log-out"></i> <span data-i18n="navbar.logout">Cerrar Sesión</span></button>
             </div>
           </div>
         </div>
@@ -530,20 +530,20 @@ class CustomNavbar extends HTMLElement {
           <div class="auth-section">
             <div class="auth-buttons" id="auth-buttons">
               <button class="btn-login" data-i18n="navbar.login">Iniciar Sesión</button>
-              <button class="btn-register">Registrarse</button>
+              <button class="btn-register" data-i18n="navbar.register">Registrarse</button>
             </div>
 
             <div class="user-menu" id="user-menu">
               <button class="user-menu-trigger" id="user-menu-trigger" type="button">
-                <span id="user-name">Usuario</span>
+                <span id="user-name" data-i18n="navbar.user">Usuario</span>
                 <i data-feather="chevron-down"></i>
               </button>
               <div class="user-menu-dropdown" id="user-menu-dropdown">
-                <button class="user-menu-item" id="user-menu-reservations" type="button"><i data-feather="calendar"></i> Mis Reservas</button>
-                <button class="user-menu-item" id="user-menu-covers" type="button"><i data-feather="credit-card"></i> Mis Covers (QR)</button>
-                <button class="user-menu-item" id="user-menu-orders" type="button"><i data-feather="shopping-bag"></i> Mis Pedidos</button>
+                <button class="user-menu-item" id="user-menu-reservations" type="button"><i data-feather="calendar"></i> <span data-i18n="navbar.myReservations">Mis Reservas</span></button>
+                <button class="user-menu-item" id="user-menu-covers" type="button"><i data-feather="credit-card"></i> <span data-i18n="navbar.myCovers">Mis Covers (QR)</span></button>
+                <button class="user-menu-item" id="user-menu-orders" type="button"><i data-feather="shopping-bag"></i> <span data-i18n="navbar.myOrders">Mis Pedidos</span></button>
                 <div style="height:1px;background:rgba(0,0,0,0.08);margin:8px 0"></div>
-                <button class="user-menu-item" id="user-menu-logout" type="button"><i data-feather="log-out"></i> Cerrar Sesión</button>
+                <button class="user-menu-item" id="user-menu-logout" type="button"><i data-feather="log-out"></i> <span data-i18n="navbar.logout">Cerrar Sesión</span></button>
               </div>
             </div>
           </div>

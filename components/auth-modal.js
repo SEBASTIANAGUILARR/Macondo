@@ -24,7 +24,7 @@ class AuthModal {
                 <div class="bg-white rounded-lg max-w-md w-full max-h-[90vh] overflow-y-auto">
                     <div class="p-6">
                         <div class="flex justify-between items-center mb-6">
-                            <h2 id="modal-title" class="text-2xl font-bold text-amber-800">Iniciar Sesión</h2>
+                            <h2 id="modal-title" class="text-2xl font-bold text-amber-800" data-i18n="auth.loginTitle">Iniciar Sesión</h2>
                             <button id="close-modal" class="text-gray-500 hover:text-gray-700">
                                 <i data-feather="x" class="w-6 h-6"></i>
                             </button>
@@ -33,57 +33,57 @@ class AuthModal {
                         <!-- Login Form -->
                         <form id="login-form" class="space-y-4">
                             <div>
-                                <label class="block text-amber-700 font-medium mb-1">Email</label>
+                                <label class="block text-amber-700 font-medium mb-1" data-i18n="auth.email">Email</label>
                                 <input type="email" id="login-email" required 
                                     class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                             </div>
                             <div>
-                                <label class="block text-amber-700 font-medium mb-1">Contraseña</label>
+                                <label class="block text-amber-700 font-medium mb-1" data-i18n="auth.password">Contraseña</label>
                                 <input type="password" id="login-password" required 
                                     class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                             </div>
                             <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
-                                Iniciar Sesión
+                                <span data-i18n="auth.loginButton">Iniciar Sesión</span>
                             </button>
                         </form>
 
                         <!-- Register Form -->
                         <form id="register-form" class="space-y-4 hidden">
                             <div>
-                                <label class="block text-amber-700 font-medium mb-1">Nombre Completo</label>
+                                <label class="block text-amber-700 font-medium mb-1" data-i18n="auth.fullName">Nombre Completo</label>
                                 <input type="text" id="register-name" required 
                                     class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                             </div>
                             <div>
-                                <label class="block text-amber-700 font-medium mb-1">Email</label>
+                                <label class="block text-amber-700 font-medium mb-1" data-i18n="auth.email">Email</label>
                                 <input type="email" id="register-email" required 
                                     class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                             </div>
                             <div>
-                                <label class="block text-amber-700 font-medium mb-1">Teléfono</label>
+                                <label class="block text-amber-700 font-medium mb-1" data-i18n="auth.phone">Teléfono</label>
                                 <input type="tel" id="register-phone" required 
                                     class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                             </div>
                             <div>
-                                <label class="block text-amber-700 font-medium mb-1">Contraseña</label>
+                                <label class="block text-amber-700 font-medium mb-1" data-i18n="auth.password">Contraseña</label>
                                 <input type="password" id="register-password" required 
                                     class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                             </div>
                             <div>
-                                <label class="block text-amber-700 font-medium mb-1">Confirmar Contraseña</label>
+                                <label class="block text-amber-700 font-medium mb-1" data-i18n="auth.confirmPassword">Confirmar Contraseña</label>
                                 <input type="password" id="register-confirm-password" required 
                                     class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
                             </div>
                             <button type="submit" class="w-full bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-4 rounded-lg transition-colors">
-                                Registrarse
+                                <span data-i18n="auth.registerButton">Registrarse</span>
                             </button>
                         </form>
 
                         <!-- Toggle between forms -->
                         <div class="mt-6 text-center">
                             <p id="toggle-text" class="text-gray-600">
-                                ¿No tienes cuenta? 
-                                <button id="toggle-form" class="text-amber-600 hover:text-amber-700 font-medium">
+                                <span data-i18n="auth.noAccount">¿No tienes cuenta?</span>
+                                <button id="toggle-form" class="text-amber-600 hover:text-amber-700 font-medium" data-i18n="auth.signUpLink">
                                     Regístrate
                                 </button>
                             </p>
@@ -94,10 +94,10 @@ class AuthModal {
 
                         <!-- Resend confirmation -->
                         <div id="auth-resend" class="mt-4 p-3 bg-amber-50 border border-amber-300 text-amber-800 rounded-lg hidden">
-                            <div class="font-semibold mb-2">Tu email aún no está confirmado</div>
-                            <div class="text-sm mb-3">Revisa tu bandeja de entrada (y spam). Si no te llegó, puedes reenviar el correo de confirmación.</div>
+                            <div class="font-semibold mb-2" data-i18n="auth.emailNotConfirmedTitle">Tu email aún no está confirmado</div>
+                            <div class="text-sm mb-3" data-i18n="auth.emailNotConfirmedBody">Revisa tu bandeja de entrada (y spam). Si no te llegó, puedes reenviar el correo de confirmación.</div>
                             <button id="resend-confirmation" type="button" class="bg-amber-600 hover:bg-amber-700 text-white font-bold py-2 px-4 rounded-lg transition-colors">
-                                Reenviar email de confirmación
+                                <span data-i18n="auth.resendConfirmation">Reenviar email de confirmación</span>
                             </button>
                         </div>
                     </div>
@@ -107,6 +107,12 @@ class AuthModal {
 
         document.body.insertAdjacentHTML('beforeend', modalHTML);
         feather.replace();
+
+        try {
+            if (window.i18n) {
+                window.i18n.applyTranslations();
+            }
+        } catch (e) {}
     }
 
     attachEventListeners() {
@@ -139,12 +145,12 @@ class AuthModal {
         document.getElementById('resend-confirmation').addEventListener('click', async () => {
             const email = (document.getElementById('login-email')?.value || '').trim();
             if (!email) {
-                this.showError('Introduce tu email para reenviar la confirmación');
+                this.showError(window.t ? window.t('auth.enterEmailToResend') : 'Introduce tu email para reenviar la confirmación');
                 return;
             }
             try {
                 await window.auth.resendConfirmationEmail(email);
-                this.showSuccess('Te hemos reenviado el email de confirmación');
+                this.showSuccess(window.t ? window.t('auth.resendSuccess') : 'Te hemos reenviado el email de confirmación');
             } catch (e) {
                 this.showError(e.message);
             }
@@ -161,16 +167,22 @@ class AuthModal {
         if (this.currentView === 'login') {
             loginForm.classList.add('hidden');
             registerForm.classList.remove('hidden');
-            modalTitle.textContent = 'Registrarse';
-            toggleText.innerHTML = '¿Ya tienes cuenta? <button id="toggle-form" class="text-amber-600 hover:text-amber-700 font-medium">Inicia Sesión</button>';
+            if (modalTitle) modalTitle.setAttribute('data-i18n', 'auth.registerTitle');
+            toggleText.innerHTML = `<span data-i18n="auth.haveAccount">¿Ya tienes cuenta?</span> <button id="toggle-form" class="text-amber-600 hover:text-amber-700 font-medium" data-i18n="auth.loginLink">Inicia Sesión</button>`;
             this.currentView = 'register';
         } else {
             loginForm.classList.remove('hidden');
             registerForm.classList.add('hidden');
-            modalTitle.textContent = 'Iniciar Sesión';
-            toggleText.innerHTML = '¿No tienes cuenta? <button id="toggle-form" class="text-amber-600 hover:text-amber-700 font-medium">Regístrate</button>';
+            if (modalTitle) modalTitle.setAttribute('data-i18n', 'auth.loginTitle');
+            toggleText.innerHTML = `<span data-i18n="auth.noAccount">¿No tienes cuenta?</span> <button id="toggle-form" class="text-amber-600 hover:text-amber-700 font-medium" data-i18n="auth.signUpLink">Regístrate</button>`;
             this.currentView = 'login';
         }
+
+        try {
+            if (window.i18n) {
+                window.i18n.applyTranslations();
+            }
+        } catch (e) {}
         
         // Re-attach event listener to toggle button
         document.getElementById('toggle-form').addEventListener('click', () => this.toggleView());
@@ -183,11 +195,11 @@ class AuthModal {
         try {
             await window.auth.login(email, password);
             this.close();
-            this.showSuccess('¡Bienvenido de vuelta!');
+            this.showSuccess(window.t ? window.t('auth.welcomeBack') : '¡Bienvenido de vuelta!');
         } catch (error) {
             const msg = String(error?.message || 'Error');
             if (msg.toLowerCase().includes('email not confirmed')) {
-                this.showError('Email no confirmado. Revisa tu correo y confirma tu cuenta.');
+                this.showError(window.t ? window.t('auth.emailNotConfirmedError') : 'Email no confirmado. Revisa tu correo y confirma tu cuenta.');
                 const resend = document.getElementById('auth-resend');
                 if (resend) resend.classList.remove('hidden');
                 return;
@@ -204,36 +216,37 @@ class AuthModal {
         const confirmPassword = String(document.getElementById('register-confirm-password').value || '');
 
         if (!name || !email || !phone || !password || !confirmPassword) {
-            this.showError('Completa todos los campos para registrarte');
+            this.showError(window.t ? window.t('auth.fillAllFields') : 'Completa todos los campos para registrarte');
             return;
         }
 
         const emailOk = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         if (!emailOk) {
-            this.showError('Introduce un email válido');
+            this.showError(window.t ? window.t('auth.invalidEmail') : 'Introduce un email válido');
             return;
         }
 
         if (phone.replace(/\D/g, '').length < 7) {
-            this.showError('Introduce un teléfono válido');
+            this.showError(window.t ? window.t('auth.invalidPhone') : 'Introduce un teléfono válido');
             return;
         }
 
         if (password.length < 6) {
-            this.showError('La contraseña debe tener al menos 6 caracteres');
+            this.showError(window.t ? window.t('auth.passwordMin') : 'La contraseña debe tener al menos 6 caracteres');
             return;
         }
         
         if (password !== confirmPassword) {
-            this.showError('Las contraseñas no coinciden');
+            this.showError(window.t ? window.t('auth.passwordMismatch') : 'Las contraseñas no coinciden');
             return;
         }
         
         try {
             await window.auth.register({ name, email, phone, password });
             this.close();
-            this.showSuccess('Registro exitoso. Por favor verifica tu cuenta en tu correo antes de iniciar sesión.');
-            alert('Registro exitoso. Por favor verifica tu cuenta en tu correo antes de iniciar sesión.');
+            const m = window.t ? window.t('auth.registerSuccess') : 'Registro exitoso. Por favor verifica tu cuenta en tu correo antes de iniciar sesión.';
+            this.showSuccess(m);
+            alert(m);
         } catch (error) {
             this.showError(error.message);
         }
