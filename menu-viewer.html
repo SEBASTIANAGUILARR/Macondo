@@ -62,14 +62,6 @@
             <!-- Images injected by JS -->
         </div>
 
-        <!-- Download PDF button -->
-        <div class="text-center mb-8">
-            <a id="download-pdf-btn" href="#" target="_blank" rel="noopener" class="inline-flex items-center bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-8 rounded-lg transition-colors text-lg">
-                <i data-feather="download" class="w-5 h-5 mr-3"></i>
-                <span data-i18n="menuViewer.downloadPdf">Descargar PDF</span>
-            </a>
-        </div>
-
         <!-- Back button -->
         <div class="text-center mb-8">
             <a href="index.html" class="inline-flex items-center text-amber-700 hover:text-amber-900 font-semibold transition-colors">
@@ -124,12 +116,6 @@
                     </div>`;
             }
             container.innerHTML = html;
-
-            // Update download button
-            const downloadBtn = document.getElementById('download-pdf-btn');
-            if (downloadBtn) {
-                downloadBtn.href = section.pdf;
-            }
         }
 
         document.addEventListener('DOMContentLoaded', function() {
