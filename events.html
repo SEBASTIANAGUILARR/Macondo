@@ -41,7 +41,7 @@
 
         <div class="grid lg:grid-cols-3 gap-8">
             <section class="lg:col-span-2">
-                <div id="cover-dj-panel" class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <div id="cover-dj-panel" class="hidden bg-white rounded-lg shadow-md p-6 mb-8">
                     <div class="flex flex-wrap items-start justify-between gap-4">
                         <div>
                             <h2 class="text-2xl font-bold text-amber-800" data-i18n="events.cover.djTitle">🎧 DJ del finde (Sótano)</h2>
@@ -142,7 +142,7 @@
                     </form>
                 </div>
 
-                <div id="events-container" class="space-y-8">
+                <div id="events-container" class="hidden space-y-8">
                     <p class="text-gray-500 text-center py-8" data-i18n="events.loading">Cargando eventos...</p>
                 </div>
             </section>
@@ -487,18 +487,15 @@
             }
 
             const eventsWrap = document.getElementById('events-container');
-            if (!siteConfig.events_enabled) {
-                hideElWithMessage(eventsWrap, 'Eventos deshabilitados temporalmente');
-            } else {
+            if (siteConfig.events_enabled) {
+                if (eventsWrap) eventsWrap.classList.remove('hidden');
                 await loadEvents();
             }
 
             const djPanel = document.getElementById('cover-dj-panel');
             const privatePanel = document.getElementById('cover-private-panel');
-            if (!siteConfig.covers_enabled) {
-                if (djPanel) hideElWithMessage(djPanel, 'Covers deshabilitados temporalmente');
-                if (privatePanel) privatePanel.classList.add('hidden');
-            } else {
+            if (siteConfig.covers_enabled) {
+                if (djPanel) djPanel.classList.remove('hidden');
                 loadCoverConfig();
                 updateCoverTotal();
             }

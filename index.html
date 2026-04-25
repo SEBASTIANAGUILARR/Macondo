@@ -37,7 +37,7 @@
 
     <main class="container mx-auto px-4 py-8">
         <!-- Sección Menú -->
-        <section id="menu" class="mb-16">
+        <section id="menu" class="mb-16 hidden">
             <h2 class="text-4xl font-bold text-amber-800 mb-8 text-center" data-i18n="menu.title">Nuestro Menú</h2>
             <div class="text-center mt-8 mb-16">
                 <a href="menu-viewer.html" class="inline-flex items-center bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-8 rounded-lg transition-colors text-lg">
@@ -48,7 +48,7 @@
         </section>
         
         <!-- Sección Reservas -->
-        <section id="reservas" class="mb-16 bg-white p-8 rounded-lg shadow-lg">
+        <section id="reservas" class="mb-16 bg-white p-8 rounded-lg shadow-lg hidden">
             <h2 class="text-4xl font-bold text-amber-800 mb-8 text-center" data-i18n="reservations.title">Reserva tu Mesa</h2>
             
             <div class="max-w-2xl mx-auto">
@@ -142,7 +142,7 @@
         </section>
         
         <!-- Sección Eventos -->
-        <section id="eventos" class="mb-16">
+        <section id="eventos" class="mb-16 hidden">
             <h2 class="text-4xl font-bold text-amber-800 mb-8 text-center" data-i18n="events.title">Eventos y Noches Especiales</h2>
             
             <div id="eventos-container" class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -227,14 +227,14 @@
                 await loadSiteConfigPublic();
             } catch (e) {}
 
-            if (!siteConfig.reservations_enabled) {
-                hideSectionWithMessage('reservas', 'Reservas deshabilitadas temporalmente');
+            if (siteConfig.menu_enabled) {
+                document.getElementById('menu')?.classList.remove('hidden');
             }
-            if (!siteConfig.menu_enabled) {
-                hideSectionWithMessage('menu', 'Menú deshabilitado temporalmente');
+            if (siteConfig.reservations_enabled) {
+                document.getElementById('reservas')?.classList.remove('hidden');
             }
-            if (!siteConfig.events_enabled) {
-                hideSectionWithMessage('eventos', 'Eventos deshabilitados temporalmente');
+            if (siteConfig.events_enabled) {
+                document.getElementById('eventos')?.classList.remove('hidden');
             }
 
             try {
