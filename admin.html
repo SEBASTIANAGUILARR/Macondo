@@ -3618,7 +3618,7 @@
                                 </button>
                             ` : ''}
 
-                            <button onclick="modalAssignTableNumber('${r.id}', ${JSON.stringify(String(r.mesa || ''))})"
+                            <button onclick="modalAssignTableNumber('${r.id}', '${String(r.mesa || '').replace(/'/g, "\\'")}')"
                                 class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors">
                                 🪑 Mesa
                             </button>
@@ -3959,7 +3959,7 @@
                                 </button>
                             ` : ''}
 
-                            <button onclick="assignTableNumber('${r.id}', ${JSON.stringify(String(r.mesa || ''))})"
+                            <button onclick="assignTableNumber('${r.id}', '${String(r.mesa || '').replace(/'/g, "\\'")}')"
                                 class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors">
                                 🪑 Mesa
                             </button>
