@@ -517,7 +517,7 @@ class CustomNavbar extends HTMLElement {
         <div class="nav-links">
           <a href="/" data-i18n="navbar.home">Inicio</a>
           <a id="nav-menu-link" href="menu-viewer.html" data-i18n="navbar.menu">Menú</a>
-          <a href="/reservas" data-i18n="navbar.reservations">Reservas</a>
+          <a id="nav-reservas-link" href="/reservas" data-i18n="navbar.reservations">Reservas</a>
           <a href="/events" data-i18n="navbar.events">Eventos</a>
           <a href="/contacto" data-i18n="navbar.contact">Contacto</a>
           

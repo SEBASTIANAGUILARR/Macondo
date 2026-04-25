@@ -232,6 +232,17 @@
             }
             if (siteConfig.reservations_enabled) {
                 document.getElementById('reservas')?.classList.remove('hidden');
+            } else {
+                const navbar = document.querySelector('custom-navbar');
+                const hero = document.querySelector('custom-hero');
+                if (navbar?.shadowRoot) {
+                    const navLink = navbar.shadowRoot.getElementById('nav-reservas-link');
+                    if (navLink) navLink.style.display = 'none';
+                }
+                if (hero?.shadowRoot) {
+                    const heroBtn = hero.shadowRoot.getElementById('hero-reservas-btn');
+                    if (heroBtn) heroBtn.style.display = 'none';
+                }
             }
             if (siteConfig.events_enabled) {
                 document.getElementById('eventos')?.classList.remove('hidden');
