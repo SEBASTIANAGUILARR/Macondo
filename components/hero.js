@@ -192,7 +192,7 @@ class CustomHero extends HTMLElement {
         <div class="hero-content">
           <h1 data-i18n="hero.title">Macondo Bar Latino</h1>
           <div class="hero-buttons">
-            <a id="hero-reservas-btn" href="#reservas" class="hero-btn hero-btn-secondary" data-i18n="hero.reserveButton">Reservar Mesa</a>
+            <a id="hero-reservas-btn" href="#reservas" class="hero-btn hero-btn-secondary" style="display:none" data-i18n="hero.reserveButton">Reservar Mesa</a>
           </div>
         </div>
       </section>
