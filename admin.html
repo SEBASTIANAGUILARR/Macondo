@@ -239,7 +239,34 @@
                         </div>
                         <div>
                             <label class="block text-amber-700 font-medium mb-1">Mesa</label>
-                            <input type="text" id="manual-reservation-mesa" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500" placeholder="Ej: 4">
+                            <select id="manual-reservation-mesa" class="w-full p-3 border border-amber-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500">
+                                <option value="">Sin asignar</option>
+                                <optgroup label="Planta 0">
+                                    <option value="1">Mesa 1 (3 sillas)</option>
+                                    <option value="2">Mesa 2 (4 sillas)</option>
+                                    <option value="3">Mesa 3 (6 sillas)</option>
+                                    <option value="4">Mesa 4 (4 sillas)</option>
+                                    <option value="5">Mesa 5 (6 sillas)</option>
+                                    <option value="6">Mesa 6 (2 sillas)</option>
+                                </optgroup>
+                                <optgroup label="Planta 1">
+                                    <option value="G1">G1 (3 sillas)</option>
+                                    <option value="G2">G2 (2 sillas)</option>
+                                    <option value="G3">G3 (2 sillas)</option>
+                                    <option value="G4">G4 (2 sillas)</option>
+                                    <option value="G5">G5 (4 sillas)</option>
+                                    <option value="G6">G6 (3 sillas)</option>
+                                    <option value="G7">G7 (2 sillas)</option>
+                                    <option value="G8">G8 (2 sillas)</option>
+                                    <option value="G9">G9 (2 sillas)</option>
+                                    <option value="G10">G10 (4 sillas)</option>
+                                    <option value="G11">G11 (4 sillas)</option>
+                                    <option value="G12">G12 (10 sillas)</option>
+                                    <option value="G13">G13 (10 sillas)</option>
+                                    <option value="G14">G14 (8 sillas)</option>
+                                    <option value="G15">G15 (4 sillas)</option>
+                                </optgroup>
+                            </select>
                         </div>
                     </div>
 
@@ -1656,6 +1683,38 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal selector visual de mesas -->
+    <div id="table-selector-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold text-amber-800">🪑 Seleccionar Mesa</h3>
+                    <button onclick="closeTableSelector()" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+                </div>
+                <p id="table-selector-info" class="text-sm text-gray-600 mb-4"></p>
+
+                <!-- Planta 0 -->
+                <div class="mb-6">
+                    <h4 class="font-bold text-amber-700 mb-3 text-lg border-b border-amber-200 pb-1">Planta 0</h4>
+                    <div class="grid grid-cols-3 sm:grid-cols-6 gap-3" id="tables-floor-0"></div>
+                </div>
+
+                <!-- Planta 1 -->
+                <div class="mb-6">
+                    <h4 class="font-bold text-amber-700 mb-3 text-lg border-b border-amber-200 pb-1">Planta 1</h4>
+                    <div class="grid grid-cols-3 sm:grid-cols-5 gap-3" id="tables-floor-1"></div>
+                </div>
+
+                <!-- Leyenda -->
+                <div class="flex flex-wrap gap-4 text-sm text-gray-600 mt-4 pt-3 border-t border-gray-200">
+                    <span class="flex items-center gap-2"><span class="w-4 h-4 rounded border-2 border-green-500 bg-green-50 inline-block"></span> Disponible</span>
+                    <span class="flex items-center gap-2"><span class="w-4 h-4 rounded border-2 border-red-500 bg-red-50 inline-block"></span> Ocupada</span>
+                    <span class="flex items-center gap-2"><span class="w-4 h-4 rounded border-2 border-amber-500 bg-amber-100 inline-block"></span> Asignada actual</span>
+                </div>
             </div>
         </div>
     </div>
@@ -3136,22 +3195,152 @@
             await loadAuthUsersAdmin();
         }
 
-        async function assignTableNumber(reservationId, currentMesa) {
-            const mesa = prompt('Número de mesa:', String(currentMesa || '').trim());
-            const mesaClean = String(mesa || '').trim();
-            if (!mesaClean) return;
+        // ==================== SELECTOR VISUAL DE MESAS ====================
+        const ALL_TABLES = [
+            { id: '1',  floor: 0, chairs: 3 },
+            { id: '2',  floor: 0, chairs: 4 },
+            { id: '3',  floor: 0, chairs: 6 },
+            { id: '4',  floor: 0, chairs: 4 },
+            { id: '5',  floor: 0, chairs: 6 },
+            { id: '6',  floor: 0, chairs: 2 },
+            { id: 'G1', floor: 1, chairs: 3 },
+            { id: 'G2', floor: 1, chairs: 2 },
+            { id: 'G3', floor: 1, chairs: 2 },
+            { id: 'G4', floor: 1, chairs: 2 },
+            { id: 'G5', floor: 1, chairs: 4 },
+            { id: 'G6', floor: 1, chairs: 3 },
+            { id: 'G7', floor: 1, chairs: 2 },
+            { id: 'G8', floor: 1, chairs: 2 },
+            { id: 'G9', floor: 1, chairs: 2 },
+            { id: 'G10', floor: 1, chairs: 4 },
+            { id: 'G11', floor: 1, chairs: 4 },
+            { id: 'G12', floor: 1, chairs: 10 },
+            { id: 'G13', floor: 1, chairs: 10 },
+            { id: 'G14', floor: 1, chairs: 8 },
+            { id: 'G15', floor: 1, chairs: 4 },
+        ];
 
-            const { error } = await supabaseClient
+        let _tableSelectorReservationId = null;
+        let _tableSelectorCallback = null;
+
+        function getOccupiedTables(reservationId) {
+            if (!Array.isArray(reservations)) return new Set();
+            const current = reservations.find(r => String(r.id) === String(reservationId));
+            const currentDate = current?.fecha || null;
+            const occupied = new Set();
+            reservations.forEach(r => {
+                if (String(r.id) === String(reservationId)) return;
+                if (r.estado === 'cancelada') return;
+                if (currentDate && r.fecha !== currentDate) return;
+                const m = String(r.mesa || '').trim();
+                if (m) occupied.add(m);
+            });
+            return occupied;
+        }
+
+        function openTableSelector(reservationId, currentMesa, callback) {
+            _tableSelectorReservationId = reservationId;
+            _tableSelectorCallback = callback || null;
+            const current = reservations.find(r => String(r.id) === String(reservationId));
+            const infoEl = document.getElementById('table-selector-info');
+            infoEl.textContent = current
+                ? `Reserva de ${current.nombre || 'Cliente'} — ${current.personas || '?'} personas — ${current.fecha || ''}`
+                : '';
+
+            const occupied = getOccupiedTables(reservationId);
+            const currentMesaClean = String(currentMesa || '').trim();
+
+            [0, 1].forEach(floor => {
+                const container = document.getElementById(`tables-floor-${floor}`);
+                const tables = ALL_TABLES.filter(t => t.floor === floor);
+                container.innerHTML = tables.map(t => {
+                    const isOccupied = occupied.has(t.id);
+                    const isCurrent = currentMesaClean === t.id;
+                    let cls, disabled;
+                    if (isCurrent) {
+                        cls = 'border-2 border-amber-500 bg-amber-50 text-amber-800 ring-2 ring-amber-300 cursor-pointer hover:bg-amber-100';
+                        disabled = false;
+                    } else if (isOccupied) {
+                        cls = 'border-2 border-red-400 bg-red-50 text-red-400 cursor-not-allowed opacity-60';
+                        disabled = true;
+                    } else {
+                        cls = 'border-2 border-green-500 bg-green-50 text-green-800 cursor-pointer hover:bg-green-100 hover:shadow-md';
+                        disabled = false;
+                    }
+                    return `
+                        <button type="button" ${disabled ? 'disabled' : ''}
+                            onclick="selectTable('${t.id}')"
+                            class="rounded-xl p-3 text-center transition-all ${cls}">
+                            <div class="text-lg font-extrabold">${t.id}</div>
+                            <div class="text-xs mt-1">${t.chairs} 💺</div>
+                            ${isCurrent ? '<div class="text-[10px] font-bold mt-1">ACTUAL</div>' : ''}
+                            ${isOccupied && !isCurrent ? '<div class="text-[10px] font-bold mt-1">OCUPADA</div>' : ''}
+                        </button>`;
+                }).join('');
+            });
+
+            document.getElementById('table-selector-modal').classList.remove('hidden');
+        }
+
+        function closeTableSelector() {
+            document.getElementById('table-selector-modal').classList.add('hidden');
+            _tableSelectorReservationId = null;
+            _tableSelectorCallback = null;
+        }
+
+        let _pendingConfirmId = null;
+
+        function openTableSelectorForConfirm(reservationId) {
+            _pendingConfirmId = reservationId;
+            const current = reservations.find(r => String(r.id) === String(reservationId));
+            openTableSelector(reservationId, current?.mesa || '', null);
+        }
+
+        async function selectTable(tableId) {
+            const reservationId = _tableSelectorReservationId;
+            if (!reservationId) return;
+            const pendingConfirm = _pendingConfirmId;
+
+            const updatePayload = { mesa: tableId };
+            if (pendingConfirm && String(pendingConfirm) === String(reservationId)) {
+                updatePayload.estado = 'confirmada';
+                _pendingConfirmId = null;
+            }
+
+            const { data, error } = await supabaseClient
                 .from('reservations')
-                .update({ mesa: mesaClean })
-                .eq('id', reservationId);
+                .update(updatePayload)
+                .eq('id', reservationId)
+                .select();
 
             if (error) {
                 alert('Error asignando mesa: ' + error.message);
                 return;
             }
 
+            closeTableSelector();
+            
+            if (updatePayload.estado === 'confirmada') {
+                const updated = Array.isArray(data) ? data[0] : null;
+                if (updated) {
+                    try {
+                        await sendReservationConfirmationEmail(updated);
+                        alert('✅ Mesa asignada y reserva confirmada. Email enviado.');
+                    } catch (e) {
+                        alert('Mesa asignada y confirmada, pero falló el email: ' + (e.message || e));
+                    }
+                }
+            }
+
             await loadReservations();
+            if (_tableSelectorCallback === 'modal') {
+                await refreshReservationsDayModalIfOpen();
+            }
+        }
+
+        function assignTableNumber(reservationId, currentMesa) {
+            _pendingConfirmId = null;
+            openTableSelector(reservationId, currentMesa);
         }
 
         async function uploadTablePhoto(reservationId) {
@@ -3837,9 +4026,8 @@
             await refreshReservationsDayModalIfOpen();
         }
 
-        async function modalAssignTableNumber(id, currentMesa) {
-            await assignTableNumber(id, currentMesa);
-            await refreshReservationsDayModalIfOpen();
+        function modalAssignTableNumber(id, currentMesa) {
+            openTableSelector(id, currentMesa, 'modal');
         }
 
         async function modalUploadTablePhoto(id) {
@@ -4066,13 +4254,10 @@
             if (newStatus === 'confirmada') {
                 const existingMesa = String(current?.mesa || '').trim();
                 if (!existingMesa) {
-                    const mesa = prompt('Para confirmar, asigna el número de mesa:');
-                    const mesaClean = String(mesa || '').trim();
-                    if (!mesaClean) {
-                        alert('Debes asignar un número de mesa antes de confirmar.');
-                        return;
-                    }
-                    updatePayload.mesa = mesaClean;
+                    // Abrir selector visual: primero asignar mesa, luego confirmar
+                    _pendingConfirmId = id;
+                    openTableSelectorForConfirm(id);
+                    return;
                 }
             }
 
