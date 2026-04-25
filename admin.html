@@ -350,7 +350,6 @@
                 <select id="mobile-tab-select" class="w-full p-3 border border-amber-300 rounded-lg bg-white">
                     <option value="reservas">🪑 Reservas</option>
                     <option value="eventos">🎉 Eventos</option>
-                    <option value="menu">🍽️ Menú</option>
                     <option value="editor">🎨 Editor</option>
                     <option value="emails">📧 Emails</option>
                     <option value="analytics">📊 Analíticas</option>
@@ -367,9 +366,6 @@
                 </button>
                 <button id="tab-eventos" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('eventos')">
                     🎉 Eventos
-                </button>
-                <button id="tab-menu" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('menu')">
-                    🍽️ Menú
                 </button>
                 <button id="tab-editor" class="tab-btn px-6 py-3 font-bold text-gray-500 border-b-2 border-transparent hover:text-amber-600 whitespace-nowrap" onclick="switchTab('editor')">
                     🎨 Editor
@@ -556,56 +552,6 @@
                     <p class="text-gray-500 text-center py-8">Cargando eventos...</p>
                 </div>
             </div>
-
-            <!-- Menú Section -->
-            <div id="section-menu" class="hidden">
-                <!-- Header con botón agregar -->
-                <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-2xl font-bold text-amber-800">Gestión del Menú</h2>
-                    <div class="flex flex-wrap gap-2 items-center">
-                        <button id="toggle-public-menu" type="button" onclick="toggleSiteFlag('menu_enabled')" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2 rounded-lg transition-colors">
-                            Web: —
-                        </button>
-                        <button onclick="showMenuItemModal()" class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors flex items-center gap-2">
-                            <span>+</span> Nuevo Plato/Bebida
-                        </button>
-                    </div>
-                </div>
-                
-                <!-- Stats Menú -->
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-xs sm:text-sm">Total Items</p>
-                        <p id="stat-menu-total" class="text-2xl sm:text-3xl font-bold text-amber-800">0</p>
-                    </div>
-                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-xs sm:text-sm">Platos</p>
-                        <p id="stat-menu-platos" class="text-2xl sm:text-3xl font-bold text-orange-600">0</p>
-                    </div>
-                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-xs sm:text-sm">Bebidas</p>
-                        <p id="stat-menu-bebidas" class="text-2xl sm:text-3xl font-bold text-blue-600">0</p>
-                    </div>
-                    <div class="bg-white p-2 sm:p-4 rounded-lg shadow">
-                        <p class="text-gray-500 text-xs sm:text-sm">Activos</p>
-                        <p id="stat-menu-activos" class="text-2xl sm:text-3xl font-bold text-green-600">0</p>
-                    </div>
-                </div>
-                
-                <!-- Filters Menú -->
-                <div class="flex flex-wrap gap-2 mb-6">
-                    <button class="menu-filter-btn active" data-filter="all">Todos</button>
-                    <button class="menu-filter-btn" data-filter="plato">Platos</button>
-                    <button class="menu-filter-btn" data-filter="bebida">Bebidas</button>
-                    <button class="menu-filter-btn" data-filter="oferta">Ofertas</button>
-                </div>
-                
-                <!-- Menu Items List -->
-                <div id="menu-items-list">
-                    <p class="text-gray-500 text-center py-8">Cargando menú...</p>
-                </div>
-            </div>
-
             <div id="section-editor" class="hidden">
                 <div class="flex flex-wrap justify-between items-center gap-3 mb-6">
                     <h2 class="text-2xl font-bold text-amber-800">🎨 Editor (Promos para redes)</h2>
@@ -1884,10 +1830,7 @@
             
             loadReservations();
             loadEvents();
-            loadMenuItems();
             setupFilters();
-            setupOrderFilters();
-            setupMenuFilters();
 
             loadSiteConfigAdmin();
         }
@@ -1912,7 +1855,6 @@
 
         function renderAllSiteFlags() {
             renderSiteFlagButton('toggle-public-reservations', siteConfig.reservations_enabled);
-            renderSiteFlagButton('toggle-public-menu', siteConfig.menu_enabled);
             renderSiteFlagButton('toggle-public-events', siteConfig.events_enabled);
             renderSiteFlagButton('toggle-public-covers', siteConfig.covers_enabled);
         }
@@ -1979,7 +1921,6 @@
             
             document.getElementById('section-reservas').classList.add('hidden');
             document.getElementById('section-eventos').classList.add('hidden');
-            document.getElementById('section-menu').classList.add('hidden');
             document.getElementById('section-editor').classList.add('hidden');
             document.getElementById('section-emails').classList.add('hidden');
             document.getElementById('section-analytics').classList.add('hidden');
