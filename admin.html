@@ -3343,45 +3343,6 @@
             openTableSelector(reservationId, currentMesa);
         }
 
-        async function uploadTablePhoto(reservationId) {
-            const input = document.createElement('input');
-            input.type = 'file';
-            input.accept = 'image/*';
-            input.capture = 'environment';
-            input.onchange = async () => {
-                const file = input.files && input.files[0];
-                if (!file) return;
-
-                try {
-                    const bucket = 'reservation-photos';
-                    const path = `reservation_${reservationId}/${Date.now()}_${file.name}`;
-
-                    const up = await supabaseClient.storage
-                        .from(bucket)
-                        .upload(path, file, { upsert: true, contentType: file.type });
-
-                    if (up.error) {
-                        throw new Error(up.error.message);
-                    }
-
-                    const { error } = await supabaseClient
-                        .from('reservations')
-                        .update({ mesa_foto_url: path })
-                        .eq('id', reservationId);
-
-                    if (error) {
-                        throw new Error(error.message);
-                    }
-
-                    await loadReservations();
-                    alert('✅ Foto guardada en la reserva');
-                } catch (e) {
-                    alert('Error subiendo foto. Asegúrate de crear el bucket "reservation-photos" (privado, con policies) y la columna reservations.mesa_foto_url en Supabase. Detalle: ' + (e.message || e));
-                }
-            };
-            input.click();
-        }
-
         async function viewReservationPhoto(path) {
             const p = String(path || '').trim();
             if (!p) return;
@@ -3648,11 +3609,6 @@
                             <button onclick="modalAssignTableNumber('${r.id}', ${JSON.stringify(String(r.mesa || ''))})"
                                 class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg transition-colors">
                                 🪑 Mesa
-                            </button>
-
-                            <button onclick="modalUploadTablePhoto('${r.id}')"
-                                class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
-                                📷 Foto
                             </button>
 
                             <button onclick="modalDeleteReservation('${r.id}')"
@@ -3996,11 +3952,6 @@
                                 🪑 Mesa
                             </button>
 
-                            <button onclick="uploadTablePhoto('${r.id}')"
-                                class="bg-slate-700 hover:bg-slate-800 text-white px-4 py-2 rounded-lg transition-colors">
-                                📷 Foto
-                            </button>
-
                             <button onclick="deleteReservation('${r.id}')"
                                 class="bg-gray-800 hover:bg-black text-white px-4 py-2 rounded-lg transition-colors">
                                 🗑️ Eliminar
@@ -4028,11 +3979,6 @@
 
         function modalAssignTableNumber(id, currentMesa) {
             openTableSelector(id, currentMesa, 'modal');
-        }
-
-        async function modalUploadTablePhoto(id) {
-            await uploadTablePhoto(id);
-            await refreshReservationsDayModalIfOpen();
         }
 
         async function modalDeleteReservation(id) {
