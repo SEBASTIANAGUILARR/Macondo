@@ -44,7 +44,6 @@
     <div class="container mx-auto px-4 py-8 mt-20">
         <div class="text-center mb-8">
             <h1 class="text-4xl font-bold text-amber-800 mb-2" data-i18n="menuViewer.title">Nuestro Menú</h1>
-            <p class="text-lg text-gray-600" data-i18n="menuViewer.subtitle">Explora nuestras opciones</p>
         </div>
 
         <!-- Tab buttons: Food / Drinks -->
@@ -62,8 +61,12 @@
             <!-- Images injected by JS -->
         </div>
 
-        <!-- Back button -->
-        <div class="text-center mb-8">
+        <!-- Share & Back -->
+        <div class="flex flex-col items-center gap-4 mb-8">
+            <button onclick="shareMenu()" class="inline-flex items-center gap-2 bg-amber-600 hover:bg-amber-700 text-white font-bold py-3 px-8 rounded-lg transition-colors text-lg">
+                <i data-feather="share-2" class="w-5 h-5"></i>
+                Compartir Menú
+            </button>
             <a href="index.html" class="inline-flex items-center text-amber-700 hover:text-amber-900 font-semibold transition-colors">
                 <i data-feather="arrow-left" class="w-5 h-5 mr-2"></i>
                 <span data-i18n="common.backHome">Volver al Inicio</span>
@@ -149,6 +152,22 @@
         window.addEventListener('languageChanged', function() {
             renderMenu();
         });
+
+        function shareMenu() {
+            const url = window.location.href;
+            const title = 'Menú - Macondo Bar Latino';
+            const text = '¡Mira el menú de Macondo Bar Latino! 🍽️🎶';
+
+            if (navigator.share) {
+                navigator.share({ title, text, url }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(url).then(() => {
+                    alert('✅ Enlace del menú copiado al portapapeles');
+                }).catch(() => {
+                    prompt('Copia este enlace para compartir:', url);
+                });
+            }
+        }
     </script>
 </body>
 </html>
