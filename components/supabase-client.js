@@ -210,6 +210,68 @@ const ReservationSystem = {
   }
 };
 
+// ==================== VALIDACIÓN DE EMAIL ====================
+
+function isEmailLegitimate(email) {
+  if (!email || typeof email !== 'string') return false;
+  const e = email.trim().toLowerCase();
+
+  // 1. Basic format
+  const formatRe = /^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,}$/;
+  if (!formatRe.test(e)) return false;
+
+  const [local, domain] = e.split('@');
+
+  // 2. Local part length
+  if (local.length < 2 || local.length > 64) return false;
+
+  // 3. Domain must have valid TLD (2-12 chars)
+  const tld = domain.split('.').pop();
+  if (!tld || tld.length < 2 || tld.length > 12) return false;
+
+  // 4. Known valid TLDs
+  const validTlds = new Set(['com','net','org','edu','gov','io','co','pl','es','de','fr','uk','it','nl','be','se','no','dk','fi','pt','at','ch','cz','sk','hu','ro','bg','hr','lt','lv','ee','ie','us','ca','mx','ar','br','cl','info','biz','me','tv','cc','eu','online','store','app','dev','tech','xyz','site','live','pro']);
+  if (!validTlds.has(tld)) {
+    // Allow two-letter country codes
+    if (tld.length !== 2) return false;
+  }
+
+  // 5. Domain should look real (not just random chars)
+  const domainBase = domain.split('.').slice(0, -1).join('.');
+  if (domainBase.length < 2) return false;
+  if (hasExcessiveConsonants(domainBase, 5)) return false;
+
+  // 6. Known providers - skip gibberish check for local part
+  const knownDomains = ['gmail.com','yahoo.com','yahoo.es','yahoo.pl','hotmail.com','outlook.com','outlook.es','live.com','icloud.com','aol.com','protonmail.com','proton.me','wp.pl','onet.pl','interia.pl','o2.pl','gazeta.pl','op.pl','tlen.pl','poczta.fm','mail.com','gmx.com','gmx.net','zoho.com','yandex.com','mail.ru','tutanota.com'];
+  if (knownDomains.includes(domain)) return true;
+
+  // 7. Gibberish detection on local part
+  if (hasExcessiveConsonants(local.replace(/[0-9._%+\-]/g, ''), 5)) return false;
+
+  // 8. Character variety check - pure repeated chars
+  const uniqueChars = new Set(local.replace(/[^a-z]/g, ''));
+  const alphaOnly = local.replace(/[^a-z]/g, '');
+  if (alphaOnly.length >= 5 && uniqueChars.size <= 2) return false;
+
+  return true;
+}
+
+function hasExcessiveConsonants(str, maxRun) {
+  const consonants = /[^aeiou\d._%+\-@]/g;
+  let run = 0;
+  for (const ch of str) {
+    if (/[aeiou]/.test(ch)) {
+      run = 0;
+    } else if (/[a-z]/.test(ch)) {
+      run++;
+      if (run >= maxRun) return true;
+    } else {
+      run = 0;
+    }
+  }
+  return false;
+}
+
 // Manejar el formulario de reservas
 function setupReservationForm() {
   const form = document.querySelector('#reservas form');
@@ -287,6 +349,12 @@ function setupReservationForm() {
     // Validar campos requeridos
     if (!reservationData.nombre || !reservationData.email || !reservationData.fecha) {
       showNotification('Por favor, completa todos los campos requeridos', 'error');
+      return;
+    }
+
+    // Validar legitimidad del email
+    if (!isEmailLegitimate(reservationData.email)) {
+      showNotification(t('reservations.invalidEmail', 'Por favor, introduce una dirección de correo electrónico válida.'), 'error');
       return;
     }
 

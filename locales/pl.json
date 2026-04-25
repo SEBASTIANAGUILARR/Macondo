@@ -183,7 +183,8 @@
     "availNoFitSub": "Możesz wybrać inną godzinę lub skontaktować się z nami w sprawie opcji specjalnych.",
     "availOk": "stolik(i) dostępne. Sugerowany stolik:",
     "availChairs": "krzeseł",
-    "availFloor": "Piętro"
+    "availFloor": "Piętro",
+    "invalidEmail": "Proszę podać prawidłowy adres e-mail."
   },
   "events": {
     "title": "Wydarzenia i Specjalne Wieczory",

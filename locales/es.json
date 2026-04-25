@@ -183,7 +183,8 @@
     "availNoFitSub": "Puede elegir otro horario o contactarnos para consultar opciones especiales.",
     "availOk": "mesa(s) disponible(s). Mesa sugerida:",
     "availChairs": "sillas",
-    "availFloor": "Planta"
+    "availFloor": "Planta",
+    "invalidEmail": "Por favor, introduce una dirección de correo electrónico válida."
   },
   "events": {
     "title": "Eventos y Noches Especiales",

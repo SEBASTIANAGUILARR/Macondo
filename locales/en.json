@@ -183,7 +183,8 @@
     "availNoFitSub": "You can choose a different time or contact us for special arrangements.",
     "availOk": "table(s) available. Suggested table:",
     "availChairs": "chairs",
-    "availFloor": "Floor"
+    "availFloor": "Floor",
+    "invalidEmail": "Please enter a valid email address."
   },
   "events": {
     "title": "Events and Special Nights",
