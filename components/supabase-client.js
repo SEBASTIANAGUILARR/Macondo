@@ -448,7 +448,8 @@ function populateTimeSlots() {
   const select = document.getElementById('hora-entrada');
   if (!select) return;
   const current = select.value;
-  select.innerHTML = '<option value="">Seleccionar hora</option>';
+  const selectTimeLabel = (window.i18n && typeof window.i18n.t === 'function') ? window.i18n.t('reservations.selectTime') || 'Seleccionar hora' : 'Seleccionar hora';
+  select.innerHTML = `<option value="">${selectTimeLabel}</option>`;
   for (let h = 12; h <= 23; h++) {
     for (let m = 0; m < 60; m += 15) {
       const hh = String(h).padStart(2, '0');
@@ -510,6 +511,16 @@ function countAvailableTables(occupiedSet) {
   return ALL_TABLES.filter(t => !occupiedSet.has(t.id)).length;
 }
 
+function t(key, fallback) {
+  try {
+    if (window.i18n && typeof window.i18n.t === 'function') {
+      const val = window.i18n.t(key);
+      if (val && val !== key) return val;
+    }
+  } catch (e) {}
+  return fallback || key;
+}
+
 async function checkAndShowAvailability() {
   const fecha = document.getElementById('fecha')?.value;
   const hora = document.getElementById('hora-entrada')?.value;
@@ -531,7 +542,7 @@ async function checkAndShowAvailability() {
 
   if (availableCount === 0) {
     msgEl.className = 'max-w-2xl mx-auto mb-4 bg-red-50 border border-red-300 rounded-lg p-4 text-sm text-red-800';
-    msgEl.innerHTML = '<p class="font-semibold">⚠️ Lo sentimos, no hay mesas disponibles para la fecha y hora seleccionadas.</p><p class="mt-1">Por favor, elija otro horario o contacte con nosotros directamente.</p>';
+    msgEl.innerHTML = `<p class="font-semibold">⚠️ ${t('reservations.availFull', 'Lo sentimos, no hay mesas disponibles para la fecha y hora seleccionadas.')}</p><p class="mt-1">${t('reservations.availFullSub', 'Por favor, elija otro horario o contacte con nosotros directamente.')}</p>`;
     if (submitBtn) submitBtn.disabled = true;
     return;
   }
@@ -540,13 +551,16 @@ async function checkAndShowAvailability() {
 
   if (!suggested) {
     msgEl.className = 'max-w-2xl mx-auto mb-4 bg-yellow-50 border border-yellow-300 rounded-lg p-4 text-sm text-yellow-800';
-    msgEl.innerHTML = '<p class="font-semibold">⚠️ No hay mesas disponibles con capacidad suficiente para el número de personas seleccionado en ese horario.</p><p class="mt-1">Puede elegir otro horario o contactarnos para consultar opciones especiales.</p>';
+    msgEl.innerHTML = `<p class="font-semibold">⚠️ ${t('reservations.availNoFit', 'No hay mesas disponibles con capacidad suficiente para el número de personas seleccionado en ese horario.')}</p><p class="mt-1">${t('reservations.availNoFitSub', 'Puede elegir otro horario o contactarnos para consultar opciones especiales.')}</p>`;
     if (submitBtn) submitBtn.disabled = true;
     return;
   }
 
+  const floorLabel = t('reservations.availFloor', 'Planta');
+  const chairsLabel = t('reservations.availChairs', 'sillas');
+  const okLabel = t('reservations.availOk', 'mesa(s) disponible(s). Mesa sugerida:');
   msgEl.className = 'max-w-2xl mx-auto mb-4 bg-green-50 border border-green-300 rounded-lg p-4 text-sm text-green-800';
-  msgEl.innerHTML = `<p>✅ <strong>${availableCount}</strong> mesa(s) disponible(s). Mesa sugerida: <strong>Mesa ${suggested.id}</strong> (${suggested.chairs} sillas, Planta ${suggested.floor}).</p>`;
+  msgEl.innerHTML = `<p>✅ <strong>${availableCount}</strong> ${okLabel} <strong>Mesa ${suggested.id}</strong> (${suggested.chairs} ${chairsLabel}, ${floorLabel} ${suggested.floor}).</p>`;
 }
 
 let _availabilityTimeout = null;
@@ -564,6 +578,10 @@ document.addEventListener('DOMContentLoaded', () => {
   ['fecha', 'hora-entrada', 'personas'].forEach(id => {
     const el = document.getElementById(id);
     if (el) el.addEventListener('change', scheduleAvailabilityCheck);
+  });
+
+  window.addEventListener('languageChanged', () => {
+    populateTimeSlots();
   });
 });
 
