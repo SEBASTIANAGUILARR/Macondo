@@ -1688,7 +1688,7 @@
     </div>
 
     <!-- Modal selector visual de mesas -->
-    <div id="table-selector-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-50 flex items-center justify-center p-4">
+    <div id="table-selector-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden z-[80] flex items-center justify-center p-4">
         <div class="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div class="p-6">
                 <div class="flex justify-between items-center mb-4">
@@ -3239,47 +3239,58 @@
         }
 
         function openTableSelector(reservationId, currentMesa, callback) {
-            _tableSelectorReservationId = reservationId;
-            _tableSelectorCallback = callback || null;
-            const current = reservations.find(r => String(r.id) === String(reservationId));
-            const infoEl = document.getElementById('table-selector-info');
-            infoEl.textContent = current
-                ? `Reserva de ${current.nombre || 'Cliente'} — ${current.personas || '?'} personas — ${current.fecha || ''}`
-                : '';
+            try {
+                _tableSelectorReservationId = reservationId;
+                _tableSelectorCallback = callback || null;
 
-            const occupied = getOccupiedTables(reservationId);
-            const currentMesaClean = String(currentMesa || '').trim();
+                const list = Array.isArray(reservations) ? reservations : [];
+                const current = list.find(r => String(r.id) === String(reservationId));
+                const infoEl = document.getElementById('table-selector-info');
+                if (infoEl) {
+                    infoEl.textContent = current
+                        ? `Reserva de ${current.nombre || 'Cliente'} — ${current.personas || '?'} personas — ${current.fecha || ''}`
+                        : '';
+                }
 
-            [0, 1].forEach(floor => {
-                const container = document.getElementById(`tables-floor-${floor}`);
-                const tables = ALL_TABLES.filter(t => t.floor === floor);
-                container.innerHTML = tables.map(t => {
-                    const isOccupied = occupied.has(t.id);
-                    const isCurrent = currentMesaClean === t.id;
-                    let cls, disabled;
-                    if (isCurrent) {
-                        cls = 'border-2 border-amber-500 bg-amber-50 text-amber-800 ring-2 ring-amber-300 cursor-pointer hover:bg-amber-100';
-                        disabled = false;
-                    } else if (isOccupied) {
-                        cls = 'border-2 border-red-400 bg-red-50 text-red-400 cursor-not-allowed opacity-60';
-                        disabled = true;
-                    } else {
-                        cls = 'border-2 border-green-500 bg-green-50 text-green-800 cursor-pointer hover:bg-green-100 hover:shadow-md';
-                        disabled = false;
-                    }
-                    return `
-                        <button type="button" ${disabled ? 'disabled' : ''}
-                            onclick="selectTable('${t.id}')"
-                            class="rounded-xl p-3 text-center transition-all ${cls}">
-                            <div class="text-lg font-extrabold">${t.id}</div>
-                            <div class="text-xs mt-1">${t.chairs} 💺</div>
-                            ${isCurrent ? '<div class="text-[10px] font-bold mt-1">ACTUAL</div>' : ''}
-                            ${isOccupied && !isCurrent ? '<div class="text-[10px] font-bold mt-1">OCUPADA</div>' : ''}
-                        </button>`;
-                }).join('');
-            });
+                const occupied = getOccupiedTables(reservationId);
+                const currentMesaClean = String(currentMesa || '').trim();
 
-            document.getElementById('table-selector-modal').classList.remove('hidden');
+                [0, 1].forEach(floor => {
+                    const container = document.getElementById(`tables-floor-${floor}`);
+                    if (!container) return;
+
+                    const tables = ALL_TABLES.filter(t => t.floor === floor);
+                    container.innerHTML = tables.map(t => {
+                        const isOccupied = occupied.has(t.id);
+                        const isCurrent = currentMesaClean === t.id;
+                        let cls, disabled;
+                        if (isCurrent) {
+                            cls = 'border-2 border-amber-500 bg-amber-50 text-amber-800 ring-2 ring-amber-300 cursor-pointer hover:bg-amber-100';
+                            disabled = false;
+                        } else if (isOccupied) {
+                            cls = 'border-2 border-red-400 bg-red-50 text-red-400 cursor-not-allowed opacity-60';
+                            disabled = true;
+                        } else {
+                            cls = 'border-2 border-green-500 bg-green-50 text-green-800 cursor-pointer hover:bg-green-100 hover:shadow-md';
+                            disabled = false;
+                        }
+                        return `
+                            <button type="button" ${disabled ? 'disabled' : ''}
+                                onclick="selectTable('${t.id}')"
+                                class="rounded-xl p-3 text-center transition-all ${cls}">
+                                <div class="text-lg font-extrabold">${t.id}</div>
+                                <div class="text-xs mt-1">${t.chairs} 💺</div>
+                                ${isCurrent ? '<div class="text-[10px] font-bold mt-1">ACTUAL</div>' : ''}
+                                ${isOccupied && !isCurrent ? '<div class="text-[10px] font-bold mt-1">OCUPADA</div>' : ''}
+                            </button>`;
+                    }).join('');
+                });
+
+                const modalEl = document.getElementById('table-selector-modal');
+                if (modalEl) modalEl.classList.remove('hidden');
+            } catch (e) {
+                alert('No se pudo abrir el selector de mesas: ' + (e.message || e));
+            }
         }
 
         function closeTableSelector() {
@@ -3300,6 +3311,7 @@
             const reservationId = _tableSelectorReservationId;
             if (!reservationId) return;
             const pendingConfirm = _pendingConfirmId;
+            const selectorCallback = _tableSelectorCallback;
 
             const updatePayload = { mesa: tableId };
             if (pendingConfirm && String(pendingConfirm) === String(reservationId)) {
@@ -3333,7 +3345,7 @@
             }
 
             await loadReservations();
-            if (_tableSelectorCallback === 'modal') {
+            if (selectorCallback === 'modal') {
                 await refreshReservationsDayModalIfOpen();
             }
         }
