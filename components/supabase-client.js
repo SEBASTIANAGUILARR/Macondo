@@ -113,6 +113,7 @@ const ReservationSystem = {
         hora_entrada: reservationData.horaEntrada || null,
         personas: parseInt(reservationData.personas) || 1,
         comentarios: reservationData.comentarios || null,
+        mesa_sugerida: reservationData.mesaSugerida || null,
         estado: 'pendiente',
         lang: detectedLang,
         created_at: new Date().toISOString()
@@ -295,6 +296,21 @@ function setupReservationForm() {
     submitBtn.innerHTML = '<span>Procesando...</span>';
     submitBtn.disabled = true;
 
+    // Verificar disponibilidad antes de enviar
+    if (reservationData.fecha && reservationData.horaEntrada) {
+      try {
+        const occupied = await getOccupiedTablesForSlot(reservationData.fecha, reservationData.horaEntrada);
+        const suggested = suggestTable(reservationData.personas, occupied);
+        if (countAvailableTables(occupied) === 0 || !suggested) {
+          showNotification('No hay mesas disponibles para esa fecha y hora. Por favor, seleccione otro horario.', 'error');
+          submitBtn.innerHTML = originalText;
+          submitBtn.disabled = false;
+          return;
+        }
+        reservationData.mesaSugerida = suggested.id;
+      } catch (e) {}
+    }
+
     // Crear reserva
     console.log('Enviando reserva a Supabase:', reservationData);
     const result = await ReservationSystem.createReservation(reservationData);
@@ -303,6 +319,9 @@ function setupReservationForm() {
     if (result.success) {
       showNotification('¡Reserva realizada con éxito! Te contactaremos pronto.', 'success');
       form.reset();
+      populateTimeSlots();
+      const msgEl = document.getElementById('availability-message');
+      if (msgEl) { msgEl.classList.add('hidden'); msgEl.innerHTML = ''; }
     } else {
       console.error('Error detallado:', result.error);
       showNotification(`Error: ${result.error || 'Error desconocido'}`, 'error');
@@ -397,10 +416,155 @@ async function upsertClientFromInteraction({ nombre, email, telefono, newsletter
   if (error) throw error;
 }
 
+// ==================== SISTEMA DE DISPONIBILIDAD DE MESAS ====================
+
+const ALL_TABLES = [
+  { id: '1',   floor: 0, chairs: 3 },
+  { id: '2',   floor: 0, chairs: 4 },
+  { id: '3',   floor: 0, chairs: 6 },
+  { id: '4',   floor: 0, chairs: 4 },
+  { id: '5',   floor: 0, chairs: 6 },
+  { id: '6',   floor: 0, chairs: 2 },
+  { id: 'G1',  floor: 1, chairs: 3 },
+  { id: 'G2',  floor: 1, chairs: 2 },
+  { id: 'G3',  floor: 1, chairs: 2 },
+  { id: 'G4',  floor: 1, chairs: 2 },
+  { id: 'G5',  floor: 1, chairs: 4 },
+  { id: 'G6',  floor: 1, chairs: 3 },
+  { id: 'G7',  floor: 1, chairs: 2 },
+  { id: 'G8',  floor: 1, chairs: 2 },
+  { id: 'G9',  floor: 1, chairs: 2 },
+  { id: 'G10', floor: 1, chairs: 4 },
+  { id: 'G11', floor: 1, chairs: 4 },
+  { id: 'G12', floor: 1, chairs: 10 },
+  { id: 'G13', floor: 1, chairs: 10 },
+  { id: 'G14', floor: 1, chairs: 8 },
+  { id: 'G15', floor: 1, chairs: 4 },
+];
+
+const RESERVATION_DURATION_HOURS = 3;
+
+function populateTimeSlots() {
+  const select = document.getElementById('hora-entrada');
+  if (!select) return;
+  const current = select.value;
+  select.innerHTML = '<option value="">Seleccionar hora</option>';
+  for (let h = 12; h <= 23; h++) {
+    for (let m = 0; m < 60; m += 15) {
+      const hh = String(h).padStart(2, '0');
+      const mm = String(m).padStart(2, '0');
+      const val = `${hh}:${mm}`;
+      const opt = document.createElement('option');
+      opt.value = val;
+      opt.textContent = val;
+      if (val === current) opt.selected = true;
+      select.appendChild(opt);
+    }
+  }
+}
+
+function timeToMinutes(timeStr) {
+  if (!timeStr) return null;
+  const [h, m] = timeStr.split(':').map(Number);
+  return h * 60 + (m || 0);
+}
+
+function reservationsOverlap(existingTime, newTime) {
+  const existingMin = timeToMinutes(existingTime);
+  const newMin = timeToMinutes(newTime);
+  if (existingMin == null || newMin == null) return false;
+  const dur = RESERVATION_DURATION_HOURS * 60;
+  return newMin < (existingMin + dur) && (newMin + dur) > existingMin;
+}
+
+async function getOccupiedTablesForSlot(fecha, hora) {
+  if (!supabaseClient || !fecha || !hora) return new Set();
+  try {
+    const { data, error } = await supabaseClient
+      .from('reservations')
+      .select('mesa, hora_entrada')
+      .eq('fecha', fecha)
+      .in('estado', ['pendiente', 'confirmada']);
+    if (error || !data) return new Set();
+    const occupied = new Set();
+    data.forEach(r => {
+      if (r.mesa && reservationsOverlap(r.hora_entrada, hora)) {
+        occupied.add(String(r.mesa).trim());
+      }
+    });
+    return occupied;
+  } catch (e) {
+    return new Set();
+  }
+}
+
+function suggestTable(personas, occupiedSet) {
+  const needed = parseInt(personas) || 1;
+  const available = ALL_TABLES
+    .filter(t => !occupiedSet.has(t.id) && t.chairs >= needed)
+    .sort((a, b) => a.chairs - b.chairs);
+  return available.length > 0 ? available[0] : null;
+}
+
+function countAvailableTables(occupiedSet) {
+  return ALL_TABLES.filter(t => !occupiedSet.has(t.id)).length;
+}
+
+async function checkAndShowAvailability() {
+  const fecha = document.getElementById('fecha')?.value;
+  const hora = document.getElementById('hora-entrada')?.value;
+  const personas = document.getElementById('personas')?.value;
+  const msgEl = document.getElementById('availability-message');
+  const submitBtn = document.querySelector('#reservation-form button[type="submit"]');
+  if (!msgEl) return;
+
+  if (!fecha || !hora) {
+    msgEl.classList.add('hidden');
+    msgEl.innerHTML = '';
+    if (submitBtn) submitBtn.disabled = false;
+    return;
+  }
+
+  const occupied = await getOccupiedTablesForSlot(fecha, hora);
+  const availableCount = countAvailableTables(occupied);
+  const suggested = suggestTable(personas, occupied);
+
+  if (availableCount === 0) {
+    msgEl.className = 'max-w-2xl mx-auto mb-4 bg-red-50 border border-red-300 rounded-lg p-4 text-sm text-red-800';
+    msgEl.innerHTML = '<p class="font-semibold">⚠️ Lo sentimos, no hay mesas disponibles para la fecha y hora seleccionadas.</p><p class="mt-1">Por favor, elija otro horario o contacte con nosotros directamente.</p>';
+    if (submitBtn) submitBtn.disabled = true;
+    return;
+  }
+
+  if (submitBtn) submitBtn.disabled = false;
+
+  if (!suggested) {
+    msgEl.className = 'max-w-2xl mx-auto mb-4 bg-yellow-50 border border-yellow-300 rounded-lg p-4 text-sm text-yellow-800';
+    msgEl.innerHTML = '<p class="font-semibold">⚠️ No hay mesas disponibles con capacidad suficiente para el número de personas seleccionado en ese horario.</p><p class="mt-1">Puede elegir otro horario o contactarnos para consultar opciones especiales.</p>';
+    if (submitBtn) submitBtn.disabled = true;
+    return;
+  }
+
+  msgEl.className = 'max-w-2xl mx-auto mb-4 bg-green-50 border border-green-300 rounded-lg p-4 text-sm text-green-800';
+  msgEl.innerHTML = `<p>✅ <strong>${availableCount}</strong> mesa(s) disponible(s). Mesa sugerida: <strong>Mesa ${suggested.id}</strong> (${suggested.chairs} sillas, Planta ${suggested.floor}).</p>`;
+}
+
+let _availabilityTimeout = null;
+function scheduleAvailabilityCheck() {
+  clearTimeout(_availabilityTimeout);
+  _availabilityTimeout = setTimeout(checkAndShowAvailability, 300);
+}
+
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
   initSupabase();
   setupReservationForm();
+  populateTimeSlots();
+
+  ['fecha', 'hora-entrada', 'personas'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.addEventListener('change', scheduleAvailabilityCheck);
+  });
 });
 
 // Exportar para uso global
