@@ -21,7 +21,13 @@ exports.handler = async (event) => {
     }
 
     const row0 = Array.isArray(rows) ? rows[0] : null;
-    const cfg = { ...DEFAULTS, ...(row0 || {}) };
+    const clean = {};
+    if (row0) {
+      for (const [k, v] of Object.entries(row0)) {
+        if (v != null) clean[k] = v;
+      }
+    }
+    const cfg = { ...DEFAULTS, ...clean };
 
     return json(200, { ok: true, config: cfg });
   } catch (e) {
