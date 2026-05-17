@@ -57,3 +57,18 @@
   from = "/admin/"
   to = "/admin.html"
   status = 200
+
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+
+[[headers]]
+  for = "/components/*"
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"

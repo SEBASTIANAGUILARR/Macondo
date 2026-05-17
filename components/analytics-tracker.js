@@ -4,6 +4,21 @@
 (function() {
     const SUPABASE_URL = 'https://imqcifvmklkccwagpkee.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImltcWNpZnZta2xrY2N3YWdwa2VlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjkxMjMzNDIsImV4cCI6MjA4NDY5OTM0Mn0.fP4S0VfaC823LKUvh6HcybS_ze9uWWrBKgC4SsQBiRU';
+
+    function hasAnalyticsConsent() {
+        try {
+            if (window.MacondoConsent && typeof window.MacondoConsent.hasAnalyticsConsent === 'function') {
+                return !!window.MacondoConsent.hasAnalyticsConsent();
+            }
+
+            const raw = localStorage.getItem('macondo_cookie_consent_v1');
+            if (!raw) return false;
+            const parsed = JSON.parse(raw);
+            return !!parsed?.analytics;
+        } catch (e) {
+            return false;
+        }
+    }
     
     // Generar o recuperar ID de visitante
     function getVisitorId() {
@@ -53,6 +68,8 @@
     // Enviar evento a Supabase
     async function trackEvent(eventType, eventData = {}) {
         try {
+            if (!hasAnalyticsConsent()) return;
+
             const payload = {
                 visitor_id: getVisitorId(),
                 session_id: getSessionId(),
@@ -169,6 +186,19 @@
     function init() {
         // No trackear en admin
         if (window.location.pathname.includes('admin')) return;
+
+        if (!hasAnalyticsConsent()) {
+            const onConsentChanged = (e) => {
+                try {
+                    const granted = !!e?.detail?.analytics;
+                    if (!granted) return;
+                    window.removeEventListener('macondo:consent-changed', onConsentChanged);
+                    init();
+                } catch (err) {}
+            };
+            window.addEventListener('macondo:consent-changed', onConsentChanged);
+            return;
+        }
         
         trackPageView();
         trackClicks();
