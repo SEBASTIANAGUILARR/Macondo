@@ -1,6 +1,82 @@
 (function () {
   const STORAGE_KEY = 'macondo_cookie_consent_v1';
 
+  const I18N = {
+    es: {
+      title: 'Cookies',
+      description: 'Usamos cookies necesarias para el funcionamiento del sitio y opcionales para analítica. Puedes aceptar, rechazar o configurar tus preferencias.',
+      reject: 'Rechazar',
+      configure: 'Configurar',
+      accept: 'Aceptar',
+      preferencesTitle: 'Preferencias de cookies',
+      preferencesNote: 'Puedes cambiar esto en cualquier momento desde este navegador.',
+      close: 'Cerrar',
+      necessaryName: 'Necesarias',
+      necessaryDesc: 'Siempre activas. Permiten que el sitio funcione.',
+      necessaryAria: 'Cookies necesarias activas',
+      analyticsName: 'Analítica',
+      analyticsDesc: 'Nos ayuda a entender el uso del sitio y mejorar la experiencia.',
+      analyticsAria: 'Activar cookies de analítica',
+      footerNote: 'Al rechazar, solo se usarán cookies necesarias.',
+      save: 'Guardar'
+    },
+    en: {
+      title: 'Cookies',
+      description: 'We use necessary cookies to make the site work and optional ones for analytics. You can accept, reject or configure your preferences.',
+      reject: 'Reject',
+      configure: 'Configure',
+      accept: 'Accept',
+      preferencesTitle: 'Cookie preferences',
+      preferencesNote: 'You can change this at any time from this browser.',
+      close: 'Close',
+      necessaryName: 'Necessary',
+      necessaryDesc: 'Always active. They allow the site to work.',
+      necessaryAria: 'Necessary cookies active',
+      analyticsName: 'Analytics',
+      analyticsDesc: 'Helps us understand how the site is used and improve the experience.',
+      analyticsAria: 'Enable analytics cookies',
+      footerNote: 'If you reject, only necessary cookies will be used.',
+      save: 'Save'
+    },
+    pl: {
+      title: 'Pliki cookies',
+      description: 'Używamy plików cookies niezbędnych do działania strony oraz opcjonalnych do analityki. Możesz zaakceptować, odrzucić lub skonfigurować swoje preferencje.',
+      reject: 'Odrzuć',
+      configure: 'Konfiguruj',
+      accept: 'Akceptuj',
+      preferencesTitle: 'Preferencje cookies',
+      preferencesNote: 'Możesz to zmienić w dowolnym momencie z poziomu tej przeglądarki.',
+      close: 'Zamknij',
+      necessaryName: 'Niezbędne',
+      necessaryDesc: 'Zawsze aktywne. Umożliwiają działanie strony.',
+      necessaryAria: 'Niezbędne pliki cookies aktywne',
+      analyticsName: 'Analityczne',
+      analyticsDesc: 'Pomagają nam zrozumieć korzystanie ze strony i poprawiać doświadczenie.',
+      analyticsAria: 'Włącz analityczne pliki cookies',
+      footerNote: 'Po odrzuceniu używane będą tylko niezbędne pliki cookies.',
+      save: 'Zapisz'
+    }
+  };
+
+  function getLang() {
+    try {
+      if (window.i18n && typeof window.i18n.getCurrentLanguage === 'function') {
+        const code = String(window.i18n.getCurrentLanguage() || '').toLowerCase().split('-')[0];
+        if (I18N[code]) return code;
+      }
+      const saved = String(localStorage.getItem('macondo-language') || '').toLowerCase().split('-')[0];
+      if (I18N[saved]) return saved;
+      const nav = String((navigator.language || navigator.userLanguage || '') || '').toLowerCase().split('-')[0];
+      if (I18N[nav]) return nav;
+    } catch (e) {}
+    return 'es';
+  }
+
+  function t(key) {
+    const lang = getLang();
+    return (I18N[lang] && I18N[lang][key]) || I18N.es[key] || '';
+  }
+
   function safeJsonParse(value) {
     try {
       return JSON.parse(value);
@@ -68,13 +144,13 @@
     bar.innerHTML = `
       <div class="mc-consent__wrap">
         <div style="flex:1;min-width:260px">
-          <p class="mc-consent__title">Cookies</p>
-          <p class="mc-consent__text">Usamos cookies necesarias para el funcionamiento del sitio y opcionales para analítica. Puedes aceptar, rechazar o configurar tus preferencias.</p>
+          <p class="mc-consent__title" data-mc-i18n="title"></p>
+          <p class="mc-consent__text" data-mc-i18n="description"></p>
         </div>
         <div class="mc-consent__actions">
-          <button type="button" class="mc-btn mc-btn--secondary" id="mc-consent-reject">Rechazar</button>
-          <button type="button" class="mc-btn mc-btn--secondary" id="mc-consent-settings">Configurar</button>
-          <button type="button" class="mc-btn mc-btn--primary" id="mc-consent-accept">Aceptar</button>
+          <button type="button" class="mc-btn mc-btn--secondary" id="mc-consent-reject" data-mc-i18n="reject"></button>
+          <button type="button" class="mc-btn mc-btn--secondary" id="mc-consent-settings" data-mc-i18n="configure"></button>
+          <button type="button" class="mc-btn mc-btn--primary" id="mc-consent-accept" data-mc-i18n="accept"></button>
         </div>
       </div>
     `;
@@ -86,38 +162,38 @@
       <div class="mc-modal__hd">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px">
           <div>
-            <p style="margin:0;font-weight:900;font-size:16px">Preferencias de cookies</p>
-            <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,.78)">Puedes cambiar esto en cualquier momento desde este navegador.</p>
+            <p style="margin:0;font-weight:900;font-size:16px" data-mc-i18n="preferencesTitle"></p>
+            <p style="margin:6px 0 0;font-size:12px;color:rgba(255,255,255,.78)" data-mc-i18n="preferencesNote"></p>
           </div>
-          <button type="button" class="mc-btn mc-btn--ghost" id="mc-consent-close" aria-label="Cerrar">Cerrar</button>
+          <button type="button" class="mc-btn mc-btn--ghost" id="mc-consent-close" data-mc-i18n="close" data-mc-i18n-aria="close"></button>
         </div>
       </div>
       <div class="mc-modal__bd">
         <div class="mc-toggle" style="margin-top:10px">
           <div class="mc-toggle__meta">
-            <div class="mc-toggle__name">Necesarias</div>
-            <div class="mc-toggle__desc">Siempre activas. Permiten que el sitio funcione.</div>
+            <div class="mc-toggle__name" data-mc-i18n="necessaryName"></div>
+            <div class="mc-toggle__desc" data-mc-i18n="necessaryDesc"></div>
           </div>
           <div class="mc-switch">
-            <input type="checkbox" checked disabled aria-label="Cookies necesarias activas" />
+            <input type="checkbox" checked disabled data-mc-i18n-aria="necessaryAria" />
           </div>
         </div>
 
         <div class="mc-toggle" style="margin-top:10px">
           <div class="mc-toggle__meta">
-            <div class="mc-toggle__name">Analítica</div>
-            <div class="mc-toggle__desc">Nos ayuda a entender el uso del sitio y mejorar la experiencia.</div>
+            <div class="mc-toggle__name" data-mc-i18n="analyticsName"></div>
+            <div class="mc-toggle__desc" data-mc-i18n="analyticsDesc"></div>
           </div>
           <div class="mc-switch">
-            <input id="mc-consent-analytics" type="checkbox" aria-label="Activar cookies de analítica" />
+            <input id="mc-consent-analytics" type="checkbox" data-mc-i18n-aria="analyticsAria" />
           </div>
         </div>
 
-        <div class="mc-note">Al rechazar, solo se usarán cookies necesarias.</div>
+        <div class="mc-note" data-mc-i18n="footerNote"></div>
       </div>
       <div class="mc-modal__ft">
-        <button type="button" class="mc-btn mc-btn--secondary" id="mc-consent-save-reject">Rechazar</button>
-        <button type="button" class="mc-btn mc-btn--primary" id="mc-consent-save">Guardar</button>
+        <button type="button" class="mc-btn mc-btn--secondary" id="mc-consent-save-reject" data-mc-i18n="reject"></button>
+        <button type="button" class="mc-btn mc-btn--primary" id="mc-consent-save" data-mc-i18n="save"></button>
       </div>
     `;
 
@@ -137,6 +213,26 @@
       save: modal.querySelector('#mc-consent-save'),
       saveReject: modal.querySelector('#mc-consent-save-reject')
     };
+
+    function applyTranslations() {
+      const roots = [bar, modal];
+      roots.forEach(root => {
+        root.querySelectorAll('[data-mc-i18n]').forEach(el => {
+          const key = el.getAttribute('data-mc-i18n');
+          if (key) el.textContent = t(key);
+        });
+        root.querySelectorAll('[data-mc-i18n-aria]').forEach(el => {
+          const key = el.getAttribute('data-mc-i18n-aria');
+          if (key) el.setAttribute('aria-label', t(key));
+        });
+      });
+    }
+
+    applyTranslations();
+    window.addEventListener('languageChanged', applyTranslations);
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'macondo-language') applyTranslations();
+    });
 
     function openModal() {
       els.backdrop.style.display = 'block';
